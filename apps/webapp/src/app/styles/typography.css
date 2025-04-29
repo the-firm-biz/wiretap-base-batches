@@ -1,0 +1,37 @@
+/**
+ * @todo Bigeon - add real font families & sizes. This is an example implementation.
+ */
+@theme {
+  /* Font Families */
+  --font-serif: 'Times New Roman';
+  --font-sans: 'Arial';
+  --font-sans-narrow: var(--font-sans-narrow);
+
+  /* shadcn defaults */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  /* end shadcn defaults */
+
+  /* Font Sizes & Line Heights */
+  --text-xs: 11px;
+  --text-xs--line-height: 16px;
+  --text-sm: 12px;
+  --text-sm--line-height: 16px;
+  --text-md: 14px;
+  --text-md--line-height: 16px;
+  --text-lg: 16px;
+  --text-lg--line-height: 20px;
+  --text-xl: 20px;
+  --text-xl--line-height: 24px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 28px;
+  --text-3xl: 36px;
+  --text-3xl--line-height: 40px;
+  --text-4xl: 48px;
+  --text-4xl--line-height: 56px;
+
+  /* Letter Spacing */
+  --tracking-narrower: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wider: 0.05em;
+}

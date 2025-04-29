@@ -1,0 +1,76 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1743954063726,
+      "tag": "0000_absurd_agent_zero",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1744277384932,
+      "tag": "0001_gray_energizer",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1744529515617,
+      "tag": "0002_mature_earthquake",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1744538234978,
+      "tag": "0003_seed-verification-sources-1",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1745321871636,
+      "tag": "0004_blushing_fabian_cortez",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1745525273176,
+      "tag": "0005_futuristic_lionheart",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1745529864673,
+      "tag": "0006_fantastic_harrier",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1745764728218,
+      "tag": "0007_tough_surge",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1745837552001,
+      "tag": "0008_goofy_warbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1745869105086,
+      "tag": "0009_flashy_zombie",
+      "breakpoints": true
+    }
+  ]
+}

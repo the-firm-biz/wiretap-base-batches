@@ -1,0 +1,1 @@
+ALTER TABLE "tokens" ADD COLUMN "deployment_transaction_hash" text NOT NULL;

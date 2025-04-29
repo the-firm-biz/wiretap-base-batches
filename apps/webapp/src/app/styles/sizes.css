@@ -1,0 +1,12 @@
+/**
+ * @todo Bigeon - add real default radius size. This is an example implementation.
+ */
+:root {
+  /* shadcn defaults */
+  --radius: 0.625rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  /* end shadcn defaults */
+}

@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@import './typography.css';
+@import './colors.css';
+@import './sizes.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  /* Default body styles */
+  body {
+    @apply bg-background text-foreground;
+  }
+}

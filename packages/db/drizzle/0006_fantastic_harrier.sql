@@ -1,0 +1,1 @@
+ALTER TABLE "farcaster_accounts" ADD CONSTRAINT "farcaster_accounts_token_creator_entity_id_unique" UNIQUE("token_creator_entity_id");

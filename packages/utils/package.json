@@ -1,0 +1,31 @@
+{
+  "name": "@wiretap/utils",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./shared": {
+      "types": "./dist/src/shared/index.d.ts",
+      "default": "./dist/src/shared/index.js"
+    },
+    "./server": {
+      "types": "./dist/src/server/index.d.ts",
+      "default": "./dist/src/server/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "lint": "eslint .",
+    "ts:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@neynar/nodejs-sdk": "^2.27.1",
+    "viem": "^2.27.0",
+    "zod": "4.0.0-beta.20250415T232143"
+  },
+  "devDependencies": {
+    "@wiretap/typescript-config": "workspace:*",
+    "@wiretap/eslint-config": "workspace:*",
+    "@wiretap/prettier-config": "workspace:*"
+  }
+}
