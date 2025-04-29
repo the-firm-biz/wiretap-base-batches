@@ -16,17 +16,18 @@
     "ts:check": "tsc --noEmit"
   },
   "dependencies": {
-    "@wiretap/utils": "workspace:*",
     "@wiretap/config": "workspace:*",
     "@wiretap/db": "workspace:*",
+    "@wiretap/utils": "workspace:*",
     "abitype": "^1.0.8",
     "dotenv": "^16.5.0",
+    "exponential-backoff": "^3.1.2",
     "viem": "^2.27.0",
     "zod": "4.0.0-beta.20250415T232143"
   },
   "devDependencies": {
-    "@wiretap/typescript-config": "workspace:*",
     "@wiretap/eslint-config": "workspace:*",
-    "@wiretap/prettier-config": "workspace:*"
+    "@wiretap/prettier-config": "workspace:*",
+    "@wiretap/typescript-config": "workspace:*"
   }
 }
