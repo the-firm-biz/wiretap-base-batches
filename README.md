@@ -108,3 +108,112 @@ Add `.env.test` to the package with env variables to use during tests
 ```
 DATABASE_URL=postgres://postgres:postgres@db.localtest.me:5432/wiretap-test-db
 ```
+
+## Code Guidelines
+
+### General Principles
+
+- Write code for <b>others</b>, not yourself.
+- Prioritize readability and debuggability.
+- Keep code as simple as possible.
+- Practice shared ownership: if you see something broken, fix it.
+
+### Function Logic
+
+- Handle edge cases and errors first, happy path last.
+- Use early returns to:
+  - Eliminate nested `else`/`else if`
+  - Avoid `let` reassignment where possible
+
+```typescript
+// bad
+function processToken(token) {
+  if (token) {
+    if (token.isActive) {
+      // main logic here
+    } else {
+      throw new Error('Token is not active');
+    }
+  } else {
+    throw new Error('No token provided');
+  }
+}
+
+// good
+function processToken(token) {
+  if (!token) {
+    throw new Error('No token provided');
+  }
+
+  if (!token.isActive) {
+    throw new Error('Token is not active');
+  }
+  // main logic here
+}
+```
+
+- Abstract complex conditions into semantic variables:
+
+```typescript
+ // bad
+ if (
+   employee.hasBullpenSpeakingPrivileges &&
+   !employee.isTerminated &&
+   employee.telegramTimeoutMs === 0 &&
+ ) {}
+
+ // good
+ const canPostInBullpen =
+   employee.hasBullpenSpeakingPrivileges &&
+   !employee.isTerminated &&
+   employee.telegramTimeoutMs === 0
+
+ if (canPostInBullpen) {}
+```
+
+- Use objects for functions with 3+ arguments.
+- Explicitly type function return values.
+- Keep functions short and focused on a single responsibility.
+
+### Naming Conventions
+
+- Use descriptive, semantic variable names to make code self-documenting.
+
+```ts
+// bad
+const cast;
+const source;
+const result;
+
+// good
+const castWithConversation;
+const deploymentSource;
+const neynarUserResponse;
+```
+
+- Prefix booleans with auxiliary verbs like is, has, can, or should.
+
+```typescript
+const isLoading;
+const canSubmit;
+const hasError;
+const shouldUpdate;
+```
+
+- Prefix functions with a verb describing their action. Avoid ambiguous or noun-only names.
+
+```typescript
+// bad
+tokenContext();
+usersByAddress();
+slackMessage();
+
+// good
+getTokenContext();
+fetchBulkUsersByEthOrSolAddress();
+sendSlackMessage();
+```
+
+- Avoid abbreviations unless they are well-known and unambiguous.
+- Avoid magic numbers/strings - use named constants.
+- Prefer named exports.
