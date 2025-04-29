@@ -1,0 +1,39 @@
+{
+  "name": "@wiretap/db",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "lint": "eslint .",
+    "ts:check": "tsc --noEmit",
+    "test": "vitest",
+    "db:migration-generate": "tsx ./src/scripts/db-generate.ts",
+    "db:migration-push": "tsx ./src/scripts/db-push.ts",
+    "db:migration": "pnpm run db:migration-generate && pnpm run db:migration-push",
+    "db:migration:test": "drizzle-kit migrate --config drizzle.test.config.ts"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.0",
+    "@wiretap/utils": "workspace:*",
+    "dotenv": "^16.5.0",
+    "drizzle-kit": "^0.31.0",
+    "drizzle-orm": "^0.42.0",
+    "pg": "^8.14.1",
+    "zod": "4.0.0-beta.20250415T232143"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.13",
+    "@wiretap/eslint-config": "workspace:*",
+    "@wiretap/prettier-config": "workspace:*",
+    "@wiretap/typescript-config": "workspace:*",
+    "vite": "^6.3.2",
+    "vitest": "^3.1.2"
+  }
+}

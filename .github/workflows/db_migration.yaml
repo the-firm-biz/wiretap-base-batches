@@ -1,0 +1,44 @@
+name: DB - Run Migrations
+
+on:
+  push:
+    branches: ['main', 'develop']
+    paths:
+      - packages/db/**
+
+jobs:
+  run_migrations:
+    environment: |-
+      ${{
+          github.ref_name == 'main'    && 'production'
+      ||  github.ref_name == 'develop' && 'staging'
+      }}
+    name: Run Migrations
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.8.1
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build @wiretap/db packages
+        run: pnpm turbo build --filter=@wiretap/db
+
+      - name: Push DB migrations
+        run: pnpm run db:migration-push

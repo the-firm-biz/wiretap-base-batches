@@ -1,0 +1,8 @@
+{
+  "extends": "@wiretap/typescript-config/no-dom-library-config.json",
+  "include": ["src", "*.ts"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "outDir": "./dist"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "DATABASE_URL",
+    "NEYNAR_API_KEY",
+    "ALCHEMY_API_KEY",
+    "SLACK_TOKEN",
+    "IS_SLACK_NOTIFICATION_ENABLED",
+    "ZERO_X_API_KEY",
+    "IS_AUTO_BUY_ENABLED",
+    "WALLET_PRIVATE_KEY"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "lint": {
+      "dependsOn": ["^build", "^lint"]
+    },
+    "ts:check": {
+      "dependsOn": ["^build", "^ts:check"]
+    },
+    "db:migration": {
+      "dependsOn": ["@wiretap/db#ts:check"],
+      "cache": false
+    },
+    "db:migration-generate": {
+      "dependsOn": ["@wiretap/db#ts:check"],
+      "cache": false
+    },
+    "db:migration-push": {
+      "cache": false
+    },
+    "db:migration:test": {
+      "dependsOn": ["@wiretap/db#ts:check"],
+      "cache": false
+    },
+    "dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "test": {
+      "cache": false
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1743954063726,
+      "tag": "0000_absurd_agent_zero",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1744277384932,
+      "tag": "0001_gray_energizer",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1744529515617,
+      "tag": "0002_mature_earthquake",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1744538234978,
+      "tag": "0003_seed-verification-sources-1",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1745321871636,
+      "tag": "0004_blushing_fabian_cortez",
+      "breakpoints": true
+    }
+  ]
+}

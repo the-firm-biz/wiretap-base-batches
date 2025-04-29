@@ -1,0 +1,22 @@
+{
+  "name": "@wiretap/config",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "lint": "eslint .",
+    "ts:check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@wiretap/typescript-config": "workspace:*",
+    "@wiretap/eslint-config": "workspace:*",
+    "@wiretap/prettier-config": "workspace:*"
+  }
+}

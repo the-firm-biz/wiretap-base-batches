@@ -1,0 +1,33 @@
+{
+  "name": "wiretap",
+  "description": "> _\"While our competitors are deploying today's strategies, we're already > frontrunning tomorrow's mistakes.\"_ > > — Copyright © Franklin J. Merrimont, Founder & Chairman, The Firm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run build && turbo run dev",
+    "pretest": "docker compose -f docker-compose.test.yaml up -d && turbo run db:migration:test --filter=@wiretap/db",
+    "test": "turbo run test",
+    "posttest": "docker compose -f docker-compose.test.yaml down",
+    "lint": "turbo run lint",
+    "ts:check": "turbo run ts:check",
+    "db:migration": "turbo run db:migration",
+    "db:migration-generate": "turbo run db:migration-generate",
+    "db:migration-push": "turbo run db:migration-push"
+  },
+  "devDependencies": {
+    "@total-typescript/tsconfig": "^1.0.4",
+    "@types/mime": "3.0.4",
+    "@types/node": "^22.14.1",
+    "eslint": "^9.24.0",
+    "prettier": "3.5.3",
+    "tsx": "4.19.3",
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@10.8.1",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
