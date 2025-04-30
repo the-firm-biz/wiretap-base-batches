@@ -35,8 +35,9 @@ export async function lookupCastConversationWithBackoff(
   neynarClient: NeynarAPIClient,
   identifier: string
 ): Promise<NeynarCastWithInteractionsAndConversations | undefined> {
-  const castWithConversation = await callWithBackOff(() =>
-    lookupCastConversation(neynarClient, identifier)
+  const castWithConversation = await callWithBackOff(
+    () => lookupCastConversation(neynarClient, identifier),
+    'lookupCastConversation'
   );
   if (!castWithConversation) {
     console.log(`No cast resolved for castHash ${identifier}`);
