@@ -54,6 +54,7 @@ export const siweConfig = createSIWEConfig({
    * This method retrieves them and returns them as a SIWESession object.
    */
   getSession: async () => {
+    console.log('siwe: !!!!!GET SESSION!!!!!');
     const sessionCookie = getSiweSessionCookie();
     if (!sessionCookie) {
       return null;
@@ -124,7 +125,7 @@ export const siweConfig = createSIWEConfig({
     return true;
   },
 
-  signOutOnDisconnect: false,
+  signOutOnDisconnect: true,
   signOutOnAccountChange: false,
-  signOutOnNetworkChange: false
+  signOutOnNetworkChange: true
 });

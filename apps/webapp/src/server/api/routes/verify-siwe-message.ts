@@ -7,7 +7,7 @@ import { serverEnv } from '@/serverEnv';
 import { publicProcedure } from '../trpc';
 import { SIWE_VALIDITY_MS } from '@/app/utils/siwe/constants';
 
-/** Returns validated, signed SIWE compliant JWT to be stored locally */
+/** Returns validated, SIWE compliant, signed JWT to be stored locally */
 export const verifySiweMessage = publicProcedure
   .input(
     z.object({
