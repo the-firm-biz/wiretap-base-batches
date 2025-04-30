@@ -114,13 +114,17 @@ DATABASE_URL=postgres://postgres:postgres@db.localtest.me:5432/wiretap-test-db
 ### General Principles
 
 - Write code for <b>others</b>, not yourself.
+
 - Prioritize readability and debuggability.
+
 - Keep code as simple as possible.
+
 - Practice shared ownership: if you see something broken, fix it.
 
 ### Function Logic
 
 - Handle edge cases and errors first, happy path last.
+
 - Use early returns to:
   - Eliminate nested `else`/`else if`
   - Avoid `let` reassignment where possible
@@ -152,6 +156,8 @@ function processToken(token) {
 }
 ```
 
+- Keep functions shallow and decoupled - try to avoid embedding unique business logic so they’re easy to reuse and change.
+
 - Abstract complex conditions into semantic variables:
 
 ```typescript
@@ -171,9 +177,9 @@ function processToken(token) {
  if (canPostInBullpen) {}
 ```
 
-- Use objects for functions with 3+ arguments.
+- Use objects for functions with >=3 arguments.
+
 - Explicitly type function return values.
-- Keep functions short and focused on a single responsibility.
 
 ### Naming Conventions
 
@@ -215,5 +221,7 @@ sendSlackMessage();
 ```
 
 - Avoid abbreviations unless they are well-known and unambiguous.
+
 - Avoid magic numbers/strings - use named constants.
+
 - Prefer named exports.
