@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "exports": {
-    ".": "./node-packages-config.js",
+    "./node-package": "./node-package-config.js",
     "./base": "./base-config.js"
   },
   "devDependencies": {

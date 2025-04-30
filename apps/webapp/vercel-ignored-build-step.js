@@ -1,6 +1,5 @@
 // @todo eslint - specific nextjs config
 // @todo check this file works
-/* eslint-disable no-undef */
 import { exec } from 'child_process';
 
 const branchesToTriggerBuild = ['develop', 'main'];
