@@ -1,6 +1,7 @@
 import { isApiErrorResponse, NeynarAPIClient } from '@neynar/nodejs-sdk';
 import type { CastWithInteractionsAndConversations } from '@neynar/nodejs-sdk/build/api/index.js';
 import { backOff } from 'exponential-backoff';
+import { assureResult } from './assure_result.js';
 
 /**
  * hhttps://docs.neynar.com/reference/lookup-cast-conversation
@@ -31,27 +32,13 @@ export async function lookupCastConversation(
   }
 }
 
-async function assureLookupCastConversation(
-  neynarClient: NeynarAPIClient,
-  identifier: string
-): Promise<NeynarCastWithInteractionsAndConversations> {
-  const castWithConversation = await lookupCastConversation(
-    neynarClient,
-    identifier
-  );
-  if (!castWithConversation) {
-    throw new Error(`no cast response for identifier ${identifier}`);
-  }
-  return castWithConversation;
-}
-
 export async function lookupCastConversationWithBackoff(
   neynarClient: NeynarAPIClient,
   identifier: string
 ): Promise<NeynarCastWithInteractionsAndConversations | undefined> {
   try {
     return await backOff(
-      () => assureLookupCastConversation(neynarClient, identifier),
+      () => assureResult(lookupCastConversation, neynarClient, identifier),
       {
         retry: (_, attemptNumber) => {
           console.log(`retry #${attemptNumber} to fetch cast ${identifier}`);
