@@ -1,8 +1,7 @@
 import {
   fetchBulkUsers,
   getSingletonNeynarClient,
-  lookupCastConversation,
-  type NeynarCastWithInteractionsAndConversations
+  lookupCastConversationWithBackoff
 } from '@wiretap/utils/server';
 import { env } from './env.js';
 import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user.js';
@@ -14,7 +13,6 @@ import {
 } from './handle-clanker-farcaster-validation.js';
 import type { Address } from 'viem';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
-import { backOff } from 'exponential-backoff';
 
 export interface HandleClankerFarcasterArgs {
   fid: number;
@@ -31,23 +29,10 @@ export async function handleClankerFarcaster(
     apiKey: env.NEYNAR_API_KEY
   });
 
-  let castAndConversations:
-    | NeynarCastWithInteractionsAndConversations
-    | undefined;
-  try {
-    castAndConversations = await backOff(
-      () => lookupCastConversation(neynarClient, castHash),
-      {
-        retry: (_, attemptNumber) => {
-          console.log(`retry #${attemptNumber} to fetch cast ${castHash}`);
-          return !castAndConversations;
-        },
-        jitter: 'full'
-      }
-    );
-  } catch (error) {
-    console.error(`Failed to fetch cast ${castHash}`, error);
-  }
+  const castAndConversations = await lookupCastConversationWithBackoff(
+    neynarClient,
+    castHash
+  );
 
   let isValidCast = false;
 
