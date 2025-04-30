@@ -1,10 +1,8 @@
+/* eslint-disable require-await */
+// @reown/appkit-siwe has typed the config functions as async when they don't need to be.
+
 import { generateNonce, SiweMessage } from 'siwe';
-import {
-  type SIWESession,
-  type SIWEVerifyMessageArgs,
-  type SIWECreateMessageArgs,
-  createSIWEConfig
-} from '@reown/appkit-siwe';
+import { createSIWEConfig } from '@reown/appkit-siwe';
 import {
   getSiweAccountCookie,
   getSiweSessionCookie,
@@ -21,7 +19,6 @@ export const SIWE_MESSAGE = 'Please sign with your account';
 /* Create a SIWE configuration object */
 export const siweConfig = createSIWEConfig({
   // @todo - this may do nothing
-
   getMessageParams: async () => ({
     domain: window.location.host,
     uri: window.location.origin,
@@ -29,6 +26,11 @@ export const siweConfig = createSIWEConfig({
     statement: 'Please sign with your account'
   }),
 
+  /**
+   * Generate an EIP-4361-compatible message,
+   * The nonce parameter is derived from your getNonce endpoint,
+   * while the address and chainId variables are sourced from the presently connected wallet.
+   */
   createMessage: ({ nonce, address, chainId }) => {
     const expirationTime = new Date(
       Date.now() + SIWE_VALIDITY_MS
@@ -46,8 +48,15 @@ export const siweConfig = createSIWEConfig({
     }).prepareMessage();
   },
 
-  getNonce: async () => awaitgenerateNonce(),
+  /**
+   * Generate a nonce for the message using siwe's helper function.
+   * This is a safeguard against spoofing.
+   */
+  getNonce: async () => generateNonce(),
 
+  /**
+   * The backend session should store the associated address and chainId and return it via the getSession method.
+   */
   getSession: async () => {
     const sessionCookie = getSiweSessionCookie();
     if (!sessionCookie) {
@@ -73,7 +82,7 @@ export const siweConfig = createSIWEConfig({
   },
 
   /**
-   * Called during sign in after wallet has created signature
+   * Called during sign in after wallet has created signature.
    */
   verifyMessage: async ({ message, signature }) => {
     try {

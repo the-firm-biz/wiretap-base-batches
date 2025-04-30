@@ -5,7 +5,7 @@ import { wagmiAdapter } from '@/app/utils/wagmi';
 import { clientEnv } from '@/clientEnv';
 import { createAppKit } from '@reown/appkit/react';
 import { base } from '@reown/appkit/networks';
-
+import { siweConfig } from '@/app/utils/siwe/siwe-config';
 const metadata = {
   name: 'WireTap',
   description: 'WireTap', // @TODO: Add a description
@@ -22,7 +22,8 @@ createAppKit({
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration
     socials: ['farcaster']
-  }
+  },
+  siweConfig: siweConfig
 });
 
 export function WalletProvider({
