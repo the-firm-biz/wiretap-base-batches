@@ -8,10 +8,7 @@ import { createTRPCQueryUtils } from '@trpc/react-query';
 import { createTRPCContext } from '@trpc/tanstack-react-query';
 import { AppRouter } from '@/server/api/app-router';
 import { createQueryClient } from './create-query-client';
-import {
-  getSiweSessionCookie,
-  getSiweAccountCookieJwt
-} from '../utils/siwe/siwe-cookies';
+import { getSiweAccountCookieJwt } from '../utils/siwe/siwe-cookies';
 
 export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 
@@ -19,9 +16,8 @@ const getRequestHeaders = () => {
   const headers = new Headers();
   headers.set('x-trpc-source', 'nextjs-react');
 
-  const siweSessionCookie = getSiweSessionCookie();
-  if (siweSessionCookie) {
-    const siweAuthJwt = getSiweAccountCookieJwt(siweSessionCookie.address);
+  const siweAuthJwt = getSiweAccountCookieJwt();
+  if (siweAuthJwt) {
     headers.set('Authorization', `Bearer ${siweAuthJwt}`);
   }
 

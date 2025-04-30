@@ -7,17 +7,14 @@ import {
   formatMessage,
   SIWECreateMessageArgs
 } from '@reown/appkit-siwe';
-import { BASE_CHAIN_ID } from '@wiretap/config';
 import { trpcClientUtils } from '@/app/trpc-clients/trpc-react-client';
 import {
   getDecodedSiweAccountCookie,
-  getSiweSessionCookie,
-  setSiweSessionCookie,
   removeSiweAccountCookie,
-  removeSiweSessionCookie,
   setSiweAccountCookie
 } from './siwe-cookies';
 import { SIWE_VALIDITY_MS } from './constants';
+import { base } from 'viem/chains';
 
 /**
  * https://docs.reown.com/appkit/javascript/core/siwe#sign-in-with-ethereum
@@ -29,7 +26,7 @@ export const siweConfig = createSIWEConfig({
   getMessageParams: async () => ({
     domain: window.location.host,
     uri: window.location.origin,
-    chains: [BASE_CHAIN_ID],
+    chains: [base.id],
     // @todo - actual message
     statement: 'Please sign with your account',
     expiry: SIWE_VALIDITY_MS
@@ -50,34 +47,6 @@ export const siweConfig = createSIWEConfig({
   getNonce: async () => generateNonce(),
 
   /**
-   * The connected account's address and chainId are stored in a cookie.
-   * This method retrieves the cookie and returns it as a SIWESession object.
-   */
-  getSession: async () => {
-    const sessionCookie = getSiweSessionCookie();
-    if (!sessionCookie) {
-      return null;
-    }
-
-    const accountCookie = getDecodedSiweAccountCookie(sessionCookie?.address);
-    if (!accountCookie) {
-      return null;
-    }
-
-    const { success } = await new SiweMessage(accountCookie.message).verify({
-      signature: accountCookie.signature
-    });
-    if (success) {
-      return {
-        address: sessionCookie.address,
-        chainId: sessionCookie.chainId
-      };
-    }
-
-    return null;
-  },
-
-  /**
    * Called after wallet has signed message.
    * Verifies the signature and signs a JWT on the BE to be stored in cookies.
    */
@@ -89,14 +58,12 @@ export const siweConfig = createSIWEConfig({
         throw new Error('verifyMessage:: Signature verification failed');
       }
 
-      const { address, chainId } = new SiweMessage(message);
       const authJwt = await trpcClientUtils.verifySiweMessage.fetch({
         signature,
         message
       });
-      setSiweAccountCookie(address, authJwt);
-      setSiweSessionCookie(address, chainId);
 
+      setSiweAccountCookie(authJwt);
       return success;
     } catch (e) {
       console.error(e);
@@ -104,27 +71,42 @@ export const siweConfig = createSIWEConfig({
     }
   },
 
-  /** Should destroy user session & account cookies */
+  /**
+   * The connected account's address and chainId are stored in a cookie.
+   * This method retrieves the cookie and returns it as a SIWESession object.
+   */
+  getSession: async () => {
+    const accountCookie = getDecodedSiweAccountCookie();
+    if (!accountCookie) {
+      return null;
+    }
+
+    const { success } = await new SiweMessage(accountCookie.message).verify({
+      signature: accountCookie.signature
+    });
+    if (success) {
+      return {
+        address: accountCookie.address,
+        // @TODO siwe match expected SIWESession type {
+        //     address: string;
+        //     chainId: number;
+        // }
+        chainId: base.id
+      };
+    }
+
+    return null;
+  },
+
+  /** Should destroy user session cookie */
   signOut: async () => {
-    const sessionCookie = getSiweSessionCookie();
-
-    if (!sessionCookie) {
-      return false;
-    }
-
-    const accountCookie = getDecodedSiweAccountCookie(sessionCookie.address);
-    if (accountCookie) {
-      removeSiweAccountCookie(sessionCookie.address);
-    }
-
-    // @todo does the order of cookie removal matter?
-    removeSiweSessionCookie();
+    removeSiweAccountCookie();
     return true;
   },
 
   /**
-   * note disconnecting on account change is the simplest way to keep the session in sync
-   * with the connected account.
+   * @note HackVP - disconnecting on account change is the simplest way
+   * to keep the session in sync and the connected wallet signed in.
    */
   signOutOnDisconnect: true,
   signOutOnAccountChange: true,
