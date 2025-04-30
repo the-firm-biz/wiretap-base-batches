@@ -54,7 +54,6 @@ export const siweConfig = createSIWEConfig({
    * This method retrieves the cookie and returns it as a SIWESession object.
    */
   getSession: async () => {
-    console.log('siwe: !!!!!GET SESSION!!!!!');
     const sessionCookie = getSiweSessionCookie();
     if (!sessionCookie) {
       return null;
@@ -62,7 +61,6 @@ export const siweConfig = createSIWEConfig({
 
     const accountCookie = getDecodedSiweAccountCookie(sessionCookie?.address);
     if (!accountCookie) {
-      console.log('siwe: || getSession:: NO ACCOUNT COOKIE ||');
       return null;
     }
 
@@ -111,8 +109,6 @@ export const siweConfig = createSIWEConfig({
     const sessionCookie = getSiweSessionCookie();
 
     if (!sessionCookie) {
-      console.log('signOut- NO SESSION COOKIE');
-      // @todo - log and test
       return false;
     }
 
@@ -126,7 +122,11 @@ export const siweConfig = createSIWEConfig({
     return true;
   },
 
+  /**
+   * note disconnecting on account change is the simplest way to keep the session in sync
+   * with the connected account.
+   */
   signOutOnDisconnect: true,
-  signOutOnAccountChange: false,
-  signOutOnNetworkChange: false
+  signOutOnAccountChange: true,
+  signOutOnNetworkChange: true
 });
