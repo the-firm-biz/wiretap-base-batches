@@ -1,7 +1,9 @@
-import { testPublicProcedure } from './routes/test-public-procedure';
 import { createTRPCRouter } from './trpc';
+import { testPublicProcedure } from './routes/test-public-procedure';
+import { verifySiweMessage } from './routes/verify-siwe-message';
 
 export const appRouter = createTRPCRouter({
+  verifySiweMessage: verifySiweMessage,
   testPublicProcedure: testPublicProcedure
 });
 
