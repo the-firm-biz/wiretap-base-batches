@@ -1,4 +1,4 @@
-import config from '@wiretap/eslint-config';
+import nextJsConfig from '@wiretap/eslint-config/nextjs';
 
 /** @type {import("eslint").Linter.Config} */
-export default config;
+export default nextJsConfig;
