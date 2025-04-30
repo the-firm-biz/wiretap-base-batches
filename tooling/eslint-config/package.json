@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "exports": {
-    ".": "./base-config.js",
-    "./nextjs": "./nextjs-packages-config.js"
+    ".": "./node-packages-config.js",
+    "./base": "./base-config.js"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.24.0",
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.2",

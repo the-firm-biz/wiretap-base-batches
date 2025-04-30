@@ -1,6 +1,6 @@
 import tseslint from 'typescript-eslint';
 import baseEslintConfig from './base-config.js';
 
-const nodePackagesConfig = tseslint.config(tseslint.configs.strict, { extends: baseEslintConfig });
+const nodePackagesConfig = tseslint.config(tseslint.configs.strict, baseEslintConfig);
 
 export default nodePackagesConfig;
