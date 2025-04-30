@@ -16,6 +16,7 @@ const getRequestHeaders = () => {
   const headers = new Headers();
   headers.set('x-trpc-source', 'nextjs-react');
 
+  // @TODO ENG-293 - figure out how to auth using embedded smart wallets
   const siweAuthJwt = getSiweAccountCookieJwt();
   if (siweAuthJwt) {
     headers.set('Authorization', `Bearer ${siweAuthJwt}`);
