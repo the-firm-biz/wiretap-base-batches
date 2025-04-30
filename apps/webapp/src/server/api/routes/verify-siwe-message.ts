@@ -2,17 +2,12 @@ import { SiweMessage } from 'siwe';
 import z from 'zod';
 import { TRPCError } from '@trpc/server';
 import jsonwebtoken from 'jsonwebtoken';
-import { SIWE_VALIDITY_MS } from '@/app/utils/siwe/siwe-config';
+import { VerifySiweMessageJwtPayload } from '@/app/utils/siwe/types';
 import { serverEnv } from '@/serverEnv';
 import { publicProcedure } from '../trpc';
+import { SIWE_VALIDITY_MS } from '@/app/utils/siwe/constants';
 
-export interface VerifySiweMessageJwtPayload {
-  message: string;
-  address: string;
-  signature: string;
-}
-
-/** Returns signed auth JWT to be stored locally */
+/** Returns validated, signed SIWE compliant JWT to be stored locally */
 export const verifySiweMessage = publicProcedure
   .input(
     z.object({
@@ -36,7 +31,7 @@ export const verifySiweMessage = publicProcedure
       }
 
       const { address, expirationTime } = new SiweMessage(message);
-      const payload: VerifySiweMessageJwtPayload = {
+      const siweJwtPayload: VerifySiweMessageJwtPayload = {
         message,
         address,
         signature
@@ -46,12 +41,16 @@ export const verifySiweMessage = publicProcedure
         : SIWE_VALIDITY_MS;
       const expiresInS = Math.floor(expiresInMs / 1000);
 
-      const authJwt = jsonwebtoken.sign(payload, serverEnv.SIWE_JWT_SECRET, {
-        algorithm: 'HS256',
-        issuer: 'WireTap',
-        expiresIn: expiresInS
-      });
-      return authJwt;
+      const signedJwt = jsonwebtoken.sign(
+        siweJwtPayload,
+        serverEnv.SIWE_JWT_SECRET,
+        {
+          algorithm: 'HS256',
+          issuer: 'WireTap',
+          expiresIn: expiresInS
+        }
+      );
+      return signedJwt;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       console.error('login', e);

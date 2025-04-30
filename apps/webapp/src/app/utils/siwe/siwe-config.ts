@@ -2,60 +2,56 @@
 // @reown/appkit-siwe has typed the config functions as async when they don't need to be.
 
 import { generateNonce, SiweMessage } from 'siwe';
-import { createSIWEConfig } from '@reown/appkit-siwe';
 import {
-  getSiweAccountCookie,
+  createSIWEConfig,
+  formatMessage,
+  SIWECreateMessageArgs
+} from '@reown/appkit-siwe';
+import { BASE_CHAIN_ID } from '@wiretap/config';
+import { trpcClientUtils } from '@/app/trpc-clients/trpc-react-client';
+import {
+  getDecodedSiweAccountCookie,
   getSiweSessionCookie,
+  setSiweSessionCookie,
   removeSiweAccountCookie,
   removeSiweSessionCookie,
   setSiweAccountCookie
 } from './siwe-cookies';
-import { setSiweSessionCookie } from './siwe-cookies';
-import { trpcClientUtils } from '@/app/trpc-clients/trpc-react-client';
+import { SIWE_VALIDITY_MS } from './constants';
 
-export const SIWE_VALIDITY_MS = 60 * 1000;
-export const SIWE_MESSAGE = 'Please sign with your account';
-
-/* Create a SIWE configuration object */
+/**
+ * https://docs.reown.com/appkit/javascript/core/siwe#sign-in-with-ethereum
+ */
 export const siweConfig = createSIWEConfig({
-  // @todo - this may do nothing
+  /**
+   * Defines various params passed to createMessage below
+   */
   getMessageParams: async () => ({
     domain: window.location.host,
     uri: window.location.origin,
-    chains: [1, 2020],
-    statement: 'Please sign with your account'
+    chains: [BASE_CHAIN_ID],
+    // @todo - actual message
+    statement: 'Please sign with your account',
+    expiry: SIWE_VALIDITY_MS
   }),
 
   /**
    * Generate an EIP-4361-compatible message,
-   * The nonce parameter is derived from your getNonce endpoint,
+   * The nonce arg is derived from your getNonce endpoint,
    * while the address and chainId variables are sourced from the presently connected wallet.
    */
-  createMessage: ({ nonce, address, chainId }) => {
-    const expirationTime = new Date(
-      Date.now() + SIWE_VALIDITY_MS
-    ).toISOString();
-    return new SiweMessage({
-      version: '1',
-      domain: window.location.host,
-      uri: window.location.origin,
-      address,
-      chainId,
-      nonce,
-      expirationTime,
-      // Human-readable ASCII assertion that the user will sign, and it must not contain `\n`.
-      statement: SIWE_MESSAGE
-    }).prepareMessage();
-  },
+  createMessage: ({ address, ...args }: SIWECreateMessageArgs) =>
+    formatMessage(args, address),
 
   /**
-   * Generate a nonce for the message using siwe's helper function.
+   * Generate a nonce for the message using SIWE's helper function.
    * This is a safeguard against spoofing.
    */
   getNonce: async () => generateNonce(),
 
   /**
-   * The backend session should store the associated address and chainId and return it via the getSession method.
+   * The connected account's address and chainId are stored in a cookie.
+   * This method retrieves them and returns them as a SIWESession object.
    */
   getSession: async () => {
     const sessionCookie = getSiweSessionCookie();
@@ -63,7 +59,7 @@ export const siweConfig = createSIWEConfig({
       return null;
     }
 
-    const accountCookie = getSiweAccountCookie(sessionCookie?.address);
+    const accountCookie = getDecodedSiweAccountCookie(sessionCookie?.address);
     if (!accountCookie) {
       return null;
     }
@@ -82,28 +78,33 @@ export const siweConfig = createSIWEConfig({
   },
 
   /**
-   * Called during sign in after wallet has created signature.
+   * Called after wallet has signed message.
+   * Verifies the signature and signs a JWT on the BE to be stored in cookies.
    */
   verifyMessage: async ({ message, signature }) => {
     try {
       const { success } = await new SiweMessage(message).verify({ signature });
-      if (success) {
-        const { address, chainId } = new SiweMessage(message);
-        const authJwt = await trpcClientUtils.verifySiweMessage.fetch({
-          signature,
-          message
-        });
-        setSiweAccountCookie(address, authJwt);
-        setSiweSessionCookie(address, chainId);
+
+      if (!success) {
+        throw new Error('verifyMessage:: Signature verification failed');
       }
+
+      const { address, chainId } = new SiweMessage(message);
+      const authJwt = await trpcClientUtils.verifySiweMessage.fetch({
+        signature,
+        message
+      });
+      setSiweAccountCookie(address, authJwt);
+      setSiweSessionCookie(address, chainId);
+
       return success;
     } catch (e) {
-      console.error('verifyMessage', e);
+      console.error(e);
       return false;
     }
   },
 
-  /** Should destroy user session */
+  /** Should destroy user session & account cookies */
   signOut: async () => {
     const sessionCookie = getSiweSessionCookie();
 
@@ -113,7 +114,7 @@ export const siweConfig = createSIWEConfig({
       return false;
     }
 
-    const accountCookie = getSiweAccountCookie(sessionCookie.address);
+    const accountCookie = getDecodedSiweAccountCookie(sessionCookie.address);
     if (accountCookie) {
       removeSiweAccountCookie(sessionCookie.address);
     }

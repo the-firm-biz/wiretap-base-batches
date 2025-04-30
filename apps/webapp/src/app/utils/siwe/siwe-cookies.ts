@@ -1,35 +1,25 @@
 import Cookies from 'js-cookie';
 import { SIWESession } from '@reown/appkit-siwe';
 import { BASE_CHAIN_ID } from '@wiretap/config';
-import { SIWE_VALIDITY_MS } from './siwe-config';
 import { decodeJwt } from '../jwt/verify-jwt';
-import { VerifySiweMessageJwtPayload } from '@/server/api/routes/verify-siwe-message';
-
-export const SIWE_ACCOUNT_COOKIE_KEY = (address: string, chainId = 1) =>
-  `siwe_${address}_${chainId}`;
-
-export const SIWE_SESSION_KEY = 'siwe_session';
+import { VerifySiweMessageJwtPayload } from './types';
+import { SIWE_VALIDITY_MS } from './constants';
 
 /**
- * Get specific account's SIWE sign in data
+ * Key to access specific wallet's SIWE cookie
  */
-export const getSiweAccountCookie = (
-  address: string | undefined
-): VerifySiweMessageJwtPayload | undefined => {
-  if (!address) return undefined;
-
-  const encodedData = Cookies.get(SIWE_ACCOUNT_COOKIE_KEY(address));
-
-  if (encodedData) {
-    const decodedJwt = decodeJwt<VerifySiweMessageJwtPayload>(encodedData);
-    return decodedJwt;
-  }
-};
+const SIWE_ACCOUNT_COOKIE_KEY = (address: string, chainId = BASE_CHAIN_ID) =>
+  `siwe_account_${address}_${chainId}`;
 
 /**
- * @todo this and the above should be renamed and refactored
+ * Key to access currently active session's SIWE cookie
  */
-export const getSiweAccountJwt = (
+const SIWE_SESSION_KEY = 'siwe_session';
+
+/**
+ * Get specific account's SIWE cookie as JWT
+ */
+export const getSiweAccountCookieJwt = (
   address: string | undefined
 ): string | undefined => {
   if (!address) return undefined;
@@ -38,7 +28,23 @@ export const getSiweAccountJwt = (
 };
 
 /**
- * Set specific account's SIWE sign in data
+ * Get specific account's SIWE cookie as object containing message, address & signature
+ */
+export const getDecodedSiweAccountCookie = (
+  address: string | undefined
+): VerifySiweMessageJwtPayload | undefined => {
+  if (!address) return undefined;
+
+  const encodedSiweJwt = getSiweAccountCookieJwt(address);
+
+  if (encodedSiweJwt) {
+    const decodedJwt = decodeJwt<VerifySiweMessageJwtPayload>(encodedSiweJwt);
+    return decodedJwt;
+  }
+};
+
+/**
+ * Set specific account's SIWE cookie
  */
 export const setSiweAccountCookie = (
   address: string,
@@ -63,7 +69,7 @@ export const removeSiweAccountCookie = (
 ) => Cookies.remove(SIWE_ACCOUNT_COOKIE_KEY(address, chainId));
 
 /**
- * Get SIWE session cookie
+ * Get currently active SIWESession cooki
  */
 export const getSiweSessionCookie = (): SIWESession | undefined => {
   const encodedData = Cookies.get(SIWE_SESSION_KEY);
@@ -75,7 +81,7 @@ export const getSiweSessionCookie = (): SIWESession | undefined => {
 };
 
 /**
- * Set SIWE session cookie
+ * Set currently active SIWEsession cookie
  */
 export const setSiweSessionCookie = (
   address: string,
