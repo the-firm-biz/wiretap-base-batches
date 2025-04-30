@@ -1,5 +1,4 @@
 import { backOff } from 'exponential-backoff';
-import { throwOnUnknownResult } from './throw-on-unknown-result.js';
 
 export async function callWithBackOff<T>(
   fn: () => Promise<T>
@@ -8,7 +7,10 @@ export async function callWithBackOff<T>(
     return await backOff(
       async () => {
         const result = await fn();
-        return throwOnUnknownResult(result, fn.name);
+        if (!result) {
+          throw new Error(`no result for ${fn.name}`);
+        }
+        return result;
       },
       {
         retry: (_, attemptNumber) => {

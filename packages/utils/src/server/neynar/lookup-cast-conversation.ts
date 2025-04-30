@@ -1,6 +1,6 @@
 import { isApiErrorResponse, NeynarAPIClient } from '@neynar/nodejs-sdk';
 import type { CastWithInteractionsAndConversations } from '@neynar/nodejs-sdk/build/api/index.js';
-import { callWithBackOff } from './hof-helpers/call-with-backoff.js';
+import { callWithBackOff } from './hof-helper/call-with-backoff.js';
 
 /**
  * hhttps://docs.neynar.com/reference/lookup-cast-conversation
