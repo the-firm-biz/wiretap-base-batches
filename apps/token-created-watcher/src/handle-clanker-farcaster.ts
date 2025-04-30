@@ -1,7 +1,7 @@
 import {
   fetchBulkUsers,
   getSingletonNeynarClient,
-  lookupCastConversation
+  lookupCastConversationWithBackoff
 } from '@wiretap/utils/server';
 import { env } from './env.js';
 import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user.js';
@@ -29,7 +29,7 @@ export async function handleClankerFarcaster(
     apiKey: env.NEYNAR_API_KEY
   });
 
-  const castAndConversations = await lookupCastConversation(
+  const castAndConversations = await lookupCastConversationWithBackoff(
     neynarClient,
     castHash
   );
