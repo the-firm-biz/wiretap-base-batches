@@ -114,9 +114,6 @@ importers:
       '@wagmi/core':
         specifier: ^2.17.0
         version: 2.17.0(@tanstack/query-core@5.74.4)(@types/react@19.1.2)(react@19.1.0)(typescript@5.8.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.28.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@4.0.0-beta.20250415T232143))
-      '@wiretap/config':
-        specifier: workspace:*
-        version: link:../../packages/config
       '@wiretap/db':
         specifier: workspace:*
         version: link:../../packages/db
