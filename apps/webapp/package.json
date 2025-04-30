@@ -51,6 +51,7 @@
     "@wiretap/eslint-config": "workspace:*",
     "@wiretap/prettier-config": "workspace:*",
     "@wiretap/typescript-config": "workspace:*",
+    "eslint-config-next": "^15.3.1",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.2.8",
     "typescript": "^5"
