@@ -1,6 +1,6 @@
 import { isApiErrorResponse, NeynarAPIClient } from '@neynar/nodejs-sdk';
 import type { CastWithInteractionsAndConversations } from '@neynar/nodejs-sdk/build/api/index.js';
-import { backoff } from './hof-helpers/call-with-backoff.js';
+import { callWithBackOff } from './hof-helpers/call-with-backoff.js';
 
 /**
  * hhttps://docs.neynar.com/reference/lookup-cast-conversation
@@ -35,9 +35,8 @@ export async function lookupCastConversationWithBackoff(
   neynarClient: NeynarAPIClient,
   identifier: string
 ): Promise<NeynarCastWithInteractionsAndConversations | undefined> {
-  const castWithConversation = await backoff(lookupCastConversation)(
-    neynarClient,
-    identifier
+  const castWithConversation = await callWithBackOff(() =>
+    lookupCastConversation(neynarClient, identifier)
   );
   if (!castWithConversation) {
     console.log(`No cast resolved for castHash ${identifier}`);
