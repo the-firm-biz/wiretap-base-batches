@@ -8,7 +8,7 @@ const baseEslintConfig = tseslint.config(
   turboConfig,
   prettierConfig,
   {
-    ignores: ['node_modules/**', 'dist/**', '.next/**'],
+    ignores: ['node_modules/**', 'dist/**'],
   },
   {
     rules: {
