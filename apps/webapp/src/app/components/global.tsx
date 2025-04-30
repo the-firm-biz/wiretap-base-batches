@@ -5,25 +5,26 @@ import { useOnAccountChange } from '../hooks/useOnAccountChange';
 import {
   getDecodedSiweAccountCookie,
   getSiweSessionCookie,
+  removeSiweSessionCookie,
   setSiweSessionCookie
 } from '../utils/siwe/siwe-cookies';
-import { siweConfig } from '../utils/siwe/siwe-config';
-
+import { handleValidateSiweOnAccountChange } from '../utils/siwe/handle-validate-siwe-on-account-change';
+import { useAppKit } from '@reown/appkit/react';
 /**
  * Global, client-side rendered component
  */
 const Global = () => {
+  const { open, close } = useAppKit();
+
   // Global 'account change' effects
   useOnAccountChange(async (newAddress) => {
     try {
-      const newAddressSiweCookie = getDecodedSiweAccountCookie(newAddress);
-      if (newAddressSiweCookie) {
-        const ting = await siweConfig.verifyMessage({
-          message: newAddressSiweCookie.message,
-          signature: newAddressSiweCookie.signature
-        });
-        console.log('siwe: tingoJONES???', ting);
-      }
+      console.log('siwe: || useOnAccountChange ||');
+      await handleValidateSiweOnAccountChange({
+        newAddress,
+        openAppKitModal: open,
+        closeAppKitModal: close
+      });
     } catch (error) {
       console.error(error);
     }

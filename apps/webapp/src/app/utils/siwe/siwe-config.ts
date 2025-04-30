@@ -51,7 +51,7 @@ export const siweConfig = createSIWEConfig({
 
   /**
    * The connected account's address and chainId are stored in a cookie.
-   * This method retrieves them and returns them as a SIWESession object.
+   * This method retrieves the cookie and returns it as a SIWESession object.
    */
   getSession: async () => {
     console.log('siwe: !!!!!GET SESSION!!!!!');
@@ -62,6 +62,7 @@ export const siweConfig = createSIWEConfig({
 
     const accountCookie = getDecodedSiweAccountCookie(sessionCookie?.address);
     if (!accountCookie) {
+      console.log('siwe: || getSession:: NO ACCOUNT COOKIE ||');
       return null;
     }
 
@@ -127,5 +128,5 @@ export const siweConfig = createSIWEConfig({
 
   signOutOnDisconnect: true,
   signOutOnAccountChange: false,
-  signOutOnNetworkChange: true
+  signOutOnNetworkChange: false
 });
