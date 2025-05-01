@@ -8,8 +8,7 @@ export const farcasterAccounts = pgTable('farcaster_accounts', {
   fid: integer('fid').notNull().unique(),
   accountEntityId: integer('account_entity_id')
     .notNull()
-    .references(() => accountEntities.id)
-    .unique(),
+    .references(() => accountEntities.id),
   createdAt: timestamp('created_at').defaultNow().notNull()
 });
 

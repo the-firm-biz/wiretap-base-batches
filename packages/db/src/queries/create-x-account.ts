@@ -1,4 +1,8 @@
-import { xAccounts, type NewXAccount } from '../schema/accounts/index.js';
+import {
+  xAccounts,
+  type NewXAccount,
+  type XAccount
+} from '../schema/accounts/index.js';
 import type {
   ServerlessDbTransaction,
   HttpDb,
@@ -8,7 +12,7 @@ import type {
 export async function createXAccount(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   newXAccount: NewXAccount
-) {
+): Promise<XAccount> {
   const [createdXAccount] = await db
     .insert(xAccounts)
     .values(newXAccount)

@@ -6,14 +6,15 @@ import {
   xAccounts
 } from '../schema/accounts/index.js';
 import { unsafe__clearDbTables } from '../utils/testUtils.js';
-import { createXAccount } from './create-x-account.js';
+import { createXAccounts } from './create-x-accounts.js';
 
-describe('createXAccount', () => {
+describe('createXAccounts', () => {
   const db = singletonDb({
     databaseUrl: env.DATABASE_URL
   });
 
   let newXAccount: NewXAccount;
+  let newXAccount2: NewXAccount;
 
   beforeEach(async () => {
     await unsafe__clearDbTables(db);
@@ -28,17 +29,22 @@ describe('createXAccount', () => {
       username: 'x-test-username',
       accountEntityId: testAccountEntity!.id
     };
+    newXAccount2 = {
+      xid: 'x-test-xid2',
+      username: 'x-test-username2',
+      accountEntityId: testAccountEntity!.id
+    };
   });
 
-  it('creates and returns X Account', async () => {
-    const response = await createXAccount(db, newXAccount);
+  it('creates and returns X Accounts', async () => {
+    const response = await createXAccounts(db, [newXAccount, newXAccount2]);
     const dbXAccounts = await db.select().from(xAccounts);
-    expect(dbXAccounts.length).toBe(1);
+    expect(dbXAccounts.length).toBe(2);
     expect(dbXAccounts[0]!).toStrictEqual({
       id: expect.any(Number),
       createdAt: expect.any(Date),
       ...newXAccount
     });
-    expect(response).toStrictEqual(dbXAccounts[0]);
+    expect(response).toStrictEqual(dbXAccounts);
   });
 });

@@ -4,7 +4,8 @@ import { accountEntities } from '../schema/accounts/index.js';
 import { contracts } from '../schema/contracts.js';
 import { env } from '../env.js';
 import { getOrCreateToken } from './get-or-create-token.js';
-import { clearDbTables } from '../utils/testUtils.js';
+import { unsafe__clearDbTables } from '../utils/testUtils.js';
+import { blocks } from '../schema/blocks.js';
 
 const newToken: NewToken = {
   block: 0,
@@ -23,7 +24,7 @@ describe('getOrCreateToken', () => {
   });
 
   beforeEach(async () => {
-    await clearDbTables(db);
+    await unsafe__clearDbTables(db);
     const [contract] = await db
       .insert(contracts)
       .values({
@@ -36,8 +37,16 @@ describe('getOrCreateToken', () => {
         label: 'Test Entity'
       })
       .returning();
+    const [block] = await db
+      .insert(blocks)
+      .values({
+        number: 1234567890,
+        timestamp: new Date()
+      })
+      .returning();
     newToken.deploymentContractId = contract!.id;
     newToken.accountEntityId = accountEntity!.id;
+    newToken.block = block!.number;
   });
 
   describe('if token does not exist in DB', () => {

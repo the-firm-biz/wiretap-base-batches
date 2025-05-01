@@ -3,7 +3,7 @@ import {
   getSingletonNeynarClient
 } from '@wiretap/utils/server';
 import { env } from './env.js';
-import { commitTokenDetailsToDb } from './commit-token-details-to-db.js';
+import { commitTokenDetailsToDb } from './commits/commit-token-details-to-db.js';
 import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
@@ -47,11 +47,11 @@ export async function handleEOAMsgSender(
   // Since we've checked userResponse is not empty, we can safely assert this is defined
   const neynarUser = userResponse[0]!;
 
-  const result = await handleTokenWithFarcasterUser(tokenCreatedData, {
-    fid: neynarUser.fid,
-    username: neynarUser.username,
-    address: tokenCreatedData.msgSender
-  });
+  const result = await handleTokenWithFarcasterUser(
+    tokenCreatedData,
+    tokenCreatedData.msgSender,
+    neynarUser
+  );
 
   sendSlackMessage({
     tokenAddress: result.token.address,
