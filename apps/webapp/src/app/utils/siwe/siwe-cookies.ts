@@ -23,8 +23,15 @@ export const getDecodedSiweSessionCookie = ():
   const encodedSiweJwt = getJwtSiweSessionCookie();
 
   if (encodedSiweJwt) {
-    const decodedJwt = decodeJwt<VerifySiweMessageJwtPayload>(encodedSiweJwt);
-    return decodedJwt;
+    try {
+      const decodedJwt = decodeJwt<VerifySiweMessageJwtPayload>(encodedSiweJwt);
+      return decodedJwt;
+    } catch (error) {
+      console.error(
+        'getDecodedSiweSessionCookie:: Error getting decoding SIWE session cookie',
+        error
+      );
+    }
   }
 };
 
@@ -32,14 +39,21 @@ export const getDecodedSiweSessionCookie = ():
  * Set session's SIWE cookie
  */
 export const setSiweSessionCookie = (authJwt: string): void => {
-  const { exp } = decodeJwt<VerifySiweMessageJwtPayload>(authJwt);
-  const expiresDate = new Date(exp ? exp * 1000 : SIWE_VALIDITY_MS);
+  try {
+    const { exp } = decodeJwt<VerifySiweMessageJwtPayload>(authJwt);
+    const expiresDate = new Date(exp ? exp * 1000 : SIWE_VALIDITY_MS);
 
-  Cookies.set(SIWE_SESSION_KEY, authJwt, {
-    expires: expiresDate,
-    sameSite: 'strict',
-    secure: true
-  });
+    Cookies.set(SIWE_SESSION_KEY, authJwt, {
+      expires: expiresDate,
+      sameSite: 'strict',
+      secure: true
+    });
+  } catch (error) {
+    console.error(
+      'setSiweSessionCookie:: Error setting SIWE session cookie',
+      error
+    );
+  }
 };
 
 /**
