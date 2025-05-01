@@ -6,6 +6,7 @@ import { VerifySiweMessageJwtPayload } from '@/app/utils/siwe/types';
 import { serverEnv } from '@/serverEnv';
 import { publicProcedure } from '../trpc';
 import { SIWE_VALIDITY_MS } from '@/app/utils/siwe/constants';
+import { base } from 'viem/chains';
 
 /** Returns validated, SIWE compliant, signed JWT to be stored locally */
 export const verifySiweMessage = publicProcedure
@@ -15,7 +16,7 @@ export const verifySiweMessage = publicProcedure
       signature: z.string()
     })
   )
-  .query(async ({ input }) => {
+  .query(async ({ input }): Promise<string> => {
     const { message, signature } = input;
     try {
       const validSignature = await new SiweMessage(message).verify({
@@ -34,11 +35,16 @@ export const verifySiweMessage = publicProcedure
       const siweJwtPayload: VerifySiweMessageJwtPayload = {
         message,
         address,
-        signature
+        signature,
+        chainId: base.id
       };
+
+      console.log('expirationTime', expirationTime);
+
       const expiresInMs = expirationTime
         ? new Date(expirationTime).getTime() - Date.now()
         : SIWE_VALIDITY_MS;
+
       const expiresInS = Math.floor(expiresInMs / 1000);
 
       const signedJwt = jsonwebtoken.sign(

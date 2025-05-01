@@ -9,9 +9,9 @@ import {
 } from '@reown/appkit-siwe';
 import { trpcClientUtils } from '@/app/trpc-clients/trpc-react-client';
 import {
-  getDecodedSiweAccountCookie,
-  removeSiweAccountCookie,
-  setSiweAccountCookie
+  getDecodedSiweSessionCookie,
+  removeSiweSessionCookie,
+  setSiweSessionCookie
 } from './siwe-cookies';
 import { SIWE_VALIDITY_MS } from './constants';
 import { base } from 'viem/chains';
@@ -23,14 +23,19 @@ export const siweConfig = createSIWEConfig({
   /**
    * Defines various params passed to createMessage below
    */
-  getMessageParams: async () => ({
-    domain: window.location.host,
-    uri: window.location.origin,
-    chains: [base.id],
-    // @todo - actual message
-    statement: 'Please sign with your account',
-    expiry: SIWE_VALIDITY_MS
-  }),
+  getMessageParams: async () => {
+    const expirationISOString = new Date(
+      Date.now() + SIWE_VALIDITY_MS
+    ).toISOString();
+
+    return {
+      domain: window.location.host,
+      uri: window.location.origin,
+      chains: [base.id],
+      statement: 'Please sign with your account',
+      exp: expirationISOString
+    };
+  },
 
   /**
    * Generate an EIP-4361-compatible message,
@@ -63,7 +68,7 @@ export const siweConfig = createSIWEConfig({
         message
       });
 
-      setSiweAccountCookie(authJwt);
+      setSiweSessionCookie(authJwt);
       return success;
     } catch (e) {
       console.error(e);
@@ -76,7 +81,7 @@ export const siweConfig = createSIWEConfig({
    * This method retrieves the cookie and returns it as a SIWESession object.
    */
   getSession: async () => {
-    const accountCookie = getDecodedSiweAccountCookie();
+    const accountCookie = getDecodedSiweSessionCookie();
     if (!accountCookie) {
       return null;
     }
@@ -87,11 +92,7 @@ export const siweConfig = createSIWEConfig({
     if (success) {
       return {
         address: accountCookie.address,
-        // @TODO siwe match expected SIWESession type {
-        //     address: string;
-        //     chainId: number;
-        // }
-        chainId: base.id
+        chainId: accountCookie.chainId
       };
     }
 
@@ -100,7 +101,7 @@ export const siweConfig = createSIWEConfig({
 
   /** Should destroy user session cookie */
   signOut: async () => {
-    removeSiweAccountCookie();
+    removeSiweSessionCookie();
     return true;
   },
 

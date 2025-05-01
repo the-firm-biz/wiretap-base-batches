@@ -9,19 +9,18 @@ import { SIWE_VALIDITY_MS } from './constants';
 const SIWE_SESSION_KEY = 'siwe_session';
 
 /**
- * Get specific account's SIWE cookie as JWT
+ * Get SIWE session cookie as JWT
  */
-// @TODO siwe - rename to 'siweSessionCookie...'
-export const getSiweAccountCookieJwt = (): string | undefined =>
+export const getJwtSiweSessionCookie = (): string | undefined =>
   Cookies.get(SIWE_SESSION_KEY);
 
 /**
- * Get specific account's SIWE cookie as object containing message, address & signature
+ * Get SIWE session cookie as object containing message, address & signature
  */
-export const getDecodedSiweAccountCookie = ():
+export const getDecodedSiweSessionCookie = ():
   | VerifySiweMessageJwtPayload
   | undefined => {
-  const encodedSiweJwt = getSiweAccountCookieJwt();
+  const encodedSiweJwt = getJwtSiweSessionCookie();
 
   if (encodedSiweJwt) {
     const decodedJwt = decodeJwt<VerifySiweMessageJwtPayload>(encodedSiweJwt);
@@ -31,12 +30,8 @@ export const getDecodedSiweAccountCookie = ():
 
 /**
  * Set session's SIWE cookie
- * @TODO siwe match expected SIWESession type {
-    address: string;
-    chainId: number;
-}
  */
-export const setSiweAccountCookie = (authJwt: string): void => {
+export const setSiweSessionCookie = (authJwt: string): void => {
   const { exp } = decodeJwt<VerifySiweMessageJwtPayload>(authJwt);
   const expiresDate = new Date(exp ? exp * 1000 : SIWE_VALIDITY_MS);
 
@@ -48,6 +43,6 @@ export const setSiweAccountCookie = (authJwt: string): void => {
 };
 
 /**
- * Remove account's SIWE cookie
+ * Remove SIWE session cookie
  */
-export const removeSiweAccountCookie = () => Cookies.remove(SIWE_SESSION_KEY);
+export const removeSiweSessionCookie = () => Cookies.remove(SIWE_SESSION_KEY);
