@@ -3,7 +3,7 @@
 import { useWalletClient } from 'wagmi';
 import { useAppKit, useAppKitAccount } from '@reown/appkit/react';
 import { formatAddress } from '@/app/utils/format/format-address';
-import { createSessionKeyForUserWallet } from '@/app/utils/kernel/create-session-key-for-user-wallet-client';
+import { createSessionKeyForUserWallet } from '@/app/utils/kernel/create-session-key-for-user-wallet';
 import { Button } from '../ui/button';
 
 export function Wallet() {
