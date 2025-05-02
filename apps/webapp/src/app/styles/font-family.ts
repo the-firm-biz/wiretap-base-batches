@@ -1,4 +1,3 @@
-import { Geist, Geist_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
 /**
  * Declare all
@@ -40,17 +39,3 @@ export const ppMondwest = localFont({
     }
   ]
 });
-
-/** hiding shadcn defaults for now
-// Shadcn defaults
-export const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin']
-});
-
-export const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin']
-});
-// End shadcn defaults
- */
