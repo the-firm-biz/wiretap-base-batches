@@ -24,15 +24,22 @@ const publicClient = createPublicClient({
 });
 
 /**
- * Backend Kernel Client
+ * Creates a Kernel client for backend operations using a serialized session key
+ *
+ * @param serializedSessionKey - Session key approval created on frontend and signed by user
+ * @returns KernelAccountClient can execute transactions on behalf of the user
  */
 export const createKernelClient = async (serializedSessionKey: string) => {
+  // STEP 1: Create backend validator signer with the PRIVATE key
+  // This is the private counterpart to the public key used in the frontend
   const validatorSigner = await toECDSASigner({
     signer: privateKeyToAccount(
       serverEnv.KERNEL_VALIDATOR_PRIVATE_KEY as Address
     )
   });
 
+  // STEP 2: Deserialize the user-approved session key
+  // Combines the user's authorization with our private key to create a complete session key
   const account = await deserializePermissionAccount(
     publicClient,
     entryPoint,
@@ -41,11 +48,15 @@ export const createKernelClient = async (serializedSessionKey: string) => {
     validatorSigner
   );
 
+  // STEP 3: Create paymaster client for gas sponsorship
+  // Allows the backend to pay for user transactions
   const paymasterClient = createZeroDevPaymasterClient({
     chain: baseSepolia,
     transport: http(serverEnv.ZERODEV_RPC)
   });
 
+  // STEP 4: Create the kernel client with the session key account
+  // This client can now execute transactions on behalf of the user within permitted scope
   const kernelClient = createKernelAccountClient({
     account,
     chain: baseSepolia,

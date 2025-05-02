@@ -24,17 +24,20 @@ const publicClient = createPublicClient({
 });
 
 /**
- * Create a session key for a user wallet
+ * Creates a session key following ZeroDev's "agent-created" pattern
+ *
+ * 1. The backend (agent) uses its validator address as the public key
+ * 2. This public key is shared with the user wallet (owner) for authorization
+ * 3. The user signs to approve the session key permissions
+ *
+ * @param userWalletSigner - User's wallet signer (from wagmi useWalletClient)
+ * @returns Serialized permission account
  */
 export const createSessionKeyForUserWallet = async (
   userWalletSigner: Signer
 ): Promise<string> => {
-  const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-    entryPoint,
-    signer: userWalletSigner,
-    kernelVersion
-  });
-
+  // STEP 1: Create an "empty account" for backend validator
+  // We only need the public address for authorization, not the private key
   const validatorEmptyAccount = addressToEmptyAccount(
     clientEnv.NEXT_PUBLIC_KERNEL_VALIDATOR_ADDRESS as Address
   );
@@ -42,7 +45,9 @@ export const createSessionKeyForUserWallet = async (
     signer: validatorEmptyAccount
   });
 
-  const permissionPlugin = await toPermissionValidator(publicClient, {
+  // STEP 2: Create session key validator with permissions
+  // This defines what actions the backend can perform on behalf of the user
+  const sessionKeyValidator = await toPermissionValidator(publicClient, {
     entryPoint,
     signer: validatorSessionKeySigner,
     policies: [
@@ -52,18 +57,28 @@ export const createSessionKeyForUserWallet = async (
     kernelVersion: KERNEL_V3_1
   });
 
-  const permissionAccount = await createKernelAccount(publicClient, {
+  // STEP 3: Create user's ECDSA validator using their Signer
+  const userValidator = await signerToEcdsaValidator(publicClient, {
+    entryPoint,
+    signer: userWalletSigner,
+    kernelVersion
+  });
+
+  // STEP 4: Create kernel account with both validators
+  // Combining user validator (sudo) with session key validator (regular)
+  const sessionKeyAccount = await createKernelAccount(publicClient, {
     entryPoint,
     plugins: {
-      sudo: ecdsaValidator,
-      regular: permissionPlugin
+      sudo: userValidator,
+      regular: sessionKeyValidator
     },
     kernelVersion
   });
 
-  // Triggers the user wallet to sign and approve the session key
+  // STEP 5: Serialize the permission account
+  // This is when the user will be prompted to sign and authorize the session key
   const serializedPermissionAccount =
-    await serializePermissionAccount(permissionAccount);
+    await serializePermissionAccount(sessionKeyAccount);
 
   return serializedPermissionAccount;
 };
