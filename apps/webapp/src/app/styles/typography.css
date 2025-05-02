@@ -1,34 +1,35 @@
-/**
- * @todo Bigeon - add real font families & sizes. This is an example implementation.
- */
 @theme {
   /* Font Families */
-  --font-serif: 'Times New Roman';
-  --font-sans: 'Arial';
-  --font-sans-narrow: var(--font-sans-narrow);
+  --font-sans: var(--font-loRes12), sans-serif;
+  --font-serif: var(--font-ppMondwest), serif;
+  --font-mono: var(--font-departureMono), monospace;
 
   /* shadcn defaults */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /** hiding for now
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+  */
   /* end shadcn defaults */
 
   /* Font Sizes & Line Heights */
-  --text-xs: 11px;
+  --text-xs: 12px;
   --text-xs--line-height: 16px;
-  --text-sm: 12px;
-  --text-sm--line-height: 16px;
-  --text-md: 14px;
-  --text-md--line-height: 16px;
-  --text-lg: 16px;
-  --text-lg--line-height: 20px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-md: 16px;
+  --text-md--line-height: 24px;
+  --text-lg: 18px;
+  --text-lg--line-height: 28px;
   --text-xl: 20px;
-  --text-xl--line-height: 24px;
+  --text-xl--line-height: 28px;
   --text-2xl: 24px;
-  --text-2xl--line-height: 28px;
-  --text-3xl: 36px;
-  --text-3xl--line-height: 40px;
-  --text-4xl: 48px;
-  --text-4xl--line-height: 56px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 36px;
+  --text-4xl: 36px;
+  --text-4xl--line-height: 40px;
+  --text-5xl: 48px;
+  --text-5xl--line-height: 48px;
 
   /* Letter Spacing */
   --tracking-narrower: -0.02em;

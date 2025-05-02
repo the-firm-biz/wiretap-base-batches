@@ -2,34 +2,46 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
 /**
  * Declare all
- * @todo Bigeon - add real font families. This is an example implementation.
  */
-export const arialNarrow = localFont({
-  variable: '--font-sans-narrow',
+export const departureMono = localFont({
+  variable: '--font-mono',
   src: [
     {
-      path: '../../../public/fonts/ArialNarrow.woff2',
+      path: '../../../public/fonts/DepartureMono-Regular.woff2',
       weight: '400',
       style: 'normal'
-    },
-    {
-      path: '../../../public/fonts/ArialNarrowBold.woff2',
-      weight: '700',
-      style: 'normal'
-    },
-    {
-      path: '../../../public/fonts/ArialNarrowItalic.woff2',
-      weight: '400',
-      style: 'italic'
-    },
-    {
-      path: '../../../public/fonts/ArialNarrowBoldItalic.woff2',
-      weight: '700',
-      style: 'italic'
     }
   ]
 });
 
+export const loRes12 = localFont({
+  variable: '--font-sans',
+  src: [
+    {
+      path: '../../../public/fonts/LoRes12OT-Regular.ttf',
+      weight: '400',
+      style: 'normal'
+    },
+    {
+      path: '../../../public/fonts/LoRes12OT-Bold.ttf',
+      weight: '700',
+      style: 'bold'
+    }
+  ]
+});
+
+export const ppMondwest = localFont({
+  variable: '--font-serif',
+  src: [
+    {
+      path: '../../../public/fonts/PPMondwest-Bold.otf',
+      weight: '700',
+      style: 'bold'
+    }
+  ]
+});
+
+/** hiding shadcn defaults for now
 // Shadcn defaults
 export const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -41,3 +53,4 @@ export const geistMono = Geist_Mono({
   subsets: ['latin']
 });
 // End shadcn defaults
+ */
