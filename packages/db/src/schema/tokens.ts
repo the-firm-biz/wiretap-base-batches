@@ -1,4 +1,6 @@
 import {
+  bigint,
+  index,
   integer,
   pgTable,
   serial,
@@ -9,6 +11,7 @@ import {
 import { contracts } from './contracts.js';
 import { accountEntities } from './accounts/account-entities.js';
 import { lower } from '../utils/pg-helpers.js';
+import { blocks } from './blocks.js';
 
 export const tokens = pgTable(
   'tokens',
@@ -26,9 +29,13 @@ export const tokens = pgTable(
     accountEntityId: integer('account_entity_id')
       .notNull()
       .references(() => accountEntities.id),
+    block: bigint('block', { mode: 'number' })
+      .notNull()
+      .references(() => blocks.number),
     createdAt: timestamp('created_at').defaultNow().notNull()
   },
   (table) => [
+    index('tokens_block_idx').on(table.name),
     uniqueIndex('tokens_address_lower_unique').on(lower(table.address))
   ]
 );

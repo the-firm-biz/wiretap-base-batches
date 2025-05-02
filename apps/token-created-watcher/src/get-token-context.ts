@@ -1,15 +1,11 @@
 import { decodeFunctionData } from 'viem/utils';
-import { createHttpPublicClient } from '@wiretap/utils/shared';
 import { CLANKER_ABI } from '@wiretap/config';
-import { env } from './env.js';
 import { type ParsedTokenContext } from './types/index.js';
+import { httpPublicClient } from './rpc-clients.js';
 
 export const getTokenContext = async (
   transactionHash: `0x${string}`
 ): Promise<ParsedTokenContext> => {
-  const httpPublicClient = createHttpPublicClient({
-    alchemyApiKey: env.ALCHEMY_API_KEY
-  });
   const transaction = await httpPublicClient.getTransaction({
     hash: transactionHash
   });
