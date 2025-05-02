@@ -8,12 +8,20 @@ import { createTRPCQueryUtils } from '@trpc/react-query';
 import { createTRPCContext } from '@trpc/tanstack-react-query';
 import { AppRouter } from '@/server/api/app-router';
 import { createQueryClient } from './create-query-client';
+import { getJwtSiweSessionCookie } from '../utils/siwe/siwe-cookies';
 
 export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 
 const getRequestHeaders = () => {
   const headers = new Headers();
   headers.set('x-trpc-source', 'nextjs-react');
+
+  // @TODO ENG-293 - figure out how to auth using embedded smart wallets
+  const siweAuthJwt = getJwtSiweSessionCookie();
+  if (siweAuthJwt) {
+    headers.set('Authorization', `Bearer ${siweAuthJwt}`);
+  }
+
   return headers;
 };
 
