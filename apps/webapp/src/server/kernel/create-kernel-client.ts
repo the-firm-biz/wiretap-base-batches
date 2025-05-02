@@ -30,12 +30,16 @@ const publicClient = createPublicClient({
  * @returns KernelAccountClient can execute transactions on behalf of the user
  */
 export const createKernelClient = async (serializedSessionKey: string) => {
+  const kernelValidatorPrivateKey = serverEnv.KERNEL_VALIDATOR_PRIVATE_KEY;
+
+  if (!kernelValidatorPrivateKey) {
+    throw new Error('KERNEL_VALIDATOR_PRIVATE_KEY is not set');
+  }
+
   // STEP 1: Create backend validator signer with the PRIVATE key
   // This is the private counterpart to the public key used in the frontend
   const validatorSigner = await toECDSASigner({
-    signer: privateKeyToAccount(
-      serverEnv.KERNEL_VALIDATOR_PRIVATE_KEY as Address
-    )
+    signer: privateKeyToAccount(kernelValidatorPrivateKey as Address)
   });
 
   // STEP 2: Deserialize the user-approved session key

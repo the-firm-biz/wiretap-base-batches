@@ -3,7 +3,8 @@ import { z } from 'zod';
 const clientEnvSchema = z.object({
   NEXT_PUBLIC_REOWN_PROJECT_ID: z.string(),
   NEXT_PUBLIC_ALCHEMY_API_KEY: z.string(),
-  NEXT_PUBLIC_KERNEL_VALIDATOR_ADDRESS: z.string()
+  // For devx - validator address only required if working with session keys
+  NEXT_PUBLIC_KERNEL_VALIDATOR_ADDRESS: z.string().optional()
 });
 
 export type ClientEnv = z.infer<typeof clientEnvSchema>;

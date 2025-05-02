@@ -14,7 +14,7 @@ export function Wallet() {
   const walletClient = walletClientQuery.data;
   const buttonText = !isConnected ? 'Connect' : status;
 
-  // @todo session keys - just a way to test the function.
+  // @todo session keys - this is just a way to test the function.
   const handleCreateSessionKey = async () => {
     const serializedSessionKey = await createSessionKeyForUserWallet(
       walletClient!

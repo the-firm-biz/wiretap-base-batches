@@ -36,10 +36,16 @@ const publicClient = createPublicClient({
 export const createSessionKeyForUserWallet = async (
   userWalletSigner: Signer
 ): Promise<string> => {
+  const kernelValidatorAddress = clientEnv.NEXT_PUBLIC_KERNEL_VALIDATOR_ADDRESS;
+
+  if (!kernelValidatorAddress) {
+    throw new Error('KERNEL_VALIDATOR_ADDRESS is not set');
+  }
+
   // STEP 1: Create an "empty account" for backend validator
   // We only need the public address for authorization, not the private key
   const validatorEmptyAccount = addressToEmptyAccount(
-    clientEnv.NEXT_PUBLIC_KERNEL_VALIDATOR_ADDRESS as Address
+    kernelValidatorAddress as Address
   );
   const validatorSessionKeySigner = await toECDSASigner({
     signer: validatorEmptyAccount
