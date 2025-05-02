@@ -6,3 +6,4 @@ export * from './get-farcaster-account.js';
 export * from './get-or-create-deployer-contract.js';
 export * from './get-or-create-token.js';
 export * from './get-wallet-address.js';
+export * from './create-block.js';

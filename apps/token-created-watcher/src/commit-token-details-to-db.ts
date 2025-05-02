@@ -8,6 +8,7 @@ import {
   getOrCreateToken,
   getPoolDb,
   getWallet,
+  createBlock,
   type Wallet
 } from '@wiretap/db';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
@@ -50,7 +51,8 @@ export const commitTokenDetailsToDb = async ({
     tokenName,
     symbol,
     deployerContractAddress,
-    transactionHash
+    transactionHash,
+    block
   },
   tokenCreatorAddress,
   farcasterAccount
@@ -105,13 +107,19 @@ export const commitTokenDetailsToDb = async ({
     existingFarcasterAccount = createdFarcasterAccount;
   }
 
+  await createBlock(poolDb, {
+    number: block.number,
+    timestamp: block.timestamp
+  });
+
   const createdToken = await getOrCreateToken(poolDb, {
     address: tokenAddress,
     deploymentContractId: deployerContract.id,
     deploymentTransactionHash: transactionHash,
     accountEntityId,
     symbol,
-    name: tokenName
+    name: tokenName,
+    block: block.number
   });
 
   await endPoolConnection();

@@ -18,7 +18,7 @@ export function onLogs(
 }
 
 export async function onLog(log: TokenCreatedLog) {
-  const onChainToken = deconstructLog(log);
+  const onChainToken = await deconstructLog(log);
 
   /* Known delegated deployers that deploy tokens on behalf of users - so we skip Neynar verification of msgSender */
   const isDelegatedDeployer = Object.values(

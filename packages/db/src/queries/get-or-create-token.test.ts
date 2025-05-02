@@ -1,12 +1,13 @@
 import { singletonDb } from '../client.js';
-import { tokens } from '../schema/tokens.js';
+import { type NewToken, tokens } from '../schema/tokens.js';
 import { accountEntities } from '../schema/accounts/index.js';
 import { contracts } from '../schema/contracts.js';
 import { env } from '../env.js';
 import { getOrCreateToken } from './get-or-create-token.js';
 import { clearDbTables } from '../utils/testUtils.js';
 
-const newToken = {
+const newToken: NewToken = {
+  block: 0,
   address: '0x60C2c576310892d741ac6faFB74D82D3dd49F4B6',
   deploymentTransactionHash:
     '0xc523028627ebdc8de1a37107ebafb45694f397929c978939f0d64c35b922a3b0',

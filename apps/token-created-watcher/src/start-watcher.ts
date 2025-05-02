@@ -1,12 +1,7 @@
-import { createWebsocketPublicClient } from '@wiretap/utils/shared';
-import { CLANKER_ABI, CLANKER_3_1_ADDRESS } from '@wiretap/config';
+import { CLANKER_3_1_ADDRESS, CLANKER_ABI } from '@wiretap/config';
 import { onLogs } from './on-logs.js';
 import { onError } from './on-error.js';
-import { env } from './env.js';
-
-const websocketPublicClient = createWebsocketPublicClient({
-  alchemyApiKey: env.ALCHEMY_API_KEY
-});
+import { websocketPublicClient } from './rpc-clients.js';
 
 export function startTokenCreatedWatcher() {
   let unwatch: (() => void) | null = null;
