@@ -52,7 +52,7 @@ export async function handleClankerFarcaster(
   const neynarUser =
     userResponse && userResponse.length > 0 ? userResponse[0] : undefined;
 
-  const tokenScore = neynarUser ? await getTokenScore(neynarUser) : null;
+  const tokenScoreDetails = neynarUser ? await getTokenScore(neynarUser) : null;
 
   if (castAndConversations && isValidCast) {
     await handleTokenWithFarcasterUser(
@@ -63,7 +63,7 @@ export async function handleClankerFarcaster(
         address: castAndConversations.author.verified_addresses
           .eth_addresses[0] as Address // todo: process entire array of addresses
       },
-      tokenScore
+      tokenScoreDetails?.tokenScore ?? null
     );
   }
 
@@ -78,6 +78,7 @@ export async function handleClankerFarcaster(
     castValidation: {
       exists: !!castAndConversations,
       isValid: isValidCast
-    }
+    },
+    tokenScoreDetails
   });
 }

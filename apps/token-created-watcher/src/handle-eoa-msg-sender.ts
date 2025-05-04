@@ -37,7 +37,8 @@ export async function handleEOAMsgSender(
       tokenName: result.token.name,
       tokenSymbol: result.token.symbol,
       deployerContractAddress: result.deployerContract.address,
-      source: 'handle-eoa-msg-sender'
+      source: 'handle-eoa-msg-sender',
+      tokenScoreDetails: null
     });
     return;
   }
@@ -45,7 +46,7 @@ export async function handleEOAMsgSender(
   // Since we've checked userResponse is not empty, we can safely assert this is defined
   const neynarUser = userResponse[0]!;
 
-  const tokenScore = await getTokenScore(neynarUser);
+  const tokenScoreDetails = await getTokenScore(neynarUser);
 
   const result = await handleTokenWithFarcasterUser(
     tokenCreatedData,
@@ -54,7 +55,7 @@ export async function handleEOAMsgSender(
       username: neynarUser.username,
       address: tokenCreatedData.msgSender
     },
-    tokenScore
+    tokenScoreDetails?.tokenScore ?? null
   );
 
   sendSlackMessage({
@@ -64,6 +65,7 @@ export async function handleEOAMsgSender(
     tokenSymbol: result.token.symbol,
     deployerContractAddress: result.deployerContract.address,
     neynarUser,
-    source: 'handle-eoa-msg-sender'
+    source: 'handle-eoa-msg-sender',
+    tokenScoreDetails
   });
 }

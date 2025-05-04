@@ -7,9 +7,14 @@ import { env } from '../env.js';
 import { calculateTokenScore } from './calculate-token-score.js';
 import type { NeynarUser } from '@wiretap/utils/server';
 
+export interface TokenScoreDetails {
+  previousDeploymentsCount: number;
+  tokenScore: number;
+}
+
 export async function getTokenScore(
   neynarUser: NeynarUser
-): Promise<number | null> {
+): Promise<TokenScoreDetails | null> {
   if (!neynarUser.experimental?.neynar_user_score) {
     console.log('[get-token-score] Neynar score missing', neynarUser);
     return null;
@@ -24,9 +29,14 @@ export async function getTokenScore(
     ? await countTokensByCreator(db, farcasterAccount.accountEntityId)
     : 0;
 
-  return calculateTokenScore({
+  const tokenScore = calculateTokenScore({
     previousDeploymentsCount,
     userFollowersCount: neynarUser.follower_count,
     neynarScore: neynarUser.experimental.neynar_user_score
   });
+
+  return {
+    previousDeploymentsCount,
+    tokenScore
+  };
 }
