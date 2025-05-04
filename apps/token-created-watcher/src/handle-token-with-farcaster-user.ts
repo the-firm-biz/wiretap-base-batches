@@ -10,7 +10,8 @@ export type FarcasterUserParams = {
 
 export async function handleTokenWithFarcasterUser(
   tokenCreatedData: TokenCreatedOnChainParams,
-  params: FarcasterUserParams
+  params: FarcasterUserParams,
+  tokenScore: number | null
 ) {
   // [3 concurrent]
   // TODO: find users monitoring accountEntities connected to response's farcasterAccounts, wallets or xAccounts
@@ -22,6 +23,7 @@ export async function handleTokenWithFarcasterUser(
     farcasterAccount: {
       fid: params.fid,
       username: params.username
-    }
+    },
+    tokenScore
   });
 }

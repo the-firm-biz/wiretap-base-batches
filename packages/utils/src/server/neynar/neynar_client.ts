@@ -7,7 +7,12 @@ export interface NeynarClientOptions {
 
 export function getNeynarClient(opts: NeynarClientOptions): NeynarAPIClient {
   const config = new Configuration({
-    apiKey: opts.apiKey
+    apiKey: opts.apiKey,
+    baseOptions: {
+      headers: {
+        'x-neynar-experimental': true
+      }
+    }
   });
   return new NeynarAPIClient(config);
 }
