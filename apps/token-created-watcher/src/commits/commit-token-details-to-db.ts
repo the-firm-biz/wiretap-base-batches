@@ -19,6 +19,7 @@ import type { Block } from '../types/block.js';
 export type CommitTokenDetailsToDbParams = {
   tokenCreatedData: TokenCreatedOnChainParams;
   tokenCreatorAddress: Address;
+  tokenScore: number | null;
   neynarUser?: NeynarUser;
 };
 
@@ -45,7 +46,8 @@ export const commitTokenDetailsToDb = async ({
     block
   },
   tokenCreatorAddress,
-  neynarUser
+  neynarUser,
+  tokenScore
 }: CommitTokenDetailsToDbParams): Promise<CommitTokenDetailsToDbResult> => {
   const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
 
@@ -68,6 +70,7 @@ export const commitTokenDetailsToDb = async ({
 
       const createdToken = await getOrCreateToken(tx, {
         address: tokenAddress,
+        score: tokenScore,
         deploymentContractId: deployerContract.id,
         deploymentTransactionHash: transactionHash,
         accountEntityId,

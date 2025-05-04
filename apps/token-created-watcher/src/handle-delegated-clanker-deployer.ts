@@ -28,6 +28,7 @@ export async function handleDelegatedClankerDeployer(
     tokenName: tokenCreatedData.tokenName,
     tokenSymbol: tokenCreatedData.symbol,
     deployerContractAddress: tokenCreatedData.deployerContractAddress,
-    source: 'handle-delegated-clanker-deployer'
+    source: 'handle-delegated-clanker-deployer',
+    tokenScoreDetails: null
   });
 }

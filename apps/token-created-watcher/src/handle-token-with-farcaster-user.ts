@@ -4,11 +4,13 @@ import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import type { Address } from 'viem';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
 import { sendSlackIndexerError } from './notifications/send-slack-indexer-error.js';
+import type { TokenScoreDetails } from './token-score/get-token-score.js';
 
 export async function handleTokenWithFarcasterUser(
   tokenCreatedData: TokenCreatedOnChainParams,
   tokenCreatorAddress: Address,
-  neynarUser: NeynarUser
+  neynarUser: NeynarUser,
+  tokenScoreDetails: TokenScoreDetails | null
 ) {
   // [3 concurrent]
   // TODO: find users monitoring accountEntities connected to response's farcasterAccounts, wallets or xAccounts
@@ -18,7 +20,8 @@ export async function handleTokenWithFarcasterUser(
     const createdDbRows = await commitTokenDetailsToDb({
       tokenCreatedData,
       tokenCreatorAddress,
-      neynarUser
+      neynarUser,
+      tokenScore: tokenScoreDetails?.tokenScore ?? null
     });
     sendSlackMessage({
       tokenAddress: createdDbRows.token.address,
@@ -31,7 +34,8 @@ export async function handleTokenWithFarcasterUser(
         ? createdDbRows.token.createdAt.getTime() -
           tokenCreatedData.block.timestamp?.getTime()
         : undefined,
-      source: 'handle-eoa-msg-sender'
+      source: 'handle-eoa-msg-sender',
+      tokenScoreDetails
     });
     return createdDbRows;
   } catch (error) {

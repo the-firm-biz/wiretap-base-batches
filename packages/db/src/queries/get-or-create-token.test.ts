@@ -15,7 +15,8 @@ const newToken: NewToken = {
   name: 'Test Token',
   symbol: 'TEST',
   deploymentContractId: 1,
-  accountEntityId: 1
+  accountEntityId: 1,
+  score: 0.999
 };
 
 describe('getOrCreateToken', () => {
