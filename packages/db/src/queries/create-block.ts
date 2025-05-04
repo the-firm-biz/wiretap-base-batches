@@ -20,10 +20,5 @@ export async function createBlock(
     })
     .returning();
 
-  if (!block) {
-    throw new Error(
-      'WiretapDbError:createBlock - failed to create Block (query returned 0 rows)'
-    );
-  }
   return block;
 }

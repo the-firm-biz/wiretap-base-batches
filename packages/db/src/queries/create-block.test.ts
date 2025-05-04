@@ -63,4 +63,14 @@ describe('createBlock', () => {
     });
     expect(response).toStrictEqual(dbBlocks[0]);
   });
+
+  it('returns undefined if the block exists and has a timestamp', async () => {
+    const newBlock: NewBlock = {
+      number: 1234567890,
+      timestamp: new Date()
+    };
+    await createBlock(db, newBlock);
+    const response = await createBlock(db, newBlock);
+    expect(response).toBeUndefined();
+  });
 });

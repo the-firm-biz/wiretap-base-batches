@@ -173,8 +173,7 @@ describe('commitTokenDetailsToDb', () => {
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP,
-          createdAt: expect.any(Date)
+          timestamp: BLOCK_TIMESTAMP
         },
         accountEntityId: expect.any(Number),
         token: {
@@ -273,8 +272,7 @@ describe('commitTokenDetailsToDb', () => {
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP,
-          createdAt: expect.any(Date)
+          timestamp: BLOCK_TIMESTAMP
         },
         accountEntityId: expect.any(Number),
         token: {
@@ -456,8 +454,7 @@ describe('commitTokenDetailsToDb', () => {
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP,
-          createdAt: expect.any(Date)
+          timestamp: BLOCK_TIMESTAMP
         },
         accountEntityId: expect.any(Number),
         token: {
@@ -557,8 +554,7 @@ describe('commitTokenDetailsToDb', () => {
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP,
-          createdAt: expect.any(Date)
+          timestamp: BLOCK_TIMESTAMP
         },
         accountEntityId: expect.any(Number),
         token: {
@@ -743,8 +739,7 @@ describe('commitTokenDetailsToDb', () => {
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP,
-          createdAt: expect.any(Date)
+          timestamp: BLOCK_TIMESTAMP
         },
         accountEntityId: expect.any(Number),
         token: {
@@ -936,8 +931,7 @@ describe('commitTokenDetailsToDb', () => {
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP,
-          createdAt: expect.any(Date)
+          timestamp: BLOCK_TIMESTAMP
         },
         accountEntityId: expect.any(Number),
         token: {

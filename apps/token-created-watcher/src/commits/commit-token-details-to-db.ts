@@ -8,13 +8,13 @@ import {
   type FarcasterAccount,
   type Token,
   type Wallet,
-  type XAccount,
-  type Block
+  type XAccount
 } from '@wiretap/db';
 import type { TokenCreatedOnChainParams } from '../types/token-created.js';
 import type { Address } from 'viem';
 import type { NeynarUser } from '@wiretap/utils/server';
 import { commitAccountInfoToDb } from './commit-account-info-to-db.js';
+import type { Block } from '../types/block.js';
 
 export type CommitTokenDetailsToDbParams = {
   tokenCreatedData: TokenCreatedOnChainParams;
@@ -60,7 +60,7 @@ export const commitTokenDetailsToDb = async ({
         neynarUser
       });
 
-    const createdBlock = await createBlock(dbPool.db, {
+    await createBlock(dbPool.db, {
       number: block.number,
       timestamp: block.timestamp
     });
@@ -72,11 +72,11 @@ export const commitTokenDetailsToDb = async ({
       accountEntityId,
       symbol,
       name: tokenName,
-      block: createdBlock.number
+      block: block.number
     });
 
     return {
-      block: createdBlock,
+      block,
       accountEntityId,
       token: createdToken,
       deployerContract,
