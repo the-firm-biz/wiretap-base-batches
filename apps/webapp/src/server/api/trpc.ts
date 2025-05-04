@@ -37,19 +37,25 @@ const isAuthed = t.middleware(async ({ ctx, next }) => {
   }
 
   const authJwt = authHeader.split(' ')[1];
-  const { message, signature } = verifyJwt<VerifySiweMessageJwtPayload>(
-    authJwt,
-    serverEnv.SIWE_JWT_SECRET
-  );
+  const { message, signature, wireTapAccountId } =
+    verifyJwt<VerifySiweMessageJwtPayload>(authJwt, serverEnv.SIWE_JWT_SECRET);
 
   const siweMessage = new SiweMessage(message);
   const { success } = await siweMessage.verify({
     signature: signature
   });
 
+  if (!success) {
+    throw new TRPCError({
+      message: 'Invalid signature',
+      code: 'UNAUTHORIZED'
+    });
+  }
+
   return next({
     ctx: {
-      authedAddress: success ? siweMessage.address : undefined
+      authedAddress: siweMessage.address,
+      wireTapAccountId
     }
   });
 });

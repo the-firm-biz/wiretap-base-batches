@@ -3,4 +3,5 @@ export interface VerifySiweMessageJwtPayload {
   address: string;
   signature: string;
   chainId: number;
+  wireTapAccountId: number;
 }

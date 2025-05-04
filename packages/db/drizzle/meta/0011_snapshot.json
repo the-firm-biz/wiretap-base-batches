@@ -77,13 +77,9 @@
         "farcaster_accounts_account_entity_id_account_entities_id_fk": {
           "name": "farcaster_accounts_account_entity_id_account_entities_id_fk",
           "tableFrom": "farcaster_accounts",
-          "columnsFrom": [
-            "account_entity_id"
-          ],
+          "columnsFrom": ["account_entity_id"],
           "tableTo": "account_entities",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -92,16 +88,12 @@
       "uniqueConstraints": {
         "farcaster_accounts_fid_unique": {
           "name": "farcaster_accounts_fid_unique",
-          "columns": [
-            "fid"
-          ],
+          "columns": ["fid"],
           "nullsNotDistinct": false
         },
         "farcaster_accounts_account_entity_id_unique": {
           "name": "farcaster_accounts_account_entity_id_unique",
-          "columns": [
-            "account_entity_id"
-          ],
+          "columns": ["account_entity_id"],
           "nullsNotDistinct": false
         }
       },
@@ -166,26 +158,18 @@
         "wallets_account_entity_id_account_entities_id_fk": {
           "name": "wallets_account_entity_id_account_entities_id_fk",
           "tableFrom": "wallets",
-          "columnsFrom": [
-            "account_entity_id"
-          ],
+          "columnsFrom": ["account_entity_id"],
           "tableTo": "account_entities",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "wallets_verification_source_id_verification_sources_id_fk": {
           "name": "wallets_verification_source_id_verification_sources_id_fk",
           "tableFrom": "wallets",
-          "columnsFrom": [
-            "verification_source_id"
-          ],
+          "columnsFrom": ["verification_source_id"],
           "tableTo": "verification_sources",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -237,13 +221,9 @@
         "x_accounts_account_entity_id_account_entities_id_fk": {
           "name": "x_accounts_account_entity_id_account_entities_id_fk",
           "tableFrom": "x_accounts",
-          "columnsFrom": [
-            "account_entity_id"
-          ],
+          "columnsFrom": ["account_entity_id"],
           "tableTo": "account_entities",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -252,9 +232,7 @@
       "uniqueConstraints": {
         "x_accounts_xid_unique": {
           "name": "x_accounts_xid_unique",
-          "columns": [
-            "xid"
-          ],
+          "columns": ["xid"],
           "nullsNotDistinct": false
         }
       },
@@ -391,26 +369,18 @@
         "tokens_deployment_contract_id_contracts_id_fk": {
           "name": "tokens_deployment_contract_id_contracts_id_fk",
           "tableFrom": "tokens",
-          "columnsFrom": [
-            "deployment_contract_id"
-          ],
+          "columnsFrom": ["deployment_contract_id"],
           "tableTo": "contracts",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "tokens_account_entity_id_account_entities_id_fk": {
           "name": "tokens_account_entity_id_account_entities_id_fk",
           "tableFrom": "tokens",
-          "columnsFrom": [
-            "account_entity_id"
-          ],
+          "columnsFrom": ["account_entity_id"],
           "tableTo": "account_entities",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }

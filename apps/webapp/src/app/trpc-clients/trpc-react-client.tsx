@@ -10,7 +10,8 @@ import { AppRouter } from '@/server/api/app-router';
 import { createQueryClient } from './create-query-client';
 import { getJwtSiweSessionCookie } from '../utils/siwe/siwe-cookies';
 
-export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
+export const { TRPCProvider, useTRPC, useTRPCClient } =
+  createTRPCContext<AppRouter>();
 
 const getRequestHeaders = () => {
   const headers = new Headers();

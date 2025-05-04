@@ -6,6 +6,47 @@ import { VerifySiweMessageJwtPayload } from '@/app/utils/siwe/types';
 import { serverEnv } from '@/serverEnv';
 import { publicProcedure } from '../trpc';
 import { SIWE_VALIDITY_MS } from '@/app/utils/siwe/constants';
+import {
+  createAccountEntity,
+  createWireTapAccount,
+  getPoolDb,
+  getWallet,
+  ServerlessDb,
+  VerificationSourceIds
+} from '@wiretap/db';
+import { Address } from 'viem';
+
+async function getOrCreateWireTapAccount(
+  poolDb: ServerlessDb,
+  walletAddress: Address
+) {
+  const wallet = await getWallet(poolDb, walletAddress);
+
+  if (wallet) {
+    const wireTapAccount = await createWireTapAccount(poolDb, {
+      accountEntityId: wallet.accountEntityId
+    });
+
+    return wireTapAccount;
+  }
+
+  const accounts = await createAccountEntity(poolDb, {
+    newWallet: {
+      address: walletAddress,
+      verificationSourceId: VerificationSourceIds.WireTap
+    },
+    newWireTapAccount: {}
+  });
+
+  if (!accounts.wireTapAccount) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to create wire tap account'
+    });
+  }
+
+  return accounts.wireTapAccount;
+}
 
 /** Returns validated, SIWE compliant, signed JWT to be stored locally */
 export const verifySiweMessage = publicProcedure
@@ -17,6 +58,11 @@ export const verifySiweMessage = publicProcedure
   )
   .query(async ({ input }): Promise<string> => {
     const { message, signature } = input;
+
+    const { poolDb, endPoolConnection } = getPoolDb({
+      databaseUrl: serverEnv.DATABASE_URL
+    });
+
     try {
       const validSignature = await new SiweMessage(message).verify({
         signature: signature
@@ -31,7 +77,14 @@ export const verifySiweMessage = publicProcedure
       }
 
       const { address, expirationTime, chainId } = new SiweMessage(message);
+
+      const wireTapAccount = await getOrCreateWireTapAccount(
+        poolDb,
+        address as `0x${string}`
+      );
+
       const siweJwtPayload: VerifySiweMessageJwtPayload = {
+        wireTapAccountId: wireTapAccount.id,
         message,
         address,
         signature,
@@ -63,5 +116,7 @@ export const verifySiweMessage = publicProcedure
         code: e.code || 'INTERNAL_SERVER_ERROR',
         message: e.message || e
       });
+    } finally {
+      await endPoolConnection();
     }
   });
