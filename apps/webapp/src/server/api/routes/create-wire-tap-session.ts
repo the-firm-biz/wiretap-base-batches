@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { wireTapSessionKeys, getPoolDb } from '@wiretap/db';
+import {
+  wireTapSessionKeys,
+  getPoolDb,
+  getWireTapAccountSessionKey
+} from '@wiretap/db';
 import { createTRPCRouter, privateProcedure } from '../trpc';
 import { encryptSessionKey } from '../../kernel/encrypt-decrypt-session-key';
 import { createKernelClient } from '../../kernel/create-kernel-client';
@@ -19,6 +23,18 @@ export const createWireTapSessionRouter = createTRPCRouter({
       });
 
       try {
+        const currentSessionKey = await getWireTapAccountSessionKey(
+          poolDb,
+          wireTapAccountId
+        );
+
+        if (currentSessionKey) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Session key already exists'
+          });
+        }
+
         // Encrypt the serialized session key
         const encryptedSessionKey = encryptSessionKey(serializedSessionKey);
 
