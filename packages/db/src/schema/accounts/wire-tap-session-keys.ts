@@ -8,7 +8,7 @@ export const wireTapSessionKeys = pgTable('wire_tap_session_keys', {
     .references(() => wireTapAccounts.id),
   encryptedSessionKey: text('encrypted_session_key').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull()
+  updatedAt: timestamp('updated_at')
 });
 
 export type WireTapSessionKey = typeof wireTapSessionKeys.$inferSelect;

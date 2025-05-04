@@ -7,7 +7,7 @@ export const wireTapAccounts = pgTable('wire_tap_accounts', {
     .notNull()
     .references(() => accountEntities.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull()
+  updatedAt: timestamp('updated_at')
 });
 
 export type WireTapAccount = typeof wireTapAccounts.$inferSelect;
