@@ -2,7 +2,8 @@ CREATE TABLE "wire_tap_accounts" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"account_entity_id" integer NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp
+	"updated_at" timestamp,
+	CONSTRAINT "wire_tap_accounts_account_entity_id_unique" UNIQUE("account_entity_id")
 );
 --> statement-breakpoint
 CREATE TABLE "wire_tap_session_keys" (

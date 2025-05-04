@@ -5,6 +5,7 @@ export const wireTapAccounts = pgTable('wire_tap_accounts', {
   id: serial('id').primaryKey(),
   accountEntityId: integer('account_entity_id')
     .notNull()
+    .unique()
     .references(() => accountEntities.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')

@@ -7,7 +7,7 @@ import {
   boolean,
   uniqueIndex
 } from 'drizzle-orm/pg-core';
-import { wireTapAccounts } from './wire-tap-accounts.js';
+import { wireTapAccounts } from './accounts/wire-tap-accounts.js';
 import { sql } from 'drizzle-orm';
 
 export const wireTapSessionKeys = pgTable(
