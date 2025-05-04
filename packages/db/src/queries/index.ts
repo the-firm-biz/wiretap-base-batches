@@ -7,3 +7,4 @@ export * from './get-or-create-deployer-contract.js';
 export * from './get-or-create-token.js';
 export * from './get-wallet-address.js';
 export * from './create-block.js';
+export * from './count-tokens-by-creator.js';

@@ -21,6 +21,7 @@ export type CommitTokenDetailsToDbParams = {
     fid: number;
     username: string;
   };
+  tokenScore: number | null;
 };
 
 const throwIfAccountEntityIdMismatch = (
@@ -55,7 +56,8 @@ export const commitTokenDetailsToDb = async ({
     block
   },
   tokenCreatorAddress,
-  farcasterAccount
+  farcasterAccount,
+  tokenScore
 }: CommitTokenDetailsToDbParams) => {
   const { poolDb, endPoolConnection } = getPoolDb({
     databaseUrl: env.DATABASE_URL
@@ -114,6 +116,7 @@ export const commitTokenDetailsToDb = async ({
 
   const createdToken = await getOrCreateToken(poolDb, {
     address: tokenAddress,
+    score: tokenScore,
     deploymentContractId: deployerContract.id,
     deploymentTransactionHash: transactionHash,
     accountEntityId,

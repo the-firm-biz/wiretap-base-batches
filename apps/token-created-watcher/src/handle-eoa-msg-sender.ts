@@ -7,6 +7,7 @@ import { commitTokenDetailsToDb } from './commit-token-details-to-db.js';
 import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
+import { getTokenScore } from './token-score/get-token-score.js';
 
 export async function handleEOAMsgSender(
   tokenCreatedData: TokenCreatedOnChainParams
@@ -27,7 +28,8 @@ export async function handleEOAMsgSender(
     // [4 concurrent]
     const result = await commitTokenDetailsToDb({
       tokenCreatedData,
-      tokenCreatorAddress: tokenCreatedData.msgSender
+      tokenCreatorAddress: tokenCreatedData.msgSender,
+      tokenScore: null
     });
     sendSlackMessage({
       tokenAddress: result.token.address,
@@ -43,11 +45,17 @@ export async function handleEOAMsgSender(
   // Since we've checked userResponse is not empty, we can safely assert this is defined
   const neynarUser = userResponse[0]!;
 
-  const result = await handleTokenWithFarcasterUser(tokenCreatedData, {
-    fid: neynarUser.fid,
-    username: neynarUser.username,
-    address: tokenCreatedData.msgSender
-  });
+  const tokenScore = await getTokenScore(neynarUser);
+
+  const result = await handleTokenWithFarcasterUser(
+    tokenCreatedData,
+    {
+      fid: neynarUser.fid,
+      username: neynarUser.username,
+      address: tokenCreatedData.msgSender
+    },
+    tokenScore
+  );
 
   sendSlackMessage({
     tokenAddress: result.token.address,
