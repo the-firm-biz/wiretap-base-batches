@@ -5,8 +5,10 @@ import { getEnv, secretString } from '@wiretap/utils/shared';
 config({ path: '.env.local' });
 
 const envSchema = z.object({
-  SLACK_TOKEN: secretString,
+  SLACK_ESPIONAGEBOT_TOKEN: secretString,
+  SLACK_INFRABOT_TOKEN: secretString,
   WIRETAP_NOTIFICATIONS_CHANNEL_ID: z.string(),
+  INFRA_NOTIFICATIONS_CHANNEL_ID: z.string(),
   NEYNAR_API_KEY: secretString,
   ALCHEMY_API_KEY: secretString,
   DATABASE_URL: secretString,

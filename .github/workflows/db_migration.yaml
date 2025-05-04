@@ -2,7 +2,7 @@ name: DB - Run Migrations
 
 on:
   push:
-    branches: ['main', 'develop']
+    branches: ["main", "develop"]
     paths:
       - packages/db/**
 
@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
@@ -42,3 +42,18 @@ jobs:
 
       - name: Push DB migrations
         run: pnpm run db:migration-push
+
+  notify-slack:
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - run_migrations
+    steps:
+      - uses: actions/checkout@v2
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_TITLE: Migration ${{ needs.run_migrations.result }} in ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+          SLACK_COLOR: ${{ needs.run_migrations.result }}
+          MSG_MINIMAL: commit,actions url
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
