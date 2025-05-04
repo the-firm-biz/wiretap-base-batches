@@ -32,14 +32,16 @@ const JOHNY_SECRET_ETH_WALLET =
 const BLOCK_NUMBER = 1234567890;
 const BLOCK_TIMESTAMP = new Date('2025-01-01T00:00:00.000Z');
 
+const DEPLOYER_CONTRACT_ADDRESS =
+  '0x9999999999999999999999999999999999999999' as Address;
+
 const testTokenCreatedData: TokenCreatedOnChainParams = {
   transactionHash:
     '0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc' as `0x${string}`,
   tokenAddress: '0x8888888888888888888888888888888888888888' as Address,
   symbol: 'TST',
   tokenName: 'Test Token',
-  deployerContractAddress:
-    '0x9999999999999999999999999999999999999999' as Address,
+  deployerContractAddress: DEPLOYER_CONTRACT_ADDRESS,
   msgSender: JOHNY_PRIMARY_ETH_WALLET,
   block: {
     number: BLOCK_NUMBER,
@@ -1173,7 +1175,7 @@ describe('commitTokenDetailsToDb', () => {
   });
 
   describe('error handling', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       await dbModule.unsafe__clearDbTables(db);
     });
 
@@ -1215,6 +1217,40 @@ describe('commitTokenDetailsToDb', () => {
           throw new Error('thrown error is not a TokenIndexerError');
         }
       }
+    });
+
+    it('does not create DB rows if transaction fails', async () => {
+      const dbPool = new dbModule.PooledDbConnection({
+        databaseUrl: env.DATABASE_URL
+      });
+      await dbModule.createAccountEntity(dbPool.db, {
+        newWallets: [
+          {
+            address: JOHNY_PRIMARY_ETH_WALLET
+          }
+        ]
+      });
+      await dbModule.createAccountEntity(dbPool.db, {
+        newFarcasterAccount: {
+          fid: testNeynarUser.fid,
+          username: testNeynarUser.username
+        }
+      });
+      await dbPool.endPoolConnection();
+      await expect(
+        commitTokenDetailsToDb({
+          tokenCreatedData: testTokenCreatedData,
+          tokenCreatorAddress: testTokenCreatedData.msgSender,
+          neynarUser: testNeynarUser
+        })
+      ).rejects.toThrow(TokenIndexerError);
+
+      // getOrCreateDeployerContract is called before TokenIndexerError is thrown, we expect it to do nothing since tx failed
+      const contractInDb = await dbModule.getDeployerContract(
+        db,
+        DEPLOYER_CONTRACT_ADDRESS
+      );
+      expect(contractInDb).toBeUndefined();
     });
   });
 });

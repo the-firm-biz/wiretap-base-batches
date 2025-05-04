@@ -50,40 +50,43 @@ export const commitTokenDetailsToDb = async ({
   const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
 
   try {
-    const deployerContract = await getOrCreateDeployerContract(dbPool.db, {
-      address: deployerContractAddress
-    });
-
-    const { accountEntityId, wallets, farcasterAccounts, xAccounts } =
-      await commitAccountInfoToDb(dbPool.db, {
-        tokenCreatorAddress,
-        neynarUser
+    const txResponse = await dbPool.db.transaction(async (tx) => {
+      const deployerContract = await getOrCreateDeployerContract(tx, {
+        address: deployerContractAddress
       });
 
-    await createBlock(dbPool.db, {
-      number: block.number,
-      timestamp: block.timestamp
-    });
+      const { accountEntityId, wallets, farcasterAccounts, xAccounts } =
+        await commitAccountInfoToDb(tx, {
+          tokenCreatorAddress,
+          neynarUser
+        });
 
-    const createdToken = await getOrCreateToken(dbPool.db, {
-      address: tokenAddress,
-      deploymentContractId: deployerContract.id,
-      deploymentTransactionHash: transactionHash,
-      accountEntityId,
-      symbol,
-      name: tokenName,
-      block: block.number
-    });
+      await createBlock(tx, {
+        number: block.number,
+        timestamp: block.timestamp
+      });
 
-    return {
-      block,
-      accountEntityId,
-      token: createdToken,
-      deployerContract,
-      wallets,
-      farcasterAccounts,
-      xAccounts
-    };
+      const createdToken = await getOrCreateToken(tx, {
+        address: tokenAddress,
+        deploymentContractId: deployerContract.id,
+        deploymentTransactionHash: transactionHash,
+        accountEntityId,
+        symbol,
+        name: tokenName,
+        block: block.number
+      });
+
+      return {
+        block,
+        accountEntityId,
+        token: createdToken,
+        deployerContract,
+        wallets,
+        farcasterAccounts,
+        xAccounts
+      };
+    });
+    return txResponse;
   } finally {
     await dbPool.endPoolConnection();
   }
