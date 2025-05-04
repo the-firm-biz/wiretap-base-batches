@@ -18,6 +18,7 @@ type SlackMessageDetails = {
     exists: boolean;
     isValid: boolean;
   };
+  latencyMs?: number;
 };
 
 const divider = '='.repeat(56);
@@ -77,6 +78,7 @@ export const sendSlackMessage = async ({
   deployerContractAddress,
   neynarUser,
   source,
+  latencyMs,
   castValidation
 }: SlackMessageDetails) => {
   console.log(`${source}: ${tokenName} (${tokenSymbol})`);
@@ -194,6 +196,14 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
       default:
         fullMessage.push('Cast validation: no cast found :large_red_square:');
     }
+  }
+
+  if (latencyMs) {
+    const indicatorColor =
+      latencyMs <= 500 ? 'green' : latencyMs <= 1000 ? 'orange' : 'red';
+    fullMessage.push(
+      `:large_${indicatorColor}_circle: Latency from block to db was ${latencyMs}`
+    );
   }
 
   await handleNotifySlack(fullMessage.join('\n'), {
