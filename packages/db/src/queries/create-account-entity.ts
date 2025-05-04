@@ -6,17 +6,21 @@ import {
   type NewXAccount,
   type AccountEntity,
   type Wallet,
-  type XAccount
+  type XAccount,
+  type NewWireTapAccount,
+  type WireTapAccount
 } from '../schema/accounts/index.js';
 import { createWallet } from './create-wallet.js';
 import { createFarcasterAccount } from './create-farcaster-account.js';
 import { createXAccount } from './create-x-account.js';
 import type { ServerlessDb } from '../client.js';
+import { createWireTapAccount } from './create-wire-tap-account.js';
 
 type createAccountEntityInput = {
   newWallet?: Omit<NewWallet, 'accountEntityId'>;
   newFarcasterAccount?: Omit<NewFarcasterAccount, 'accountEntityId'>;
   newXAccount?: Omit<NewXAccount, 'accountEntityId'>;
+  newWireTapAccount?: Omit<NewWireTapAccount, 'accountEntityId'>;
   /** A name to give to the account entity (when creating new one) */
   label?: string;
 };
@@ -26,6 +30,7 @@ export type createAccountEntityResponse = {
   wallet?: Wallet;
   farcasterAccount?: FarcasterAccount;
   xAccount?: XAccount;
+  wireTapAccount?: WireTapAccount;
 };
 
 /**
@@ -38,6 +43,7 @@ export async function createAccountEntity(
     newWallet,
     newFarcasterAccount,
     newXAccount,
+    newWireTapAccount,
     label
   }: createAccountEntityInput
 ): Promise<createAccountEntityResponse> {
@@ -79,6 +85,14 @@ export async function createAccountEntity(
         accountEntityId: createdAccountEntity.id
       });
     }
+
+    if (newWireTapAccount) {
+      response.wireTapAccount = await createWireTapAccount(tx, {
+        ...newWireTapAccount,
+        accountEntityId: createdAccountEntity.id
+      });
+    }
+
     return response;
   });
 

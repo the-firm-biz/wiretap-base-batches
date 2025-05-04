@@ -1,16 +1,21 @@
 import {
+  integer,
   pgTable,
-  serial,
   text,
   timestamp,
   uniqueIndex
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
+export const VerificationSourceIds = {
+  Farcaster: 1,
+  WireTap: 2
+} as const;
+
 export const verificationSources = pgTable(
   'verification_sources',
   {
-    id: serial('id').primaryKey(),
+    id: integer('id').primaryKey(),
     name: text('name').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull()
   },
