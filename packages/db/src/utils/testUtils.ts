@@ -3,12 +3,14 @@ import {
   farcasterAccounts,
   accountEntities,
   wallets,
-  xAccounts
+  xAccounts,
+  wireTapAccounts
 } from '../schema/accounts/index.js';
 import { contracts } from '../schema/contracts.js';
 import { tokens } from '../schema/tokens.js';
 import { blocks } from '../schema/blocks.js';
 import { verificationSources } from '../schema/verification-sources.js';
+import { wireTapSessionKeys } from '../schema/wire-tap-session-keys.js';
 
 /**
  * WARNING: This function is unsafe and should only be used in test files
@@ -21,6 +23,8 @@ export const unsafe__clearDbTables = async (db: NeonHttpDatabase) => {
   await db.delete(farcasterAccounts);
   await db.delete(xAccounts);
   await db.delete(blocks);
+  await db.delete(wireTapSessionKeys);
+  await db.delete(wireTapAccounts);
 
   await db.delete(contracts);
   await db.delete(accountEntities);

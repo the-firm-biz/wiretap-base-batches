@@ -4,7 +4,7 @@ import type {
   HttpDb,
   ServerlessDb
 } from '../client.js';
-import { wireTapSessionKeys } from '../schema/accounts/index.js';
+import { wireTapSessionKeys } from '../schema/wire-tap-session-keys.js';
 
 export async function getWireTapAccountSessionKey(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
