@@ -24,6 +24,8 @@ const getMessageText = (
   if (systemMessage.type === 'shutdown') {
     return `TokenCreatedWatcher has been terminated (signal = ${systemMessage.signal})`;
   }
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  const _assureAllCasesAreHandled: never = systemMessage;
   return 'how did you get here?';
 };
 
