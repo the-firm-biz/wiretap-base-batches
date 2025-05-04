@@ -2,7 +2,7 @@ CREATE TABLE "wire_tap_accounts" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"account_entity_id" integer NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
+	"updated_at" timestamp
 );
 --> statement-breakpoint
 CREATE TABLE "wire_tap_session_keys" (
@@ -10,7 +10,7 @@ CREATE TABLE "wire_tap_session_keys" (
 	"wire_tap_account_id" integer NOT NULL,
 	"encrypted_session_key" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
+	"updated_at" timestamp
 );
 --> statement-breakpoint
 ALTER TABLE "verification_sources" ALTER COLUMN "id" SET DATA TYPE integer;--> statement-breakpoint
