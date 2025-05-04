@@ -18,3 +18,5 @@ export * from './get-account-entity.js';
 export * from './get-deployer-contract.js';
 export * from './get-wire-tap-account.js';
 export * from './count-tokens-by-creator.js';
+export * from './create-wire-tap-account.js';
+export * from './get-wire-tap-account-session-key.js';
