@@ -14,6 +14,7 @@ import {
 import type { Address } from 'viem';
 import type { NeynarUser } from '@wiretap/utils/server';
 import { TokenIndexerError } from '../errors.js';
+import { isAddressEqual } from '@wiretap/utils/shared';
 
 /** Returns the list of all wallets to be checked or created */
 const getListOfWallets = (
@@ -158,7 +159,7 @@ const updateExistingAccountInfo = async (
   // Create wallets if they don't exist
   const allWallets = getListOfWallets(tokenCreatorAddress, neynarUser);
   const newWallets = allWallets.filter(
-    (wallet) => !existingWallets.some((w) => w.address === wallet)
+    (wallet) => !existingWallets.some((w) => isAddressEqual(w.address, wallet))
   );
   if (newWallets.length > 0) {
     const createdWallets = await createWallets(
@@ -174,7 +175,10 @@ const updateExistingAccountInfo = async (
   // Create X accounts if they don't exist
   const neynarXAccounts = getXAccountsFromNeynarUser(neynarUser);
   const newXAccounts = neynarXAccounts.filter(
-    (xAccount) => !existingXAccounts.some((x) => x.username === xAccount)
+    (xAccount) =>
+      !existingXAccounts.some(
+        (x) => x.username.toLowerCase() === xAccount.toLowerCase()
+      )
   );
   if (newXAccounts.length > 0) {
     const createdXAccounts = await createXAccounts(
