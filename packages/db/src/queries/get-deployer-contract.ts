@@ -1,4 +1,4 @@
-import { contracts, type NewContract } from '../schema/contracts.js';
+import { contracts } from '../schema/contracts.js';
 import { lowerEq } from '../utils/pg-helpers.js';
 import type {
   ServerlessDbTransaction,
