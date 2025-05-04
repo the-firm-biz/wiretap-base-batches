@@ -14,8 +14,8 @@
     "DATABASE_URL",
     "NEYNAR_API_KEY",
     "ALCHEMY_API_KEY",
-    "SLACK_TOKEN",
-    "IS_SLACK_NOTIFICATION_ENABLED"
+    "IS_SLACK_NOTIFICATION_ENABLED",
+    "ENV_NAME"
   ],
   "tasks": {
     "build": {
