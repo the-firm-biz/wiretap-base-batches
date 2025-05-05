@@ -15,6 +15,8 @@ const messageStartEmoji = {
   shutdown: ':octagonal_sign:'
 };
 
+const divider = '='.repeat(56);
+
 const getMessageText = (
   systemMessage: SlackStartupMessage | SlackShutdownMessage
 ): string => {
@@ -33,12 +35,13 @@ const getMessageText = (
 export const sendSlackSystemMessage = async (
   systemMessage: SlackStartupMessage | SlackShutdownMessage
 ): Promise<void> => {
-  const envName = process.env.ENV_NAME; // ENV_NAME is defined in fly.toml
-  if (!envName) {
-    console.log('Slack system notifications skipped (ENV_NAME is not set)');
+  const flyAppName = process.env.FLY_APP_NAME;
+  if (!flyAppName) {
+    console.log('Slack system notifications skipped (no FLY_APP_NAME env var)');
     return;
   }
-  const message = `${messageStartEmoji[systemMessage.type]} *${envName}* - ${getMessageText(systemMessage)}`;
+  const flyData = `Fly app: ${flyAppName} | Fly machine: ${process.env.FLY_MACHINE_ID}`;
+  const message = `${divider}\n${messageStartEmoji[systemMessage.type]} ${getMessageText(systemMessage)}\n${flyData}`;
   await handleNotifySlack(message, {
     slackToken: env.SLACK_INFRABOT_TOKEN,
     slackChannelId: env.INFRA_NOTIFICATIONS_CHANNEL_ID

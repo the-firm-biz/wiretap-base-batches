@@ -17,9 +17,6 @@ kill_timeout = 10
   min_machines_running = 1
   processes = ['app']
 
-[env]
-  ENV_NAME = 'production'
-
 [[vm]]
   memory_mb = 512
   cpu_kind = 'shared'
