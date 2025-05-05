@@ -106,7 +106,11 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
       tokenContextJson.messageId &&
       neynarUser?.username;
     if (canBuildWarpcastUrl) {
-      mainUrls += `${slackLink('mega', `https://warpcast.com/${neynarUser.username}/${tokenContextJson.messageId}`, 'Warpcast Cast')}`;
+      mainUrls += slackLink(
+        'mega',
+        `https://warpcast.com/${neynarUser.username}/${tokenContextJson.messageId}`,
+        'Warpcast Cast'
+      );
     }
   } catch (error) {
     const tokenContextError =

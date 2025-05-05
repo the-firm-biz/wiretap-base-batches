@@ -43,7 +43,6 @@ export async function handleClankerFarcaster(
     );
   }
 
-  // TODO: write missing neynar data to DB
   const userResponse = await fetchBulkUsers(neynarClient, [
     clankerFarcasterArgs.fid
   ]);
@@ -52,19 +51,23 @@ export async function handleClankerFarcaster(
     userResponse && userResponse.length > 0 ? userResponse[0] : undefined;
 
   let latencyMs: number | undefined = undefined;
-  if (castAndConversations && isValidCast) {
-    const result = await handleTokenWithFarcasterUser(tokenCreatedData, {
-      fid: clankerFarcasterArgs.fid,
-      username: castAndConversations.author.username,
-      address: castAndConversations.author.verified_addresses
-        .eth_addresses[0] as Address // todo: process entire array of addresses
-    });
+
+  if (castAndConversations && isValidCast && neynarUser) {
+    const tokenCreatorAddress = neynarUser.verified_addresses.primary
+      .eth_address as Address;
+    const createdDbRows = await handleTokenWithFarcasterUser(
+      tokenCreatedData,
+      tokenCreatorAddress,
+      neynarUser
+    );
 
     latencyMs = tokenCreatedData.block.timestamp
-      ? result.token.createdAt.getTime() -
+      ? createdDbRows.token.createdAt.getTime() -
         tokenCreatedData.block.timestamp?.getTime()
       : undefined;
   }
+
+  // TODO: add neynarUser to castValidation log
 
   sendSlackMessage({
     tokenAddress: tokenCreatedData.tokenAddress,

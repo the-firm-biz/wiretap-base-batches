@@ -50,7 +50,7 @@
       "cache": false
     },
     "test": {
-      "dependsOn": ["^test"]
+      "dependsOn": ["^build", "^test"]
     },
     "test:watch": {
       "cache": false,

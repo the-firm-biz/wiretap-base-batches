@@ -2,7 +2,7 @@ import { contracts } from '../schema/contracts.js';
 import { singletonDb } from '../client.js';
 import { env } from '../env.js';
 import { getOrCreateDeployerContract } from './get-or-create-deployer-contract.js';
-import { clearDbTables } from '../utils/testUtils.js';
+import { unsafe__clearDbTables } from '../utils/testUtils.js';
 
 const newDeployer = {
   address: '0xd9aCd656A5f1B519C9E76a2A6092265A74186e58'
@@ -14,7 +14,7 @@ describe('getOrCreateDeployerContract', () => {
   });
 
   beforeEach(async () => {
-    await clearDbTables(db);
+    await unsafe__clearDbTables(db);
   });
 
   afterEach(() => {

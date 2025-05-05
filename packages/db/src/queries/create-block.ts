@@ -10,12 +10,15 @@ export async function createBlock(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   newBlock: NewBlock
 ) {
-  await db
+  const [block] = await db
     .insert(blocks)
     .values(newBlock)
     .onConflictDoUpdate({
       target: blocks.number,
       set: { timestamp: newBlock.timestamp },
       setWhere: isNull(blocks.timestamp)
-    });
+    })
+    .returning();
+
+  return block;
 }

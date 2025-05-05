@@ -9,3 +9,10 @@ export function lower(column: AnyPgColumn): SQL {
 export function lowerEq(column: AnyPgColumn, value: string): SQL {
   return sql`lower(${column}) = ${value.toLowerCase()}`;
 }
+
+export function lowerInArray(column: AnyPgColumn, values: string[]): SQL {
+  return sql`lower(${column}) IN (${sql.join(
+    values.map((value) => sql`${value.toLowerCase()}`),
+    sql`, `
+  )})`;
+}
