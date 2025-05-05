@@ -61,10 +61,11 @@ export async function handleClankerFarcaster(
       neynarUser
     );
 
-    latencyMs = tokenCreatedData.block.timestamp
-      ? createdDbRows.token.createdAt.getTime() -
-        tokenCreatedData.block.timestamp?.getTime()
-      : undefined;
+    latencyMs =
+      createdDbRows && tokenCreatedData.block.timestamp
+        ? createdDbRows.token.createdAt.getTime() -
+          tokenCreatedData.block.timestamp?.getTime()
+        : undefined;
   }
 
   // TODO: add neynarUser to castValidation log
