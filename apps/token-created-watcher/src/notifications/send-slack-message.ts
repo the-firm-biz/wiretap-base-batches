@@ -211,7 +211,7 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
   }
 
   await handleNotifySlack(fullMessage.join('\n'), {
-    slackToken: env.SLACK_TOKEN,
+    slackToken: env.SLACK_ESPIONAGEBOT_TOKEN,
     slackChannelId: env.WIRETAP_NOTIFICATIONS_CHANNEL_ID
   });
 };
