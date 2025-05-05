@@ -7,10 +7,12 @@ import { isAddressEqual } from '@wiretap/utils/shared';
 import { handleDelegatedClankerDeployer } from './handle-delegated-clanker-deployer.js';
 import { handleEOAMsgSender } from './handle-eoa-msg-sender.js';
 import { deconstructLog, type TokenCreatedLog } from './types/token-created.js';
+import { resetReconnectReties } from './on-error.js';
 
 export function onLogs(
   logs: WatchContractEventOnLogsParameter<ClankerAbi, 'TokenCreated', true>
 ) {
+  resetReconnectReties();
   // @todo parallelize in case multiple logs are returned
   logs.forEach(async (log: TokenCreatedLog) => {
     await onLog(log);
