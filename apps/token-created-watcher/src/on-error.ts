@@ -33,3 +33,7 @@ export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
     process.exit(0);
   }
 }
+
+export function resetReconnectReties() {
+  retryCount = 0;
+}
