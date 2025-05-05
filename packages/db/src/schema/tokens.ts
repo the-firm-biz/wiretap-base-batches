@@ -2,6 +2,7 @@ import {
   bigint,
   index,
   integer,
+  numeric,
   pgTable,
   serial,
   text,
@@ -32,6 +33,7 @@ export const tokens = pgTable(
     block: bigint('block', { mode: 'number' })
       .notNull()
       .references(() => blocks.number),
+    athPriceUsd: numeric('ath_price_usd', { precision: 100, scale: 20 }),
     createdAt: timestamp('created_at').defaultNow().notNull()
   },
   (table) => [

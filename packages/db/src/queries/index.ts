@@ -14,3 +14,5 @@ export * from './get-x-accounts.js';
 export * from './create-x-accounts.js';
 export * from './get-account-entity.js';
 export * from './get-deployer-contract.js';
+export * from './get-all-tokens.js';
+export * from './update-tokens-ath.js';

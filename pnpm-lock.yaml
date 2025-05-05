@@ -33,6 +33,49 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
+  apps/economist:
+    dependencies:
+      '@wiretap/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@wiretap/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@wiretap/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      bignumber.js:
+        specifier: ^9.3.0
+        version: 9.3.0
+      cron:
+        specifier: ^4.3.0
+        version: 4.3.0
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
+      graphql:
+        specifier: ^16.11.0
+        version: 16.11.0
+      graphql-request:
+        specifier: ^7.1.2
+        version: 7.1.2(graphql@16.11.0)
+      viem:
+        specifier: ^2.27.0
+        version: 2.28.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@4.0.0-beta.20250415T232143)
+      zod:
+        specifier: 4.0.0-beta.20250415T232143
+        version: 4.0.0-beta.20250415T232143
+    devDependencies:
+      '@wiretap/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint-config
+      '@wiretap/prettier-config':
+        specifier: workspace:*
+        version: link:../../tooling/prettier-config
+      '@wiretap/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript-config
+
   apps/token-created-watcher:
     dependencies:
       '@wiretap/config':
@@ -47,6 +90,9 @@ importers:
       abitype:
         specifier: ^1.0.8
         version: 1.0.8(typescript@5.8.3)(zod@4.0.0-beta.20250415T232143)
+      bignumber.js:
+        specifier: ^9.3.0
+        version: 9.3.0
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
@@ -743,6 +789,11 @@ packages:
 
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
+
+  '@graphql-typed-document-node/core@3.2.0':
+    resolution: {integrity: sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==}
+    peerDependencies:
+      graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -1844,6 +1895,9 @@ packages:
   '@types/jsonwebtoken@9.0.9':
     resolution: {integrity: sha512-uoe+GxEuHbvy12OUQct2X9JenKM3qAscquYymuQN4fMWG9DBQtykrQEFcAbVACF7qaLw9BePSodUL0kquqBJpQ==}
 
+  '@types/luxon@3.6.2':
+    resolution: {integrity: sha512-R/BdP7OxEMc44l2Ex5lSXHoIXTB2JLNa3y2QISIbr58U/YcsffyQrYW//hZSdrfxrjRZj3GcUoxMPGdO8gSYuw==}
+
   '@types/mime@3.0.4':
     resolution: {integrity: sha512-iJt33IQnVRkqeqC7PzBHPTC6fDlRNRW8vjrgqtScAhrmMwe8c4Eo7+fUGTa+XdWrpEgpyKWMYmi2dIwMAYRzPw==}
 
@@ -2531,6 +2585,10 @@ packages:
     resolution: {integrity: sha512-ROmzCKrTnOwybPcJApAA6WBWij23HVfGVNKqqrZpuyZOHqK2CwHSvpGuyt/UNNvaIjEd8X5IFGp4Mh+Ie1IHJQ==}
     engines: {node: '>=0.8'}
     hasBin: true
+
+  cron@4.3.0:
+    resolution: {integrity: sha512-ciiYNLfSlF9MrDqnbMdRWFiA6oizSF7kA1osPP9lRzNu0Uu+AWog1UKy7SkckiDY2irrNjeO6qLyKnXC8oxmrw==}
+    engines: {node: '>=18.x'}
 
   cross-fetch@3.2.0:
     resolution: {integrity: sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==}
@@ -3243,6 +3301,15 @@ packages:
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
 
+  graphql-request@7.1.2:
+    resolution: {integrity: sha512-+XE3iuC55C2di5ZUrB4pjgwe+nIQBuXVIK9J98wrVwojzDW3GMdSBZfxUk8l4j9TieIpjpggclxhNEU9ebGF8w==}
+    peerDependencies:
+      graphql: 14 - 16
+
+  graphql@16.11.0:
+    resolution: {integrity: sha512-mS1lbMsxgQj6hge1XZ6p7GPhbrtFwUFYi3wRzXAC/FmYnyXMTvvI3td3rjmQ2u8ewXueaSvRPWaEcgVVOT9Jnw==}
+    engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
+
   h3@1.15.1:
     resolution: {integrity: sha512-+ORaOBttdUm1E2Uu/obAyCguiI7MbBvsLTndc3gyK3zU+SYLoZXlyCP9Xgy0gikkGufFLTZXCXD6+4BsufnmHA==}
 
@@ -3691,6 +3758,10 @@ packages:
     resolution: {integrity: sha512-HGGkdlPWQ0vTF8jJ5TdIqhQXZi6uh3LnNgfZ8MHiuxFfX3RZeA79r2MW2tHAZKlAVfoNE8esm3p+O6VkIvpj6w==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  luxon@3.6.1:
+    resolution: {integrity: sha512-tJLxrKJhO2ukZ5z0gyjY1zPh3Rh88Ej9P7jNrZiHMUXHae1yvI2imgOZtL1TO8TW6biMMKfTtAOoEJANgtWBMQ==}
+    engines: {node: '>=12'}
 
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
@@ -4911,14 +4982,6 @@ packages:
       typescript:
         optional: true
 
-  viem@2.28.0:
-    resolution: {integrity: sha512-Z4W5O1pe+6pirYTFm451FcZmfGAUxUWt2L/eWC+YfTF28j/8rd7q6MBAi05lMN4KhLJjhN0s5YGIPB+kf1L20g==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
   viem@2.28.1:
     resolution: {integrity: sha512-7eqGfxAPlMW9u9aE3SMEFPzNYqqU7uFLKUQyd/GwccyW4OAdq7VqJkPIpdULUePN9m3XmfBunA9mswYFp9sUuQ==}
     peerDependencies:
@@ -5469,6 +5532,10 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
+  '@graphql-typed-document-node/core@3.2.0(graphql@16.11.0)':
+    dependencies:
+      graphql: 16.11.0
+
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.6':
@@ -5857,7 +5924,7 @@ snapshots:
     dependencies:
       '@openapitools/openapi-generator-cli': 2.19.0(encoding@0.1.13)(file-type@20.4.1)
       semver: 7.7.1
-      viem: 2.28.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@4.0.0-beta.20250415T232143)
+      viem: 2.28.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@4.0.0-beta.20250415T232143)
     transitivePeerDependencies:
       - '@nestjs/microservices'
       - '@nestjs/platform-express'
@@ -6820,6 +6887,8 @@ snapshots:
     dependencies:
       '@types/ms': 2.1.0
       '@types/node': 22.14.1
+
+  '@types/luxon@3.6.2': {}
 
   '@types/mime@3.0.4': {}
 
@@ -8087,6 +8156,11 @@ snapshots:
 
   crc-32@1.2.2: {}
 
+  cron@4.3.0:
+    dependencies:
+      '@types/luxon': 3.6.2
+      luxon: 3.6.1
+
   cross-fetch@3.2.0(encoding@0.1.13):
     dependencies:
       node-fetch: 2.7.0(encoding@0.1.13)
@@ -8939,6 +9013,13 @@ snapshots:
 
   graphemer@1.4.0: {}
 
+  graphql-request@7.1.2(graphql@16.11.0):
+    dependencies:
+      '@graphql-typed-document-node/core': 3.2.0(graphql@16.11.0)
+      graphql: 16.11.0
+
+  graphql@16.11.0: {}
+
   h3@1.15.1:
     dependencies:
       cookie-es: 1.2.2
@@ -9410,6 +9491,8 @@ snapshots:
   lucide-react@0.503.0(react@19.1.0):
     dependencies:
       react: 19.1.0
+
+  luxon@3.6.1: {}
 
   magic-string@0.30.17:
     dependencies:
@@ -10701,23 +10784,6 @@ snapshots:
     dependencies:
       '@noble/curves': 1.8.1
       '@noble/hashes': 1.7.1
-      '@scure/bip32': 1.6.2
-      '@scure/bip39': 1.5.4
-      abitype: 1.0.8(typescript@5.8.3)(zod@4.0.0-beta.20250415T232143)
-      isows: 1.0.6(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      ox: 0.6.9(typescript@5.8.3)(zod@4.0.0-beta.20250415T232143)
-      ws: 8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-    optionalDependencies:
-      typescript: 5.8.3
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-      - zod
-
-  viem@2.28.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@4.0.0-beta.20250415T232143):
-    dependencies:
-      '@noble/curves': 1.8.2
-      '@noble/hashes': 1.7.2
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
       abitype: 1.0.8(typescript@5.8.3)(zod@4.0.0-beta.20250415T232143)

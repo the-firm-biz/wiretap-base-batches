@@ -1,0 +1,1 @@
+ALTER TABLE "tokens" ADD COLUMN "ath_price_usd" numeric(100, 20);
