@@ -35,6 +35,10 @@ export async function handleEOAMsgSender(
       tokenName: result.token.name,
       tokenSymbol: result.token.symbol,
       deployerContractAddress: result.deployerContract.address,
+      latencyMs: tokenCreatedData.block.timestamp
+        ? result.token.createdAt.getTime() -
+          tokenCreatedData.block.timestamp?.getTime()
+        : undefined,
       source: 'handle-eoa-msg-sender'
     });
     return;
@@ -56,6 +60,10 @@ export async function handleEOAMsgSender(
     tokenSymbol: result.token.symbol,
     deployerContractAddress: result.deployerContract.address,
     neynarUser,
+    latencyMs: tokenCreatedData.block.timestamp
+      ? result.token.createdAt.getTime() -
+        tokenCreatedData.block.timestamp?.getTime()
+      : undefined,
     source: 'handle-eoa-msg-sender'
   });
 }

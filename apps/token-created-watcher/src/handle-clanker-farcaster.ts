@@ -51,13 +51,19 @@ export async function handleClankerFarcaster(
   const neynarUser =
     userResponse && userResponse.length > 0 ? userResponse[0] : undefined;
 
+  let latencyMs: number | undefined = undefined;
   if (castAndConversations && isValidCast) {
-    await handleTokenWithFarcasterUser(tokenCreatedData, {
+    const result = await handleTokenWithFarcasterUser(tokenCreatedData, {
       fid: clankerFarcasterArgs.fid,
       username: castAndConversations.author.username,
       address: castAndConversations.author.verified_addresses
         .eth_addresses[0] as Address // todo: process entire array of addresses
     });
+
+    latencyMs = tokenCreatedData.block.timestamp
+      ? result.token.createdAt.getTime() -
+        tokenCreatedData.block.timestamp?.getTime()
+      : undefined;
   }
 
   sendSlackMessage({
@@ -67,6 +73,7 @@ export async function handleClankerFarcaster(
     tokenSymbol: tokenCreatedData.symbol,
     deployerContractAddress: tokenCreatedData.deployerContractAddress,
     neynarUser,
+    latencyMs,
     source: 'handle-clanker-farcaster',
     castValidation: {
       exists: !!castAndConversations,
