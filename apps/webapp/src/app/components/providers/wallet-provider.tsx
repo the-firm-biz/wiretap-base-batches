@@ -4,7 +4,7 @@ import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi';
 import { wagmiAdapter } from '@/app/utils/wagmi';
 import { clientEnv } from '@/clientEnv';
 import { createAppKit } from '@reown/appkit/react';
-import { base } from '@reown/appkit/networks';
+import { base, baseSepolia } from '@reown/appkit/networks';
 import { siweConfig } from '@/app/utils/siwe/siwe-config';
 const metadata = {
   name: 'WireTap',
@@ -16,7 +16,7 @@ const metadata = {
 createAppKit({
   adapters: [wagmiAdapter],
   projectId: clientEnv.NEXT_PUBLIC_REOWN_PROJECT_ID,
-  networks: [base],
+  networks: [base, baseSepolia],
   defaultNetwork: base,
   metadata: metadata,
   features: {

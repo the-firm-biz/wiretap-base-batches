@@ -6,7 +6,6 @@ import { VerifySiweMessageJwtPayload } from '@/app/utils/siwe/types';
 import { serverEnv } from '@/serverEnv';
 import { publicProcedure } from '../trpc';
 import { SIWE_VALIDITY_MS } from '@/app/utils/siwe/constants';
-import { base } from 'viem/chains';
 
 /** Returns validated, SIWE compliant, signed JWT to be stored locally */
 export const verifySiweMessage = publicProcedure
@@ -31,12 +30,12 @@ export const verifySiweMessage = publicProcedure
         });
       }
 
-      const { address, expirationTime } = new SiweMessage(message);
+      const { address, expirationTime, chainId } = new SiweMessage(message);
       const siweJwtPayload: VerifySiweMessageJwtPayload = {
         message,
         address,
         signature,
-        chainId: base.id
+        chainId
       };
 
       console.log('expirationTime', expirationTime);
