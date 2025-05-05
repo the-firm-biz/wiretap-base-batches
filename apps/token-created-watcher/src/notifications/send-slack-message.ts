@@ -203,10 +203,14 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
   }
 
   if (latencyMs) {
-    const indicatorColor =
-      latencyMs <= 500 ? 'green' : latencyMs <= 1000 ? 'orange' : 'red';
+    const indicatorEmoji =
+      latencyMs <= 500
+        ? 'large_green_circle'
+        : latencyMs <= 1000
+          ? 'large_orange_circle'
+          : 'red_circle';
     fullMessage.push(
-      `:large_${indicatorColor}_circle: Latency from block to db was ${latencyMs}`
+      `:${indicatorEmoji}: Latency from block to db was ${latencyMs}`
     );
   }
 

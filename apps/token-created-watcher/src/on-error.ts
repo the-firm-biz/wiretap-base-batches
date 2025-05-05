@@ -1,3 +1,5 @@
+import { sendSlackSystemMessage } from './notifications/send-slack-system-message.js';
+
 interface OnErrorParams {
   error: Error;
   startWatcher: () => void;
@@ -17,6 +19,12 @@ export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
       `onError:: Attempting to reconnect... (Attempt ${retryCount}/${MAX_RETRIES})`
     );
 
+    sendSlackSystemMessage({
+      type: 'reconnectAttempt',
+      currentAttempt: retryCount,
+      maxAttempts: MAX_RETRIES
+    });
+
     // Clean up existing watcher
     if (unwatch) unwatch();
 
@@ -28,6 +36,12 @@ export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
     console.error(
       'onError:: Max retry attempts reached. Manual intervention required.'
     );
+
+    sendSlackSystemMessage({
+      type: 'reconnectMaxAttempts',
+      maxAttempts: MAX_RETRIES
+    });
+
     if (unwatch) unwatch();
     console.log('onError:: Shutting down event watcher...');
     process.exit(0);

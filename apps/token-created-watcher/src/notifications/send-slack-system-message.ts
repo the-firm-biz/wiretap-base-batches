@@ -10,21 +10,44 @@ type SlackShutdownMessage = {
   signal: string;
 };
 
+type SlackReconnectRetryMessage = {
+  type: 'reconnectAttempt';
+  currentAttempt: number;
+  maxAttempts: number;
+};
+
+type SlackReconnectMaxAttemptsMessage = {
+  type: 'reconnectMaxAttempts';
+  maxAttempts: number;
+};
+
 const messageStartEmoji = {
   startup: ':rocket:',
-  shutdown: ':octagonal_sign:'
+  shutdown: ':octagonal_sign:',
+  reconnectAttempt: ':broken_heart:',
+  reconnectMaxAttempts: ':skull:'
 };
 
 const divider = '='.repeat(56);
 
 const getMessageText = (
-  systemMessage: SlackStartupMessage | SlackShutdownMessage
+  systemMessage:
+    | SlackStartupMessage
+    | SlackShutdownMessage
+    | SlackReconnectRetryMessage
+    | SlackReconnectMaxAttemptsMessage
 ): string => {
   if (systemMessage.type === 'startup') {
     return 'TokenCreatedWatcher has been started';
   }
   if (systemMessage.type === 'shutdown') {
     return `TokenCreatedWatcher has been terminated (signal = ${systemMessage.signal})`;
+  }
+  if (systemMessage.type === 'reconnectAttempt') {
+    return `TokenCreatedWatcher is attempting to reconnect (attempt ${systemMessage.currentAttempt} of ${systemMessage.maxAttempts})`;
+  }
+  if (systemMessage.type === 'reconnectMaxAttempts') {
+    return `TokenCreatedWatcher has reached the maximum number of reconnect attempts (${systemMessage.maxAttempts}). Shutdown initiated. Manual intervention required.`;
   }
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const _assureAllCasesAreHandled: never = systemMessage;
@@ -33,7 +56,11 @@ const getMessageText = (
 
 /** Send a slack alert about system status (e.g. startup, shutdown) */
 export const sendSlackSystemMessage = async (
-  systemMessage: SlackStartupMessage | SlackShutdownMessage
+  systemMessage:
+    | SlackStartupMessage
+    | SlackShutdownMessage
+    | SlackReconnectRetryMessage
+    | SlackReconnectMaxAttemptsMessage
 ): Promise<void> => {
   const flyAppName = process.env.FLY_APP_NAME;
   if (!flyAppName) {
