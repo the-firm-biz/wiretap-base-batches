@@ -68,8 +68,6 @@ export async function handleClankerFarcaster(
         : undefined;
   }
 
-  // TODO: add neynarUser to castValidation log
-
   sendSlackMessage({
     tokenAddress: tokenCreatedData.tokenAddress,
     transactionHash: tokenCreatedData.transactionHash,
@@ -80,8 +78,9 @@ export async function handleClankerFarcaster(
     latencyMs,
     source: 'handle-clanker-farcaster',
     castValidation: {
-      exists: !!castAndConversations,
-      isValid: isValidCast
+      castExists: !!castAndConversations,
+      castIsValid: isValidCast,
+      neynarUserExists: !!neynarUser
     }
   });
 }

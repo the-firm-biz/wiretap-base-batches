@@ -15,8 +15,9 @@ type SlackMessageDetails = {
   neynarUser?: NeynarUser;
   source: string;
   castValidation?: {
-    exists: boolean;
-    isValid: boolean;
+    castExists: boolean;
+    castIsValid: boolean;
+    neynarUserExists: boolean;
   };
   latencyMs?: number;
 };
@@ -188,15 +189,24 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
 
   if (castValidation) {
     switch (true) {
-      case castValidation.exists && castValidation.isValid:
+      case castValidation.castExists &&
+        castValidation.castIsValid &&
+        castValidation.neynarUserExists:
         fullMessage.push('Cast validation: all good :white_check_mark:');
         break;
-      case castValidation.exists && !castValidation.isValid:
+      case castValidation.castExists && !castValidation.castIsValid:
         fullMessage.push(
           'Cast validation: cast found but validation failed :large_red_square:'
         );
         break;
-      case !castValidation.exists:
+      case castValidation.castExists &&
+        castValidation.castIsValid &&
+        !castValidation.neynarUserExists:
+        fullMessage.push(
+          'Cast validation: cast found and is valid, but Neynar user is not found :large_red_square:'
+        );
+        break;
+      case !castValidation.castExists:
       default:
         fullMessage.push('Cast validation: no cast found :large_red_square:');
     }
