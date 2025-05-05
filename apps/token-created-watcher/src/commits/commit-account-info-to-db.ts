@@ -20,7 +20,7 @@ import { isAddressEqual } from '@wiretap/utils/shared';
 const getListOfWallets = (
   tokenCreatorAddress: Address,
   neynarUser?: NeynarUser
-) => {
+): Address[] => {
   const allWallets = [tokenCreatorAddress];
 
   if (!neynarUser) {
@@ -29,14 +29,14 @@ const getListOfWallets = (
 
   const neynarEthWallets = neynarUser.verified_addresses.eth_addresses;
   return neynarEthWallets.reduce((acc, cur) => {
-    if (!acc.some((w) => w.toLowerCase() === cur.toLowerCase())) {
+    if (!acc.some((w) => isAddressEqual(w, cur))) {
       acc.push(cur as Address);
     }
     return acc;
   }, allWallets);
 };
 
-const getXAccountsFromNeynarUser = (neynarUser?: NeynarUser) => {
+const getXAccountsFromNeynarUser = (neynarUser?: NeynarUser): string[] => {
   if (!neynarUser) {
     return [];
   }
