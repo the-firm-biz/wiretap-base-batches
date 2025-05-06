@@ -14,11 +14,23 @@ export default function Home() {
       )}
     >
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <p className={textStyles['title1']}>WireTap</p>
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-ppMondwest)]">
+        <h1 className={textStyles['title1']}>WireTap</h1>
+        <p className={textStyles['compact']}>
+          Compact Compact Compact Compact Compact{' '}
+        </p>
+        <p className={textStyles['label']}>
+          Label Label Label Label Label Label Label Label Label Label Label
+        </p>
+        <h3 className={textStyles['title3']}>Title3</h3>
+        <ol className={cn(textStyles['body'], 'list-inside list-decimal')}>
           <li className="mb-2 tracking-[-.01em]">
             Get started by editing{' '}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
+            <code
+              className={cn(
+                textStyles['code-02'],
+                'bg-[url(/patterns/selection-pattern-light.png)] dark:bg-[url(/patterns/selection-pattern-dark.png)] bg-repeat px-1 py-0.5 [image-rendering:pixelated]'
+              )}
+            >
               src/app/(home)/page.tsx
             </code>
             .

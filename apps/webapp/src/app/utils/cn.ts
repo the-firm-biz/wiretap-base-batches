@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function withTextStyle(
+export function cnWithTextStyle(
   style: keyof typeof textStyles,
   ...inputs: ClassValue[]
 ) {
