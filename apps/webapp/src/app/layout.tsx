@@ -7,6 +7,7 @@ import { Header } from '@/app/components/ui/header';
 import './styles/globals.css';
 import { departureMono, ppMondwest, loRes12 } from './styles/font-family';
 import { headers } from 'next/headers';
+import { ThemeProvider } from '@/app/components/providers/theme-provider';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),
@@ -24,16 +25,18 @@ export default async function RootLayout({
   const cookies = headersObj.get('cookie');
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${ppMondwest.variable} ${loRes12.variable} ${departureMono.variable} antialiased`}
       >
-        <Providers cookies={cookies}>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-1">{children}</main>
-          </div>
-        </Providers>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <Providers cookies={cookies}>
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="flex-1">{children}</main>
+            </div>
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );
