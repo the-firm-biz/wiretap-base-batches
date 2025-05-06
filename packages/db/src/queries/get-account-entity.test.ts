@@ -81,6 +81,7 @@ describe('getAccountEntity', () => {
       deploymentTransactionHash: '0x4444444444444444444444444444444444444444',
       deploymentContractId: contract!.id,
       accountEntityId: testAccountEntity!.id,
+      score: null,
       block: block!.number
     };
     await db.insert(tokens).values(newToken);

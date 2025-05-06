@@ -4,7 +4,8 @@ import { accountEntities } from '../schema/accounts/index.js';
 import { contracts } from '../schema/contracts.js';
 import { env } from '../env.js';
 import { countTokensByCreator } from './count-tokens-by-creator.js';
-import { clearDbTables } from '../utils/testUtils.js';
+import { unsafe__clearDbTables } from '../utils/testUtils.js';
+import { blocks } from '../schema/blocks.js';
 
 describe('countTokensByCreator', () => {
   const db = singletonDb({
@@ -12,7 +13,6 @@ describe('countTokensByCreator', () => {
   });
 
   const baseToken = {
-    block: 0,
     address: '0x60C2c576310892d741ac6faFB74D82D3dd49F4B6',
     deploymentTransactionHash:
       '0xc523028627ebdc8de1a37107ebafb45694f397929c978939f0d64c35b922a3b0',
@@ -23,12 +23,13 @@ describe('countTokensByCreator', () => {
     accountEntityId: 1
   };
 
+  let blockNumber: number;
   let contractId: number;
   let accountEntityId1: number;
   let accountEntityId2: number;
 
   beforeEach(async () => {
-    await clearDbTables(db);
+    await unsafe__clearDbTables(db);
 
     // Create a test contract
     const [contract] = await db
@@ -55,6 +56,15 @@ describe('countTokensByCreator', () => {
       })
       .returning();
     accountEntityId2 = tokenCreatorEntity2!.id;
+
+    // Create a test block
+    const [testBlock] = await db
+      .insert(blocks)
+      .values({
+        number: 1
+      })
+      .returning();
+    blockNumber = testBlock!.number;
   });
 
   it('returns 0 when creator has no tokens', async () => {
@@ -69,19 +79,22 @@ describe('countTokensByCreator', () => {
         ...baseToken,
         address: '0x60C2c576310892d741ac6faFB74D82D3dd49F4B6',
         accountEntityId: accountEntityId1,
-        deploymentContractId: contractId
+        deploymentContractId: contractId,
+        block: blockNumber
       },
       {
         ...baseToken,
         address: '0x70C2c576310892d741ac6faFB74D82D3dd49F4B7',
         accountEntityId: accountEntityId1,
-        deploymentContractId: contractId
+        deploymentContractId: contractId,
+        block: blockNumber
       },
       {
         ...baseToken,
         address: '0x80C2c576310892d741ac6faFB74D82D3dd49F4B8',
         accountEntityId: accountEntityId1,
-        deploymentContractId: contractId
+        deploymentContractId: contractId,
+        block: blockNumber
       }
     ]);
 
@@ -90,7 +103,8 @@ describe('countTokensByCreator', () => {
       ...baseToken,
       address: '0x90C2c576310892d741ac6faFB74D82D3dd49F4B9',
       accountEntityId: accountEntityId2,
-      deploymentContractId: contractId
+      deploymentContractId: contractId,
+      block: blockNumber
     });
 
     const count1 = await countTokensByCreator(db, accountEntityId1);

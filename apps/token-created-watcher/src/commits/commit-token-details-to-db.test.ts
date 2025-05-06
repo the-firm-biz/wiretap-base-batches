@@ -134,7 +134,8 @@ describe('commitTokenDetailsToDb', () => {
       await expect(
         commitTokenDetailsToDb({
           tokenCreatedData: testTokenCreatedData,
-          tokenCreatorAddress: testTokenCreatedData.msgSender
+          tokenCreatorAddress: testTokenCreatedData.msgSender,
+          tokenScore: null
         })
       ).resolves.not.toThrow();
       expect(spyEndPoolConnection).toHaveBeenCalledTimes(1);
@@ -147,7 +148,8 @@ describe('commitTokenDetailsToDb', () => {
             ...testTokenCreatedData,
             deployerContractAddress: null as unknown as Address // trigger random error
           },
-          tokenCreatorAddress: testTokenCreatedData.msgSender
+          tokenCreatorAddress: testTokenCreatedData.msgSender,
+          tokenScore: null
         })
       ).rejects.toThrowError('Cannot read properties of null');
       expect(spyEndPoolConnection).toHaveBeenCalledTimes(1);
@@ -162,7 +164,8 @@ describe('commitTokenDetailsToDb', () => {
       await dbModule.unsafe__clearDbTables(db);
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
-        tokenCreatorAddress: testTokenCreatedData.msgSender
+        tokenCreatorAddress: testTokenCreatedData.msgSender,
+        tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
         db,
@@ -187,7 +190,8 @@ describe('commitTokenDetailsToDb', () => {
           deploymentTransactionHash: testTokenCreatedData.transactionHash,
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId
+          accountEntityId: result.accountEntityId,
+          score: null
         },
         deployerContract: {
           id: expect.any(Number),
@@ -247,7 +251,8 @@ describe('commitTokenDetailsToDb', () => {
         deploymentTransactionHash: testTokenCreatedData.transactionHash,
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
-        accountEntityId: result.accountEntityId
+        accountEntityId: result.accountEntityId,
+        score: null
       });
     });
   });
@@ -261,7 +266,8 @@ describe('commitTokenDetailsToDb', () => {
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
         tokenCreatorAddress: testTokenCreatedData.msgSender,
-        neynarUser: testNeynarUser
+        neynarUser: testNeynarUser,
+        tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
         db,
@@ -286,7 +292,8 @@ describe('commitTokenDetailsToDb', () => {
           deploymentTransactionHash: testTokenCreatedData.transactionHash,
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId
+          accountEntityId: result.accountEntityId,
+          score: null
         },
         deployerContract: {
           id: expect.any(Number),
@@ -412,7 +419,8 @@ describe('commitTokenDetailsToDb', () => {
         deploymentTransactionHash: testTokenCreatedData.transactionHash,
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
-        accountEntityId: result.accountEntityId
+        accountEntityId: result.accountEntityId,
+        score: null
       });
     });
   });
@@ -443,7 +451,8 @@ describe('commitTokenDetailsToDb', () => {
       await dbPool.endPoolConnection();
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
-        tokenCreatorAddress: testTokenCreatedData.msgSender
+        tokenCreatorAddress: testTokenCreatedData.msgSender,
+        tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
         db,
@@ -468,7 +477,8 @@ describe('commitTokenDetailsToDb', () => {
           deploymentTransactionHash: testTokenCreatedData.transactionHash,
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId
+          accountEntityId: result.accountEntityId,
+          score: null
         },
         deployerContract: {
           id: expect.any(Number),
@@ -511,7 +521,8 @@ describe('commitTokenDetailsToDb', () => {
         deploymentTransactionHash: testTokenCreatedData.transactionHash,
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
-        accountEntityId: existingAccountEntityId
+        accountEntityId: existingAccountEntityId,
+        score: null
       });
     });
   });
@@ -543,7 +554,8 @@ describe('commitTokenDetailsToDb', () => {
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
         tokenCreatorAddress: testTokenCreatedData.msgSender,
-        neynarUser: testNeynarUser
+        neynarUser: testNeynarUser,
+        tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
         db,
@@ -568,7 +580,8 @@ describe('commitTokenDetailsToDb', () => {
           deploymentTransactionHash: testTokenCreatedData.transactionHash,
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId
+          accountEntityId: result.accountEntityId,
+          score: null
         },
         deployerContract: {
           id: expect.any(Number),
@@ -693,7 +706,8 @@ describe('commitTokenDetailsToDb', () => {
         deploymentTransactionHash: testTokenCreatedData.transactionHash,
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
-        accountEntityId: existingAccountEntityId
+        accountEntityId: existingAccountEntityId,
+        score: null
       });
     });
   });
@@ -728,7 +742,8 @@ describe('commitTokenDetailsToDb', () => {
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
         tokenCreatorAddress: testTokenCreatedData.msgSender,
-        neynarUser: testNeynarUser
+        neynarUser: testNeynarUser,
+        tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
         db,
@@ -753,7 +768,8 @@ describe('commitTokenDetailsToDb', () => {
           deploymentTransactionHash: testTokenCreatedData.transactionHash,
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId
+          accountEntityId: result.accountEntityId,
+          score: null
         },
         deployerContract: {
           id: expect.any(Number),
@@ -878,7 +894,8 @@ describe('commitTokenDetailsToDb', () => {
         deploymentTransactionHash: testTokenCreatedData.transactionHash,
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
-        accountEntityId: existingAccountEntityId
+        accountEntityId: existingAccountEntityId,
+        score: null
       });
     });
   });
@@ -920,7 +937,8 @@ describe('commitTokenDetailsToDb', () => {
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
         tokenCreatorAddress: testTokenCreatedData.msgSender,
-        neynarUser: testNeynarUser
+        neynarUser: testNeynarUser,
+        tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
         db,
@@ -945,7 +963,8 @@ describe('commitTokenDetailsToDb', () => {
           deploymentTransactionHash: testTokenCreatedData.transactionHash,
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId
+          accountEntityId: result.accountEntityId,
+          score: null
         },
         deployerContract: {
           id: expect.any(Number),
@@ -1058,7 +1077,8 @@ describe('commitTokenDetailsToDb', () => {
         deploymentTransactionHash: testTokenCreatedData.transactionHash,
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
-        accountEntityId: existingAccountEntityId
+        accountEntityId: existingAccountEntityId,
+        score: null
       });
     });
   });
@@ -1117,7 +1137,8 @@ describe('commitTokenDetailsToDb', () => {
           msgSender: JOHNY_SECRET_ETH_WALLET
         },
         tokenCreatorAddress: JOHNY_SECRET_ETH_WALLET,
-        neynarUser: anotherNeynarUser
+        neynarUser: anotherNeynarUser,
+        tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
         db,
@@ -1201,7 +1222,8 @@ describe('commitTokenDetailsToDb', () => {
         await commitTokenDetailsToDb({
           tokenCreatedData: testTokenCreatedData,
           tokenCreatorAddress: testTokenCreatedData.msgSender,
-          neynarUser: testNeynarUser
+          neynarUser: testNeynarUser,
+          tokenScore: null
         });
         throw new Error('expected to throw but did not');
       } catch (error) {
@@ -1241,7 +1263,8 @@ describe('commitTokenDetailsToDb', () => {
         commitTokenDetailsToDb({
           tokenCreatedData: testTokenCreatedData,
           tokenCreatorAddress: testTokenCreatedData.msgSender,
-          neynarUser: testNeynarUser
+          neynarUser: testNeynarUser,
+          tokenScore: null
         })
       ).rejects.toThrow(TokenIndexerError);
 
