@@ -72,23 +72,20 @@ export function getDb(opts: DbClientOptions) {
 
 /**
  * Required whenever using transactions
- *
- * Returns a pooled db connection and a cleanup function to end the connection
  */
-export function getPoolDb(opts: DbClientOptions): {
-  poolDb: ServerlessDb;
-  endPoolConnection: () => Promise<void>;
-} {
-  if (isLocalDatabase(opts.databaseUrl)) {
-    initLocalNeonProxy(opts.databaseUrl);
-  }
-  const pool = new Pool({ connectionString: opts.databaseUrl });
-  pool.on('error', (err: Error) => console.error(err));
+export class PooledDbConnection {
+  private readonly pool: Pool;
+  public db: ServerlessDb;
 
-  return {
-    poolDb: drizzleNeonServerless(pool),
-    endPoolConnection: async () => {
-      await pool.end();
+  constructor(opts: DbClientOptions) {
+    if (isLocalDatabase(opts.databaseUrl)) {
+      initLocalNeonProxy(opts.databaseUrl);
     }
-  };
+    this.pool = new Pool({ connectionString: opts.databaseUrl });
+    this.db = drizzleNeonServerless(this.pool);
+  }
+
+  public async endPoolConnection() {
+    await this.pool.end();
+  }
 }

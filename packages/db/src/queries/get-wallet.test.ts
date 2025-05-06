@@ -5,8 +5,8 @@ import {
   wallets,
   type NewWallet
 } from '../schema/accounts/index.js';
-import { clearDbTables } from '../utils/testUtils.js';
-import { getWallet } from './get-wallet-address.js';
+import { unsafe__clearDbTables } from '../utils/testUtils.js';
+import { getWallet } from './get-wallet.js';
 
 describe('getWallet', () => {
   const db = singletonDb({
@@ -16,7 +16,7 @@ describe('getWallet', () => {
   let newWallet: NewWallet;
 
   beforeEach(async () => {
-    await clearDbTables(db);
+    await unsafe__clearDbTables(db);
     const [testAccountEntity] = await db
       .insert(accountEntities)
       .values({
@@ -30,7 +30,7 @@ describe('getWallet', () => {
     await db.insert(wallets).values(newWallet);
   });
 
-  it('returns Wallet Address if exists', async () => {
+  it('returns Wallet if exists', async () => {
     const response = await getWallet(db, newWallet.address as `0x${string}`);
     expect(response).toStrictEqual({
       id: expect.any(Number),
@@ -40,7 +40,7 @@ describe('getWallet', () => {
     });
   });
 
-  it('returns undefined if Wallet Address does not exist', async () => {
+  it('returns undefined if Wallet does not exist', async () => {
     const response = await getWallet(db, '0x1234567');
     expect(response).toBeUndefined();
   });

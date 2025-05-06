@@ -8,24 +8,24 @@ import {
   type Wallet,
   type XAccount
 } from '../schema/accounts/index.js';
-import { createWallet } from './create-wallet.js';
+import { createWallets } from './create-wallets.js';
 import { createFarcasterAccount } from './create-farcaster-account.js';
-import { createXAccount } from './create-x-account.js';
 import type { ServerlessDb } from '../client.js';
+import { createXAccounts } from './create-x-accounts.js';
 
 type createAccountEntityInput = {
-  newWallet?: Omit<NewWallet, 'accountEntityId'>;
+  newWallets?: Omit<NewWallet, 'accountEntityId'>[];
   newFarcasterAccount?: Omit<NewFarcasterAccount, 'accountEntityId'>;
-  newXAccount?: Omit<NewXAccount, 'accountEntityId'>;
+  newXAccounts?: Omit<NewXAccount, 'accountEntityId'>[];
   /** A name to give to the account entity (when creating new one) */
   label?: string;
 };
 
 export type createAccountEntityResponse = {
   accountEntity: AccountEntity;
-  wallet?: Wallet;
+  wallets: Wallet[];
   farcasterAccount?: FarcasterAccount;
-  xAccount?: XAccount;
+  xAccounts: XAccount[];
 };
 
 /**
@@ -35,9 +35,9 @@ export type createAccountEntityResponse = {
 export async function createAccountEntity(
   db: ServerlessDb,
   {
-    newWallet,
+    newWallets,
     newFarcasterAccount,
-    newXAccount,
+    newXAccounts,
     label
   }: createAccountEntityInput
 ): Promise<createAccountEntityResponse> {
@@ -54,16 +54,19 @@ export async function createAccountEntity(
     }
 
     const response: createAccountEntityResponse = {
-      accountEntity: createdAccountEntity
+      accountEntity: createdAccountEntity,
+      wallets: [],
+      xAccounts: []
     };
 
     // Create associated rows in other tables
 
-    if (newWallet) {
-      response.wallet = await createWallet(tx, {
-        ...newWallet,
+    if (newWallets && newWallets.length > 0) {
+      const walletsWithAccountEntityId = newWallets.map((wallet) => ({
+        ...wallet,
         accountEntityId: createdAccountEntity.id
-      });
+      }));
+      response.wallets = await createWallets(tx, walletsWithAccountEntityId);
     }
 
     if (newFarcasterAccount) {
@@ -73,11 +76,15 @@ export async function createAccountEntity(
       });
     }
 
-    if (newXAccount) {
-      response.xAccount = await createXAccount(tx, {
-        ...newXAccount,
+    if (newXAccounts && newXAccounts.length > 0) {
+      const xAccountsWithAccountEntityId = newXAccounts.map((xAccount) => ({
+        ...xAccount,
         accountEntityId: createdAccountEntity.id
-      });
+      }));
+      response.xAccounts = await createXAccounts(
+        tx,
+        xAccountsWithAccountEntityId
+      );
     }
     return response;
   });

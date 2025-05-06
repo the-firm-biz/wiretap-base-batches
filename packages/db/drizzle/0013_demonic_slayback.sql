@@ -1,0 +1,1 @@
+ALTER TABLE "farcaster_accounts" DROP CONSTRAINT "farcaster_accounts_account_entity_id_unique";

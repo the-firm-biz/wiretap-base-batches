@@ -3,6 +3,7 @@
   "include": ["src", "*.ts"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "types": ["vitest/globals"]
   }
 }

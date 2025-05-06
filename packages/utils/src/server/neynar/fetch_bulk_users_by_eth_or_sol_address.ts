@@ -1,5 +1,4 @@
-import { isApiErrorResponse } from '@neynar/nodejs-sdk';
-import { NeynarAPIClient } from '@neynar/nodejs-sdk';
+import { isApiErrorResponse, NeynarAPIClient } from '@neynar/nodejs-sdk';
 
 /**
  * https://docs.neynar.com/reference/fetch-bulk-users-by-eth-or-sol-address

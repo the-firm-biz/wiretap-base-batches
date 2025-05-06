@@ -14,7 +14,7 @@ import {
   setSiweSessionCookie
 } from './siwe-cookies';
 import { SIWE_VALIDITY_MS } from './constants';
-import { base } from 'viem/chains';
+import { base, baseSepolia } from 'viem/chains';
 
 /**
  * https://docs.reown.com/appkit/javascript/core/siwe#sign-in-with-ethereum
@@ -31,7 +31,7 @@ export const siweConfig = createSIWEConfig({
     return {
       domain: window.location.host,
       uri: window.location.origin,
-      chains: [base.id],
+      chains: [base.id, baseSepolia.id],
       statement: 'Please sign with your account',
       exp: expirationISOString
     };
