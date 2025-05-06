@@ -1,16 +1,12 @@
-import { commitTokenDetailsToDb } from './commit-token-details-to-db.js';
+import type { NeynarUser } from '@wiretap/utils/server';
+import { commitTokenDetailsToDb } from './commits/commit-token-details-to-db.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import type { Address } from 'viem';
 
-export type FarcasterUserParams = {
-  fid: number;
-  username: string;
-  address: Address;
-};
-
 export async function handleTokenWithFarcasterUser(
   tokenCreatedData: TokenCreatedOnChainParams,
-  params: FarcasterUserParams
+  tokenCreatorAddress: Address,
+  neynarUser: NeynarUser
 ) {
   // [3 concurrent]
   // TODO: find users monitoring accountEntities connected to response's farcasterAccounts, wallets or xAccounts
@@ -18,10 +14,7 @@ export async function handleTokenWithFarcasterUser(
   // [4 concurrent]
   return await commitTokenDetailsToDb({
     tokenCreatedData,
-    tokenCreatorAddress: params.address,
-    farcasterAccount: {
-      fid: params.fid,
-      username: params.username
-    }
+    tokenCreatorAddress,
+    neynarUser
   });
 }

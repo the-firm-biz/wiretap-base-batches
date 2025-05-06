@@ -1,4 +1,4 @@
-import { getPoolDb, singletonDb } from '../client.js';
+import { PooledDbConnection, singletonDb } from '../client.js';
 import { env } from '../env.js';
 import {
   farcasterAccounts,
@@ -9,7 +9,7 @@ import {
   type NewWallet,
   type NewXAccount
 } from '../schema/accounts/index.js';
-import { clearDbTables } from '../utils/testUtils.js';
+import { unsafe__clearDbTables } from '../utils/testUtils.js';
 import { createAccountEntity } from './create-account-entity.js';
 
 const newWallet: Omit<NewWallet, 'accountEntityId'> = {
@@ -31,16 +31,14 @@ describe('createAccountEntity', () => {
     databaseUrl: env.DATABASE_URL
   });
 
-  const { poolDb, endPoolConnection } = getPoolDb({
-    databaseUrl: env.DATABASE_URL
-  });
+  const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
 
   beforeEach(async () => {
-    await clearDbTables(db);
+    await unsafe__clearDbTables(db);
   });
 
   afterAll(async () => {
-    await endPoolConnection();
+    await dbPool.endPoolConnection();
   });
 
   it.each([
@@ -55,12 +53,12 @@ describe('createAccountEntity', () => {
   ])(
     'creates and returns account entity - %s%s%s',
     async (hasWallet, hasFarcasterAccount, hasXAccount) => {
-      const response = await createAccountEntity(poolDb, {
-        newWallet: hasWallet ? newWallet : undefined,
+      const response = await createAccountEntity(dbPool.db, {
+        newWallets: hasWallet ? [newWallet] : undefined,
         newFarcasterAccount: hasFarcasterAccount
           ? newFarcasterAccount
           : undefined,
-        newXAccount: hasXAccount ? newXAccount : undefined,
+        newXAccounts: hasXAccount ? [newXAccount] : undefined,
         label: hasWallet ? 'Test Entity' : undefined
       });
 
@@ -78,11 +76,11 @@ describe('createAccountEntity', () => {
           createdAt: expect.any(Date),
           verificationSourceId: null
         });
-        expect(response.wallet).toStrictEqual(dbWallets[0]);
+        expect(response.wallets).toStrictEqual(dbWallets);
       } else {
         const dbWallets = await db.select().from(wallets);
         expect(dbWallets.length).toBe(0);
-        expect(response.wallet).toBeUndefined();
+        expect(response.wallets).toStrictEqual([]);
       }
 
       if (hasFarcasterAccount) {
@@ -112,18 +110,18 @@ describe('createAccountEntity', () => {
           accountEntityId: dbEntities[0]!.id,
           createdAt: expect.any(Date)
         });
-        expect(response.xAccount).toStrictEqual(dbXAccounts[0]);
+        expect(response.xAccounts).toStrictEqual(dbXAccounts);
       } else {
         const dbXAccounts = await db.select().from(xAccounts);
         expect(dbXAccounts.length).toBe(0);
-        expect(response.xAccount).toBeUndefined();
+        expect(response.xAccounts).toStrictEqual([]);
       }
     }
   );
 
   it('creates and returns account entity with specified label', async () => {
     const label = 'Test Entity';
-    const response = await createAccountEntity(poolDb, {
+    const response = await createAccountEntity(dbPool.db, {
       label: label
     });
     const dbEntities = await db.select().from(accountEntities);

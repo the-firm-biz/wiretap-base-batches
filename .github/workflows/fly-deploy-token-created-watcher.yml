@@ -21,3 +21,18 @@ jobs:
       - run: flyctl deploy -a token-created-watcher-${{ github.ref_name == 'main' && 'production' || 'staging' }} --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_TOKEN_CREATED_WATCHER_API_TOKEN }}
+
+  notify-slack:
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - deploy-token-created-watcher
+    steps:
+      - uses: actions/checkout@v2
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_TITLE: Deploy ${{ github.ref_name == 'main' && 'production' || 'staging' }} token-created-watcher app ${{ needs.deploy-token-created-watcher.result }}
+          SLACK_COLOR: ${{ needs.deploy-token-created-watcher.result }}
+          MSG_MINIMAL: commit,actions url
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}

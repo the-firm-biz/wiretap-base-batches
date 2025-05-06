@@ -5,7 +5,7 @@ import {
   accountEntities,
   type NewFarcasterAccount
 } from '../schema/accounts/index.js';
-import { clearDbTables } from '../utils/testUtils.js';
+import { unsafe__clearDbTables } from '../utils/testUtils.js';
 import { getFarcasterAccount } from './get-farcaster-account.js';
 
 describe('getFarcasterAccount', () => {
@@ -16,7 +16,7 @@ describe('getFarcasterAccount', () => {
   let newFarcasterAccount: NewFarcasterAccount;
 
   beforeEach(async () => {
-    await clearDbTables(db);
+    await unsafe__clearDbTables(db);
     const [testAccountEntity] = await db
       .insert(accountEntities)
       .values({

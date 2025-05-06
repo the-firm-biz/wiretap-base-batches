@@ -5,7 +5,7 @@ import {
   wallets,
   type NewWallet
 } from '../schema/accounts/index.js';
-import { clearDbTables } from '../utils/testUtils.js';
+import { unsafe__clearDbTables } from '../utils/testUtils.js';
 import { createWallet } from './create-wallet.js';
 
 describe('createWallet', () => {
@@ -16,7 +16,7 @@ describe('createWallet', () => {
   let newWallet: NewWallet;
 
   beforeEach(async () => {
-    await clearDbTables(db);
+    await unsafe__clearDbTables(db);
     const [testAccountEntity] = await db
       .insert(accountEntities)
       .values({
@@ -29,7 +29,7 @@ describe('createWallet', () => {
     };
   });
 
-  it('creates and returns Wallet Address', async () => {
+  it('creates and returns Wallet', async () => {
     const response = await createWallet(db, newWallet);
     const dbWallets = await db.select().from(wallets);
     expect(dbWallets.length).toBe(1);

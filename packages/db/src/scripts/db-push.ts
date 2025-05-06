@@ -2,7 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { migrate } from 'drizzle-orm/neon-serverless/migrator';
 import { env } from '../env.js';
-import { getPoolDb } from '../client.js';
+import { PooledDbConnection } from '../client.js';
 
 console.log('🔄 Applying migrations to the database...');
 
@@ -11,13 +11,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Get a pooled connection for migrations
-const { poolDb, endPoolConnection } = getPoolDb({
-  databaseUrl: env.DATABASE_URL
-});
+const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
 
 try {
   // Run the migrator against the database
-  await migrate(poolDb, {
+  await migrate(dbPool.db, {
     migrationsFolder: path.resolve(__dirname, '../../drizzle')
   });
   console.log('✅ Migrations applied successfully!');
@@ -26,7 +24,7 @@ try {
   process.exit(1);
 } finally {
   // Always close the pooled connection
-  await endPoolConnection();
+  await dbPool.endPoolConnection();
   console.log('Database connection closed');
   process.exit(0);
 }

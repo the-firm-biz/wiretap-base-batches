@@ -18,6 +18,7 @@ type SlackMessageDetails = {
     exists: boolean;
     isValid: boolean;
   };
+  latencyMs?: number;
 };
 
 const divider = '='.repeat(56);
@@ -77,6 +78,7 @@ export const sendSlackMessage = async ({
   deployerContractAddress,
   neynarUser,
   source,
+  latencyMs,
   castValidation
 }: SlackMessageDetails) => {
   console.log(`${source}: ${tokenName} (${tokenSymbol})`);
@@ -104,7 +106,11 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
       tokenContextJson.messageId &&
       neynarUser?.username;
     if (canBuildWarpcastUrl) {
-      mainUrls += `${slackLink('mega', `https://warpcast.com/${neynarUser.username}/${tokenContextJson.messageId}`, 'Warpcast Cast')}`;
+      mainUrls += slackLink(
+        'mega',
+        `https://warpcast.com/${neynarUser.username}/${tokenContextJson.messageId}`,
+        'Warpcast Cast'
+      );
     }
   } catch (error) {
     const tokenContextError =
@@ -196,8 +202,16 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
     }
   }
 
+  if (latencyMs) {
+    const indicatorColor =
+      latencyMs <= 500 ? 'green' : latencyMs <= 1000 ? 'orange' : 'red';
+    fullMessage.push(
+      `:large_${indicatorColor}_circle: Latency from block to db was ${latencyMs}`
+    );
+  }
+
   await handleNotifySlack(fullMessage.join('\n'), {
-    slackToken: env.SLACK_TOKEN,
+    slackToken: env.SLACK_ESPIONAGEBOT_TOKEN,
     slackChannelId: env.WIRETAP_NOTIFICATIONS_CHANNEL_ID
   });
 };

@@ -1,6 +1,9 @@
 import { type ClankerAbi } from '@wiretap/config';
-import type { Address, Log } from 'viem';
+import { type Address, type Log } from 'viem';
 import type { ExtractAbiEvent } from 'abitype';
+import { httpPublicClient } from '../rpc-clients.js';
+import type { Block } from './block.js';
+import { callWithBackOff } from '@wiretap/utils/server';
 
 export type TokenCreatedOnChainParams = {
   transactionHash: `0x${string}`;
@@ -9,6 +12,7 @@ export type TokenCreatedOnChainParams = {
   tokenName: string;
   deployerContractAddress: Address;
   msgSender: Address;
+  block: Block;
 };
 
 export type TokenCreatedLog = Log<
@@ -19,12 +23,13 @@ export type TokenCreatedLog = Log<
   true // should be the same as last param in listener WatchContractEventOnLogsParameter
 >;
 
-export function deconstructLog(
+export async function deconstructLog(
   log: TokenCreatedLog
-): TokenCreatedOnChainParams {
+): Promise<TokenCreatedOnChainParams> {
   const {
     args: { tokenAddress, name: tokenName, symbol, msgSender },
-    address: deployerContractAddress
+    address: deployerContractAddress,
+    blockNumber
   } = log;
 
   if (!tokenAddress || !tokenName || !symbol || !msgSender) {
@@ -34,7 +39,20 @@ export function deconstructLog(
     );
   }
 
+  const block = await callWithBackOff(
+    () => httpPublicClient.getBlock({ blockNumber }),
+    'getBlock'
+  );
+
+  const timestamp = block
+    ? new Date(Number(block.timestamp) * 1000)
+    : undefined;
+
   return {
+    block: {
+      number: Number(blockNumber),
+      timestamp: timestamp
+    },
     transactionHash: log.transactionHash,
     tokenAddress,
     symbol,
