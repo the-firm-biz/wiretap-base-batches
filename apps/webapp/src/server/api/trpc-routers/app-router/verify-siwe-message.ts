@@ -80,8 +80,6 @@ export const verifySiweMessage = publicProcedure
 
       const { address, expirationTime, chainId } = new SiweMessage(message);
 
-      console.log('HERE NO PROBLEM');
-
       const wireTapAccount = await getOrCreateWireTapAccount(
         poolDb,
         address as `0x${string}`
