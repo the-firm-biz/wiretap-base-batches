@@ -27,7 +27,7 @@ export function Wallet() {
       const serializedSessionKey =
         await createSessionKeyForUserWallet(walletClient);
 
-      const result = await trpc.wireTapSession.createWireTapSession.mutate({
+      const result = await trpc.session.createWireTapSession.mutate({
         serializedSessionKey
       });
 

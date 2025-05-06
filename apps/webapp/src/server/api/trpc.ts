@@ -47,7 +47,7 @@ const isAuthed = t.middleware(async ({ ctx, next }) => {
 
   if (!success) {
     throw new TRPCError({
-      message: 'Invalid signature',
+      message: 'isAuthed middleware:: Invalid signature',
       code: 'UNAUTHORIZED'
     });
   }

@@ -6,12 +6,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createTRPCClient, httpBatchLink, loggerLink } from '@trpc/client';
 import { createTRPCQueryUtils } from '@trpc/react-query';
 import { createTRPCContext } from '@trpc/tanstack-react-query';
-import { AppRouter } from '@/server/api/app-router';
+import { TrpcRouter } from '@/server/api/trpc-routers';
 import { createQueryClient } from './create-query-client';
 import { getJwtSiweSessionCookie } from '../utils/siwe/siwe-cookies';
 
 export const { TRPCProvider, useTRPC, useTRPCClient } =
-  createTRPCContext<AppRouter>();
+  createTRPCContext<TrpcRouter>();
 
 const getRequestHeaders = () => {
   const headers = new Headers();
@@ -33,7 +33,7 @@ const getBaseUrl = () => {
   return `http://localhost:3000`;
 };
 
-const trpcClient = createTRPCClient<AppRouter>({
+const trpcClient = createTRPCClient<TrpcRouter>({
   links: [
     loggerLink({
       enabled: (op) =>

@@ -63,7 +63,7 @@ export const siweConfig = createSIWEConfig({
         throw new Error('verifyMessage:: Signature verification failed');
       }
 
-      const authJwt = await trpcClientUtils.verifySiweMessage.fetch({
+      const authJwt = await trpcClientUtils.app.verifySiweMessage.fetch({
         signature,
         message
       });

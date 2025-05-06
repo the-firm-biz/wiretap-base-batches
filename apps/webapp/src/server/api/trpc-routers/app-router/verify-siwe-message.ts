@@ -4,7 +4,7 @@ import { TRPCError } from '@trpc/server';
 import jsonwebtoken from 'jsonwebtoken';
 import { VerifySiweMessageJwtPayload } from '@/app/utils/siwe/types';
 import { serverEnv } from '@/serverEnv';
-import { publicProcedure } from '../trpc';
+import { publicProcedure } from '../../trpc';
 import { SIWE_VALIDITY_MS } from '@/app/utils/siwe/constants';
 import {
   createAccountEntity,
@@ -79,6 +79,8 @@ export const verifySiweMessage = publicProcedure
       }
 
       const { address, expirationTime, chainId } = new SiweMessage(message);
+
+      console.log('HERE NO PROBLEM');
 
       const wireTapAccount = await getOrCreateWireTapAccount(
         poolDb,
