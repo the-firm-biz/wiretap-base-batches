@@ -99,6 +99,13 @@
       "when": 1746300321556,
       "tag": "0013_demonic_slayback",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1746526877490,
+      "tag": "0014_right_warpath",
+      "breakpoints": true
     }
   ]
 }

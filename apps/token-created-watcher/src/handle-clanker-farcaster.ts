@@ -13,6 +13,7 @@ import {
 } from './handle-clanker-farcaster-validation.js';
 import type { Address } from 'viem';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
+import { getTokenScore } from './token-score/get-token-score.js';
 
 export interface HandleClankerFarcasterArgs {
   fid: number;
@@ -51,6 +52,7 @@ export async function handleClankerFarcaster(
     userResponse && userResponse.length > 0 ? userResponse[0] : undefined;
 
   let latencyMs: number | undefined = undefined;
+  const tokenScoreDetails = neynarUser ? await getTokenScore(neynarUser) : null;
 
   if (castAndConversations && isValidCast && neynarUser) {
     const tokenCreatorAddress = neynarUser.verified_addresses.primary
@@ -58,7 +60,8 @@ export async function handleClankerFarcaster(
     const createdDbRows = await handleTokenWithFarcasterUser(
       tokenCreatedData,
       tokenCreatorAddress,
-      neynarUser
+      neynarUser,
+      tokenScoreDetails
     );
 
     latencyMs =
@@ -81,6 +84,7 @@ export async function handleClankerFarcaster(
       castExists: !!castAndConversations,
       castIsValid: isValidCast,
       neynarUserExists: !!neynarUser
-    }
+    },
+    tokenScoreDetails
   });
 }

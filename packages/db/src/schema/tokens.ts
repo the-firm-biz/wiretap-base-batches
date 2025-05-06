@@ -3,6 +3,7 @@ import {
   index,
   integer,
   pgTable,
+  real,
   serial,
   text,
   timestamp,
@@ -20,6 +21,7 @@ export const tokens = pgTable(
     name: text('name').notNull(),
     symbol: text('symbol').notNull(),
     address: text('address').notNull(),
+    score: real('score'),
     deploymentTransactionHash: text('deployment_transaction_hash').notNull(),
     /** Which token contract was used to deploy */
     deploymentContractId: integer('deployment_contract_id')
