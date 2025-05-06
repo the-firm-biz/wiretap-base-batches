@@ -9,8 +9,8 @@ import { SIWE_VALIDITY_MS } from '@/app/utils/siwe/constants';
 import {
   createAccountEntity,
   createWireTapAccount,
-  getPoolDb,
   getWallet,
+  PooledDbConnection,
   ServerlessDb,
   VerificationSourceIds
 } from '@wiretap/db';
@@ -31,10 +31,12 @@ async function getOrCreateWireTapAccount(
   }
 
   const accounts = await createAccountEntity(poolDb, {
-    newWallet: {
-      address: walletAddress,
-      verificationSourceId: VerificationSourceIds.WireTap
-    },
+    newWallets: [
+      {
+        address: walletAddress,
+        verificationSourceId: VerificationSourceIds.WireTap
+      }
+    ],
     newWireTapAccount: {}
   });
 
@@ -59,7 +61,7 @@ export const verifySiweMessage = publicProcedure
   .query(async ({ input }): Promise<string> => {
     const { message, signature } = input;
 
-    const { poolDb, endPoolConnection } = getPoolDb({
+    const { db: poolDb, endPoolConnection } = new PooledDbConnection({
       databaseUrl: serverEnv.DATABASE_URL
     });
 

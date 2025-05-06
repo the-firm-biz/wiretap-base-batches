@@ -9,7 +9,7 @@ import {
   wireTapSessionKeys,
   type NewWireTapSessionKey
 } from '../schema/wire-tap-session-keys.js';
-import { clearDbTables } from '../utils/testUtils.js';
+import { unsafe__clearDbTables } from '../utils/testUtils.js';
 import { getWireTapAccountSessionKey } from './get-wire-tap-account-session-key.js';
 
 describe('getWireTapAccountSessionKey', () => {
@@ -20,7 +20,7 @@ describe('getWireTapAccountSessionKey', () => {
   let wireTapAccountId: number;
 
   beforeEach(async () => {
-    await clearDbTables(db);
+    await unsafe__clearDbTables(db);
 
     const [testAccountEntity] = await db
       .insert(accountEntities)

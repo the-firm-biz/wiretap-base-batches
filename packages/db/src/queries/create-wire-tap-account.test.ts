@@ -5,7 +5,7 @@ import {
   type NewWireTapAccount,
   wireTapAccounts
 } from '../schema/accounts/index.js';
-import { clearDbTables } from '../utils/testUtils.js';
+import { unsafe__clearDbTables } from '../utils/testUtils.js';
 import { createWireTapAccount } from './create-wire-tap-account.js';
 
 describe('createWireTapAccount', () => {
@@ -16,7 +16,7 @@ describe('createWireTapAccount', () => {
   let newWireTapAccount: NewWireTapAccount;
 
   beforeEach(async () => {
-    await clearDbTables(db);
+    await unsafe__clearDbTables(db);
     const [testAccountEntity] = await db
       .insert(accountEntities)
       .values({

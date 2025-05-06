@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import {
   wireTapSessionKeys,
-  getPoolDb,
-  getWireTapAccountSessionKey
+  getWireTapAccountSessionKey,
+  PooledDbConnection
 } from '@wiretap/db';
 import { createTRPCRouter, privateProcedure } from '../trpc';
 import { encryptSessionKey } from '../../kernel/encrypt-decrypt-session-key';
@@ -18,7 +18,7 @@ export const createWireTapSessionRouter = createTRPCRouter({
       const { wireTapAccountId } = ctx;
       const { serializedSessionKey } = input;
 
-      const { poolDb, endPoolConnection } = getPoolDb({
+      const { db: poolDb, endPoolConnection } = new PooledDbConnection({
         databaseUrl: serverEnv.DATABASE_URL
       });
 
