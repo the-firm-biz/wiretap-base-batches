@@ -4,16 +4,28 @@
  * @todo Bigeon - add real text styles. This is an example implementation.
  */
 export const textStyles = {
-  quote: 'font-serif italic text-3xl',
-  'button-xl': 'font-sans-narrow font-bold text-2xl',
-  subtitle: 'font-serif text-xl',
-  'subtitle-emphasis': 'font-serif text-xl font-bold',
-  'subtitle-sans': 'font-sans-narrow text-xl',
-  'subtitle-sans-emphasis': 'font-sans-narrow text-xl font-bold',
-  lead: 'font-serif text-lg',
-  'lead-sans': 'font-sans-narrow text-lg',
-  'lead-sans-emphasis': 'font-sans-narrow text-lg font-bold',
-  body: 'font-serif text-md',
-  'body-sans': 'font-sans-narrow text-md',
-  'body-sans-emphasis': 'font-sans-narrow font-bold text-md'
+  button: 'font-mono text-sm',
+
+  label: 'font-sans text-xs',
+  'label-emphasis': 'font-sans text-xs font-bold',
+  'code-01': 'font-mono text-xs font-normal',
+
+  compact: 'font-sans text-sm',
+  'compact-mid': 'font-sans text-sm font-medium',
+  'compact-emphasis': 'font-sans text-sm font-bold',
+  'code-02': 'font-mono text-sm font-normal',
+
+  body: 'font-sans text-md',
+  'body-mid': 'font-sans text-md font-medium',
+  'body-emphasis': 'font-sans text-md font-bold',
+
+  lead: 'font-sans text-lg',
+  'lead-mid': 'font-sans text-lg font-medium',
+  'lead-emphasis': 'font-sans text-lg font-bold',
+
+  title4: 'font-serif text-xl font-bold tracking-tight',
+  title3: 'font-serif text-2xl font-bold tracking-tight',
+  title2: 'font-serif text-3xl font-bold tracking-tight',
+  title1: 'font-serif text-4xl font-bold tracking-tight',
+  titleGiant: 'font-serif text-5xl font-bold tracking-tight'
 };

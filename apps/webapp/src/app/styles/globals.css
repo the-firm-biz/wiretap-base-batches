@@ -15,4 +15,8 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Text selection styles */
+  ::selection {
+    @apply bg-accent text-accent-foreground;
+  }
 }

@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Providers from '@/app/components/providers';
 import { Header } from '@/app/components/ui/header';
 import './styles/globals.css';
-import { arialNarrow, geistMono, geistSans } from './styles/font-family';
+import { departureMono, ppMondwest, loRes12 } from './styles/font-family';
 import { headers } from 'next/headers';
 
 export const metadata: Metadata = {
@@ -26,7 +26,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${arialNarrow.variable} antialiased`}
+        className={`${ppMondwest.variable} ${loRes12.variable} ${departureMono.variable} antialiased`}
       >
         <Providers cookies={cookies}>
           <div className="flex flex-col min-h-screen">
