@@ -4,6 +4,7 @@ import { Button } from '@/app/components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { cn } from '@/app/utils/cn';
+import DitheredImage from '../components/ui/dithered-image';
 
 export default function Home() {
   return (
@@ -65,6 +66,21 @@ export default function Home() {
           <Input placeholder="required" required></Input>
           <Input placeholder="email" type="email"></Input>
           <Input placeholder="password" type="password"></Input>
+        </div>
+        <div className="flex gap-4 items-center flex-col sm:flex-row">
+          <DitheredImage
+            src="/glory.png"
+            alt="Dithered test"
+            width={184}
+            height={240}
+          />
+          <Image
+            src="/glory.png"
+            alt="Dithered test"
+            width={184}
+            height={240}
+            priority
+          />
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">

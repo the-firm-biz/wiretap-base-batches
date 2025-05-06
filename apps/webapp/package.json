@@ -58,6 +58,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.176.0",
     "@wiretap/eslint-config": "workspace:*",
     "@wiretap/prettier-config": "workspace:*",
     "@wiretap/typescript-config": "workspace:*",
