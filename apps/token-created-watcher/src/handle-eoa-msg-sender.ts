@@ -27,18 +27,18 @@ export async function handleEOAMsgSender(
   if (!userResponse || userResponse.length === 0) {
     // [4 concurrent]
     try {
-      const result = await commitTokenDetailsToDb({
+      const createdDbRows = await commitTokenDetailsToDb({
         tokenCreatedData,
         tokenCreatorAddress: tokenCreatedData.msgSender
       });
       sendSlackMessage({
-        tokenAddress: result.token.address,
-        transactionHash: result.token.deploymentTransactionHash,
-        tokenName: result.token.name,
-        tokenSymbol: result.token.symbol,
-        deployerContractAddress: result.deployerContract.address,
+        tokenAddress: createdDbRows.token.address,
+        transactionHash: createdDbRows.token.deploymentTransactionHash,
+        tokenName: createdDbRows.token.name,
+        tokenSymbol: createdDbRows.token.symbol,
+        deployerContractAddress: createdDbRows.deployerContract.address,
         latencyMs: tokenCreatedData.block.timestamp
-          ? result.token.createdAt.getTime() -
+          ? createdDbRows.token.createdAt.getTime() -
             tokenCreatedData.block.timestamp?.getTime()
           : undefined,
         source: 'handle-eoa-msg-sender'
