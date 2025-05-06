@@ -61,13 +61,12 @@ export async function handleClankerFarcaster(
       neynarUser
     );
 
-    latencyMs = tokenCreatedData.block.timestamp
-      ? createdDbRows.token.createdAt.getTime() -
-        tokenCreatedData.block.timestamp?.getTime()
-      : undefined;
+    latencyMs =
+      createdDbRows && tokenCreatedData.block.timestamp
+        ? createdDbRows.token.createdAt.getTime() -
+          tokenCreatedData.block.timestamp?.getTime()
+        : undefined;
   }
-
-  // TODO: add neynarUser to castValidation log
 
   sendSlackMessage({
     tokenAddress: tokenCreatedData.tokenAddress,
@@ -79,8 +78,9 @@ export async function handleClankerFarcaster(
     latencyMs,
     source: 'handle-clanker-farcaster',
     castValidation: {
-      exists: !!castAndConversations,
-      isValid: isValidCast
+      castExists: !!castAndConversations,
+      castIsValid: isValidCast,
+      neynarUserExists: !!neynarUser
     }
   });
 }
