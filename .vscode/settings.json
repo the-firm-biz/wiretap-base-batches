@@ -5,6 +5,9 @@
       "mode": "auto"
     }
   ],
+  // Enables Tailwind CSS IntelliSense for these naming patterns.
+  // These patterns allow for props like `headerClassName=`, `titleTextClassName=` or variables like `const textStyles = ...`
+  "tailwindCSS.classAttributes": [".*className", ".*ClassName", ".*Styles.*"],
   // Sets Prettier as the default formatter for all files
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   // Runs ESLint on save

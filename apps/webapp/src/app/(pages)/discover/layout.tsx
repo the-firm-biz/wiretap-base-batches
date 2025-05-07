@@ -1,0 +1,23 @@
+import type { Metadata } from 'next';
+import { Header } from '@/app/components/ui/header';
+import PageContainer from '@/app/components/page-container';
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://wiretap.thefirm.biz'),
+  title: 'Discover | WireTap',
+  description: 'Blah blah blah',
+  robots: 'index, follow'
+};
+
+export default function DiscoverLayout({
+  children
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <>
+      <Header pageTitle="Discover" />
+      <PageContainer>{children}</PageContainer>
+    </>
+  );
+}
