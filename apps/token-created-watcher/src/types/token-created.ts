@@ -4,6 +4,7 @@ import type { ExtractAbiEvent } from 'abitype';
 import { httpPublicClient } from '../rpc-clients.js';
 import type { Block } from './block.js';
 import { callWithBackOff } from '@wiretap/utils/server';
+import { bigIntReplacer } from '@wiretap/utils/shared';
 
 export type TokenCreatedOnChainParams = {
   transactionHash: `0x${string}`;
@@ -35,7 +36,7 @@ export async function deconstructLog(
   if (!tokenAddress || !tokenName || !symbol || !msgSender) {
     // @todo error - handle gracefully
     throw new Error(
-      `log.args not returning expected values: ${JSON.stringify(log.args)}`
+      `log.args not returning expected values: ${JSON.stringify(log.args, bigIntReplacer)}`
     );
   }
 
