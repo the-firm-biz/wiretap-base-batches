@@ -7,7 +7,6 @@ import { Header } from '@/app/components/ui/header';
 import './styles/globals.css';
 import { departureMono, ppMondwest, loRes12 } from './styles/font-family';
 import { headers } from 'next/headers';
-import { ThemeProvider } from '@/app/components/providers/theme-provider';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),
