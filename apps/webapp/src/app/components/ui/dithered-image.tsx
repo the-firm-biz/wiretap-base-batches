@@ -128,12 +128,11 @@ export default function DitheredImage({
     renderer.render(scene, camera);
 
     // Dithering loading animation
-    let animationFrame;
     function animateDither() {
       if (material.uniforms.uDitherLevel.value < 1) {
         material.uniforms.uDitherLevel.value += 0.08; // adjust speed as desired (faster)
         renderer.render(scene, camera);
-        animationFrame = requestAnimationFrame(animateDither);
+        requestAnimationFrame(animateDither);
       } else {
         material.uniforms.uDitherLevel.value = 1;
         renderer.render(scene, camera);
@@ -165,6 +164,7 @@ export default function DitheredImage({
     <div
       style={{ position: 'relative', width: renderWidth, height: renderHeight }}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={imgRef}
         src={src}
