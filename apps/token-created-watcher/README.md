@@ -9,10 +9,16 @@ Monitors Clanker 3.1 token creation events.
 `src/start-watcher.ts` - Core watcher logic that sets up and manages the contract event
 subscription
 
-<!-- @TODO - UPDATE -->
-
 ```bash
 # Run the service
-# scripts/dev_token_created.ts
-deno task dev:token-created-watcher
+# from the monorepo root
+pnpm dev:watchers
 ```
+
+## Scenarios where a token will not be indexed
+
+- If the 'TokenCreated' log does not contain any of the following:
+  - msgSender
+  - tokenAddress
+  - symbol
+  - tokenName
