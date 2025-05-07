@@ -1,14 +1,16 @@
 import {
+  callWithBackOff,
   fetchBulkUsers,
   getSingletonNeynarClient,
-  lookupCastConversationWithBackoff
+  lookupCastConversation,
+  type NeynarAPIClient,
+  type NeynarCastWithInteractionsAndConversations
 } from '@wiretap/utils/server';
 import { env } from './env.js';
 import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import {
   validateAuthorFid,
-  type validateCastFn,
   validateDirectReplies
 } from './handle-clanker-farcaster-validation.js';
 import type { Address } from 'viem';
@@ -24,25 +26,16 @@ export async function handleClankerFarcaster(
   tokenCreatedData: TokenCreatedOnChainParams,
   clankerFarcasterArgs: HandleClankerFarcasterArgs
 ) {
-  const { messageId: castHash } = clankerFarcasterArgs;
-
   const neynarClient = getSingletonNeynarClient({
     apiKey: env.NEYNAR_API_KEY
   });
 
-  const castAndConversations = await lookupCastConversationWithBackoff(
-    neynarClient,
-    castHash
-  );
-
-  let isValidCast = false;
-
-  if (castAndConversations) {
-    isValidCast = [validateAuthorFid, validateDirectReplies].every(
-      (fn: validateCastFn) =>
-        fn(castAndConversations, clankerFarcasterArgs, tokenCreatedData)
+  const { castAndConversations, isValidCast } =
+    await lookupAndValidateCastConversationWithBackoff(
+      neynarClient,
+      tokenCreatedData,
+      clankerFarcasterArgs
     );
-  }
 
   const userResponse = await fetchBulkUsers(neynarClient, [
     clankerFarcasterArgs.fid
@@ -87,4 +80,57 @@ export async function handleClankerFarcaster(
     },
     tokenScoreDetails
   });
+}
+
+type CastWithValidation = {
+  castAndConversations: NeynarCastWithInteractionsAndConversations | undefined;
+  isValidCast: boolean;
+};
+
+async function lookupAndValidateCastConversationWithBackoff(
+  neynarClient: NeynarAPIClient,
+  tokenCreatedData: TokenCreatedOnChainParams,
+  clankerFarcasterArgs: HandleClankerFarcasterArgs
+): Promise<CastWithValidation> {
+  const { messageId: castHash } = clankerFarcasterArgs;
+
+  const castWithValidation = await callWithBackOff(async () => {
+    const castAndConversations = await lookupCastConversation(
+      neynarClient,
+      castHash
+    );
+
+    if (!castAndConversations) {
+      throw new Error('No Cast was fetched');
+    }
+
+    const isFidValid = validateAuthorFid(
+      castAndConversations,
+      clankerFarcasterArgs,
+      tokenCreatedData
+    );
+    if (!isFidValid) {
+      // no need to retry as fid validation went wrong
+      return { castAndConversations, isValidCast: false };
+    }
+
+    const areDirectRepliesValid = validateDirectReplies(
+      castAndConversations,
+      clankerFarcasterArgs,
+      tokenCreatedData
+    );
+    if (!areDirectRepliesValid) {
+      // cause retry to cover cases when direct reply is delayed
+      throw new Error('Cast Direct Reply validation failed, try again');
+    }
+
+    return { castAndConversations, isValidCast: true };
+  }, 'lookupAndValidateCastConversationWithBackoff');
+
+  return (
+    castWithValidation ?? {
+      castAndConversations: undefined,
+      isValidCast: false
+    }
+  );
 }
