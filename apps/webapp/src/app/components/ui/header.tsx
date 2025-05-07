@@ -1,15 +1,33 @@
 'use client';
 
 import { Wallet } from '@/app/components/wallet/wallet';
+import { textStyles } from '@/app/styles/template-strings';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { cn } from '@/app/utils/cn';
+interface HeaderProps {
+  pageTitle: string;
+  pageTitleClassName?: string;
+  headerClassName?: string;
+}
 
-export function Header() {
+export function Header({
+  pageTitle,
+  pageTitleClassName,
+  headerClassName
+}: HeaderProps) {
   return (
-    <header className="w-full h-[60px] py-4 px-6 flex items-center justify-between border-b">
-      <div className="flex items-center" />
-      <PaletteSwitcher />
-      <div className="flex items-center">
+    <header
+      className={cn(
+        'w-full p-4 flex items-center justify-between max-w-screen-md mx-auto',
+        headerClassName
+      )}
+    >
+      <h1 className={cn(textStyles['title3'], pageTitleClassName)}>
+        {pageTitle}
+      </h1>
+      <div className="flex gap-4 items-center">
+        <PaletteSwitcher />
         <Wallet />
       </div>
     </header>

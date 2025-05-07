@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
  @todo - if using this, we'll need to theme it https://docs.base.org/builderkits/onchainkit/installation/nextjs#add-styles
  */
 import Providers from '@/app/components/providers';
-import { Header } from '@/app/components/ui/header';
 import './styles/globals.css';
 import { departureMono, ppMondwest, loRes12 } from './styles/font-family';
 import { headers } from 'next/headers';
@@ -35,10 +34,7 @@ export default async function RootLayout({
         className={`${ppMondwest.variable} ${loRes12.variable} ${departureMono.variable} antialiased`}
       >
         <Providers cookies={cookies}>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-1">{children}</main>
-          </div>
+          <div className="flex flex-col min-h-screen">{children}</div>
         </Providers>
       </body>
     </html>

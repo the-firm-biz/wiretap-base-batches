@@ -1,12 +1,12 @@
 import Image from 'next/image';
-import { textStyles } from '../styles/template-strings';
+import { textStyles } from '../../styles/template-strings';
 import { Button } from '@/app/components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { Input } from '../components/ui/input';
+import { Badge } from '../../components/ui/badge';
+import { Input } from '../../components/ui/input';
 import { cn } from '@/app/utils/cn';
-import DitheredImage from '../components/dithered-image';
+import DitheredImage from '../../components/dithered-image';
 
-export default function Home() {
+export default function BigeonsBasementPage() {
   return (
     <div
       className={cn(
