@@ -5,18 +5,18 @@ import PageContainer from '@/app/components/page-container';
 export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),
   title: "Bigeon's Basement | WireTap",
-  description: "Welcome to Bigeon's Basement",
+  description: "Are you brave enough to enter... Bigeon's Basement",
   robots: 'index, follow'
 };
 
-export default function TargetsLayout({
+export default function BigeonsBasementLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <>
-      <Header pageTitle="Bigeon's Basement" />
+      <Header pageTitle="Bigeon's Homepage" />
       <PageContainer>{children}</PageContainer>
     </>
   );
