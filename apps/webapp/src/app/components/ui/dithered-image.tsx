@@ -5,8 +5,8 @@ import * as THREE from 'three';
 interface DitheredImageProps {
   src: string;
   alt: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
 }
 
 export default function DitheredImage({
@@ -21,6 +21,9 @@ export default function DitheredImage({
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgSize, setImgSize] = useState({ width: 1, height: 1 });
 
+  const renderWidth = width || imgSize.width;
+  const renderHeight = height || imgSize.height;
+
   useEffect(() => {
     if (!imgLoaded || !imgRef.current || !canvasRef.current) return;
 
@@ -28,12 +31,19 @@ export default function DitheredImage({
 
     // Set up Three.js
     const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(0, width, height, 0, -1, 1);
+    const camera = new THREE.OrthographicCamera(
+      0,
+      renderWidth,
+      renderHeight,
+      0,
+      -1,
+      1
+    );
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       alpha: true
     });
-    renderer.setSize(width, height);
+    renderer.setSize(renderWidth, renderHeight);
 
     // Create texture from image
     const texture = new THREE.Texture(imgRef.current);
@@ -43,14 +53,10 @@ export default function DitheredImage({
     const material = new THREE.ShaderMaterial({
       uniforms: {
         uTexture: { value: texture },
-        uResolution: { value: new THREE.Vector2(width, height) },
+        uResolution: { value: new THREE.Vector2(renderWidth, renderHeight) },
         uImageSize: { value: new THREE.Vector2(imgSize.width, imgSize.height) },
-        uColor1: {
-          value: new THREE.Color(0.7843, 0.8235, 0.78)
-        } /* green-200 in sRGB */,
-        uColor2: {
-          value: new THREE.Color(0.153, 0.18, 0.16)
-        } /* green-800 in sRGB */,
+        uColor1: { value: new THREE.Color(0.7843, 0.8235, 0.78) }, // Our sage-200
+        uColor2: { value: new THREE.Color(0.153, 0.18, 0.16) }, // Our sage-900
         uDitherLevel: { value: 0 }
       },
       vertexShader: `
@@ -70,7 +76,7 @@ export default function DitheredImage({
         varying vec2 vUv;
 
         // 4x4 Bayer matrix
-        float bayerDither(vec2 pos) {
+        float bayer4x4(vec2 pos) {
           int x = int(mod(pos.x, 4.0));
           int y = int(mod(pos.y, 4.0));
           int index = x + y * 4;
@@ -89,11 +95,9 @@ export default function DitheredImage({
           float imageRatio = image.x / image.y;
           vec2 newUv = uv;
           if (imageRatio > planeRatio) {
-            // Image is wider than plane
             float scale = planeRatio / imageRatio;
             newUv.y = (uv.y - 0.5) * scale + 0.5;
           } else {
-            // Image is taller than plane
             float scale = imageRatio / planeRatio;
             newUv.x = (uv.x - 0.5) * scale + 0.5;
           }
@@ -104,7 +108,10 @@ export default function DitheredImage({
           vec2 uv = getContainUv(vUv, uResolution, uImageSize);
           vec4 color = texture2D(uTexture, uv);
           float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-          float threshold = bayerDither(gl_FragCoord.xy);
+          float contrast = 1.3; // Increase for more contrast
+          gray = (gray - 0.5) * contrast + 0.5;
+          gray = clamp(gray, 0.0, 1.0);
+          float threshold = bayer4x4(gl_FragCoord.xy);
           float dithered = step(threshold, gray * uDitherLevel);
           gl_FragColor = vec4(mix(uColor2, uColor1, dithered), 1.0);
         }
@@ -112,15 +119,16 @@ export default function DitheredImage({
     });
 
     // Plane with shader
-    const geometry = new THREE.PlaneGeometry(width, height);
+    const geometry = new THREE.PlaneGeometry(renderWidth, renderHeight);
     const mesh = new THREE.Mesh(geometry, material);
-    // Move the plane so its bottom-left corner is at (0, 0) -- without this, image if offset
-    mesh.position.x = width / 2;
-    mesh.position.y = height / 2;
+    // Move the plane so its bottom-left corner is at (0, 0) -- without this, image is offset
+    mesh.position.x = renderWidth / 2;
+    mesh.position.y = renderHeight / 2;
     scene.add(mesh);
 
     renderer.render(scene, camera);
 
+    // Dithering loading animation
     let animationFrame;
     function animateDither() {
       if (material.uniforms.uDitherLevel.value < 1) {
@@ -140,7 +148,7 @@ export default function DitheredImage({
       geometry.dispose();
       texture.dispose();
     };
-  }, [width, height, src, imgLoaded, imgSize]);
+  }, [renderWidth, renderHeight, src, imgLoaded, imgSize]);
 
   useEffect(() => {
     if (imgRef.current && imgRef.current.complete && !imgLoaded) {
@@ -155,13 +163,15 @@ export default function DitheredImage({
   }, [imgLoaded]);
 
   return (
-    <div style={{ position: 'relative', width, height }}>
+    <div
+      style={{ position: 'relative', width: renderWidth, height: renderHeight }}
+    >
       <img
         ref={imgRef}
         src={src}
         alt={alt}
-        width={width}
-        height={height}
+        width={renderWidth}
+        height={renderHeight}
         // The below style hides the image but still lets it load. If removed, it'll be visible briefly before the dithered version is rendered, which could be desirable in a different use case.
         style={{
           position: 'absolute',
@@ -185,7 +195,9 @@ export default function DitheredImage({
           position: 'absolute',
           top: 0,
           left: 0,
-          imageRendering: 'pixelated'
+          imageRendering: 'pixelated',
+          width: renderWidth,
+          height: renderHeight
         }}
       />
     </div>

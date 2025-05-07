@@ -76,10 +76,23 @@ export default function Home() {
           />
           <Image
             src="/glory.png"
-            alt="Dithered test"
+            alt="Non-dithered test"
             width={184}
             height={240}
-            priority
+          />
+        </div>
+        <div className="flex gap-4 items-center flex-col sm:flex-row">
+          <DitheredImage
+            src="/banner-clanker.png"
+            alt="Clanker"
+            width={240}
+            height={72}
+          />
+          <Image
+            src="/banner-clanker.png"
+            alt="Clanker"
+            width={240}
+            height={72}
           />
         </div>
       </main>
