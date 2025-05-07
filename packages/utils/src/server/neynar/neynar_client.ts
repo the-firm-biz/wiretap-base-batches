@@ -1,4 +1,8 @@
-import { Configuration, NeynarAPIClient } from '@neynar/nodejs-sdk';
+import {
+  Configuration,
+  NeynarAPIClient as SdkNeynarAPIClient
+} from '@neynar/nodejs-sdk';
+import type { NeynarAPIClient } from './types.js';
 
 export interface NeynarClientOptions {
   apiKey: string;
@@ -14,10 +18,11 @@ export function getNeynarClient(opts: NeynarClientOptions): NeynarAPIClient {
       }
     }
   });
-  return new NeynarAPIClient(config);
+  return new SdkNeynarAPIClient(config);
 }
 
 let _singleTonClient: NeynarAPIClient | null = null;
+
 export function getSingletonNeynarClient(
   opts: NeynarClientOptions
 ): NeynarAPIClient {
