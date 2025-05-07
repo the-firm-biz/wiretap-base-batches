@@ -15,7 +15,6 @@ export default function DitheredImage({
   width,
   height
 }: DitheredImageProps) {
-  console.log('DitheredImage component rendered', { src, alt, width, height });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -181,7 +180,6 @@ export default function DitheredImage({
           pointerEvents: 'none'
         }}
         onLoad={(e) => {
-          console.log('Image loaded!', e);
           setImgLoaded(true);
           setImgSize({
             width: e.currentTarget.naturalWidth,
