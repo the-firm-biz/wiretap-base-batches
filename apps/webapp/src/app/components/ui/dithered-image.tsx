@@ -45,8 +45,13 @@ export default function DitheredImage({
         uTexture: { value: texture },
         uResolution: { value: new THREE.Vector2(width, height) },
         uImageSize: { value: new THREE.Vector2(imgSize.width, imgSize.height) },
-        uColor1: { value: new THREE.Color(0.8118, 0.8235, 0.8) },
-        uColor2: { value: new THREE.Color(0.0667, 0.0745, 0.0706) }
+        uColor1: {
+          value: new THREE.Color(0.7843, 0.8235, 0.78)
+        } /* green-200 in sRGB */,
+        uColor2: {
+          value: new THREE.Color(0.153, 0.18, 0.16)
+        } /* green-800 in sRGB */,
+        uDitherLevel: { value: 0 }
       },
       vertexShader: `
         varying vec2 vUv;
@@ -61,6 +66,7 @@ export default function DitheredImage({
         uniform vec2 uImageSize;
         uniform vec3 uColor1;
         uniform vec3 uColor2;
+        uniform float uDitherLevel;
         varying vec2 vUv;
 
         // 4x4 Bayer matrix
@@ -99,7 +105,7 @@ export default function DitheredImage({
           vec4 color = texture2D(uTexture, uv);
           float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
           float threshold = bayerDither(gl_FragCoord.xy);
-          float dithered = step(threshold, gray);
+          float dithered = step(threshold, gray * uDitherLevel);
           gl_FragColor = vec4(mix(uColor2, uColor1, dithered), 1.0);
         }
       `
@@ -114,6 +120,19 @@ export default function DitheredImage({
     scene.add(mesh);
 
     renderer.render(scene, camera);
+
+    let animationFrame;
+    function animateDither() {
+      if (material.uniforms.uDitherLevel.value < 1) {
+        material.uniforms.uDitherLevel.value += 0.08; // adjust speed as desired (faster)
+        renderer.render(scene, camera);
+        animationFrame = requestAnimationFrame(animateDither);
+      } else {
+        material.uniforms.uDitherLevel.value = 1;
+        renderer.render(scene, camera);
+      }
+    }
+    animateDither();
 
     return () => {
       renderer.dispose();
@@ -162,7 +181,12 @@ export default function DitheredImage({
       />
       <canvas
         ref={canvasRef}
-        style={{ position: 'absolute', top: 0, left: 0 }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          imageRendering: 'pixelated'
+        }}
       />
     </div>
   );
