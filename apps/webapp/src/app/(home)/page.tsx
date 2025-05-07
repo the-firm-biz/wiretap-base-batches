@@ -4,7 +4,7 @@ import { Button } from '@/app/components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { cn } from '@/app/utils/cn';
-import DitheredImage from '../components/ui/dithered-image';
+import DitheredImage from '../components/dithered-image';
 
 export default function Home() {
   return (
