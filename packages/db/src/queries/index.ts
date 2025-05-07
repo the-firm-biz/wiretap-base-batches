@@ -1,6 +1,8 @@
-export * from './create-farcaster-account.js';
 export * from './create-account-entity.js';
+export * from './create-block.js';
+export * from './create-farcaster-account.js';
 export * from './create-wallet.js';
+export * from './create-wire-tap-account.js';
 export * from './create-x-account.js';
 export * from './get-farcaster-account.js';
 export * from './get-farcaster-accounts.js';
@@ -14,4 +16,7 @@ export * from './get-x-accounts.js';
 export * from './create-x-accounts.js';
 export * from './get-account-entity.js';
 export * from './get-deployer-contract.js';
+export * from './get-wire-tap-account.js';
 export * from './count-tokens-by-creator.js';
+export * from './create-wire-tap-account.js';
+export * from './get-wire-tap-account-session-key.js';

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
-import { appRouter } from '@/server/api/app-router';
+import { trpcRouter } from '@/server/api/trpc-routers';
 import { createInnerContext } from '@/server/api/trpc';
 
 /**
@@ -19,7 +19,7 @@ const handler = (req: NextRequest) =>
   fetchRequestHandler({
     endpoint: '/api/trpc',
     req,
-    router: appRouter,
+    router: trpcRouter,
     createContext: () => createOuterContext(req),
     onError:
       process.env.NODE_ENV === 'development'

@@ -7,7 +7,9 @@ const serverEnvSchema = z.object({
   SIWE_JWT_SECRET: secretString,
   ZERODEV_RPC: secretString,
   // For devx - validator private key only required if working with session keys
-  KERNEL_VALIDATOR_PRIVATE_KEY: secretString.optional()
+  KERNEL_VALIDATOR_PRIVATE_KEY: secretString.optional(),
+  // For secure storage of session keys
+  SESSION_KEY_ENCRYPTION_SECRET: secretString.optional()
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
