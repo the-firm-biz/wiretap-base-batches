@@ -15,8 +15,8 @@
   body {
     @apply bg-background text-foreground;
   }
-  /* Text selection styles */
-  ::selection {
-    @apply bg-accent text-accent-foreground;
-  }
+}
+/* Text selection styles moved out of the base layer to avoid browser default styles */
+::selection {
+  @apply bg-accent text-accent-foreground;
 }
