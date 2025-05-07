@@ -5,10 +5,11 @@ import { textStyles } from '@/app/styles/template-strings';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { cn } from '@/app/utils/cn';
+import { ClassValue } from 'clsx';
 interface HeaderProps {
   pageTitle: string;
-  pageTitleClassName?: string;
-  headerClassName?: string;
+  pageTitleClassName?: ClassValue;
+  headerClassName?: ClassValue;
 }
 
 export function Header({

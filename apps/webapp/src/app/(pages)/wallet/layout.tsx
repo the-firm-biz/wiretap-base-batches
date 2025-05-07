@@ -17,7 +17,7 @@ export default function WalletLayout({
     <>
       <Header
         pageTitle="Wallet"
-        headerClassName="bg-accent"
+        headerClassName="bg-background"
         pageTitleClassName="text-accent-foreground"
       />
       <main className="flex-1">{children}</main>
