@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      three:
-        specifier: ^0.176.0
-        version: 0.176.0
     devDependencies:
       '@total-typescript/tsconfig':
         specifier: ^1.0.4
