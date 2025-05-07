@@ -12,42 +12,45 @@ import {
   getWallet,
   PooledDbConnection,
   ServerlessDb,
-  VerificationSourceIds
+  VerificationSourceIds,
+  WireTapAccount
 } from '@wiretap/db';
 import { Address } from 'viem';
 
 async function getOrCreateWireTapAccount(
   poolDb: ServerlessDb,
   walletAddress: Address
-) {
-  const wallet = await getWallet(poolDb, walletAddress);
+): Promise<WireTapAccount> {
+  return await poolDb.transaction(async (tx) => {
+    const wallet = await getWallet(tx, walletAddress);
 
-  if (wallet) {
-    const wireTapAccount = await createWireTapAccount(poolDb, {
-      accountEntityId: wallet.accountEntityId
+    if (wallet) {
+      const wireTapAccount = await createWireTapAccount(tx, {
+        accountEntityId: wallet.accountEntityId
+      });
+
+      return wireTapAccount;
+    }
+
+    const accounts = await createAccountEntity(tx, {
+      newWallets: [
+        {
+          address: walletAddress,
+          verificationSourceId: VerificationSourceIds.WireTap
+        }
+      ],
+      newWireTapAccount: {}
     });
 
-    return wireTapAccount;
-  }
+    if (!accounts.wireTapAccount) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to create wire tap account'
+      });
+    }
 
-  const accounts = await createAccountEntity(poolDb, {
-    newWallets: [
-      {
-        address: walletAddress,
-        verificationSourceId: VerificationSourceIds.WireTap
-      }
-    ],
-    newWireTapAccount: {}
+    return accounts.wireTapAccount;
   });
-
-  if (!accounts.wireTapAccount) {
-    throw new TRPCError({
-      code: 'INTERNAL_SERVER_ERROR',
-      message: 'Failed to create wire tap account'
-    });
-  }
-
-  return accounts.wireTapAccount;
 }
 
 /** Returns validated, SIWE compliant, signed JWT to be stored locally */
@@ -61,7 +64,7 @@ export const verifySiweMessage = publicProcedure
   .query(async ({ input }): Promise<string> => {
     const { message, signature } = input;
 
-    const { db: poolDb, endPoolConnection } = new PooledDbConnection({
+    const poolDb = new PooledDbConnection({
       databaseUrl: serverEnv.DATABASE_URL
     });
 
@@ -81,7 +84,7 @@ export const verifySiweMessage = publicProcedure
       const { address, expirationTime, chainId } = new SiweMessage(message);
 
       const wireTapAccount = await getOrCreateWireTapAccount(
-        poolDb,
+        poolDb.db,
         address as `0x${string}`
       );
 
@@ -92,8 +95,6 @@ export const verifySiweMessage = publicProcedure
         signature,
         chainId
       };
-
-      console.log('expirationTime', expirationTime);
 
       const expiresInMs = expirationTime
         ? new Date(expirationTime).getTime() - Date.now()
@@ -119,6 +120,6 @@ export const verifySiweMessage = publicProcedure
         message: e.message || e
       });
     } finally {
-      await endPoolConnection();
+      await poolDb.endPoolConnection();
     }
   });

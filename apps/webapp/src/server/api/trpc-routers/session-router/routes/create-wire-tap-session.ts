@@ -17,13 +17,13 @@ export const createWireTapSession = privateProcedure
     const { wireTapAccountId } = ctx;
     const { serializedSessionKey } = input;
 
-    const { db: poolDb, endPoolConnection } = new PooledDbConnection({
+    const poolDb = new PooledDbConnection({
       databaseUrl: serverEnv.DATABASE_URL
     });
 
     try {
       const currentSessionKey = await getWireTapAccountSessionKey(
-        poolDb,
+        poolDb.db,
         wireTapAccountId
       );
 
@@ -38,7 +38,7 @@ export const createWireTapSession = privateProcedure
       const encryptedSessionKey = encryptSessionKey(serializedSessionKey);
 
       // Store the encrypted session key in the database
-      await poolDb
+      await poolDb.db
         .insert(wireTapSessionKeys)
         .values({ wireTapAccountId, encryptedSessionKey })
         .returning();
@@ -55,13 +55,13 @@ export const createWireTapSession = privateProcedure
       }
     } catch (error) {
       console.error('Failed to create account entity', error);
-      await endPoolConnection();
+      await poolDb.endPoolConnection();
 
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Failed to create account entity'
       });
     } finally {
-      await endPoolConnection();
+      await poolDb.endPoolConnection();
     }
   });
