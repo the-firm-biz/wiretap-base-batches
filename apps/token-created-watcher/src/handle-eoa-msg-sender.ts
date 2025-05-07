@@ -8,6 +8,7 @@ import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
 import { sendSlackIndexerError } from './notifications/send-slack-indexer-error.js';
+import { getTokenScore } from './token-score/get-token-score.js';
 
 export async function handleEOAMsgSender(
   tokenCreatedData: TokenCreatedOnChainParams
@@ -29,7 +30,8 @@ export async function handleEOAMsgSender(
     try {
       const createdDbRows = await commitTokenDetailsToDb({
         tokenCreatedData,
-        tokenCreatorAddress: tokenCreatedData.msgSender
+        tokenCreatorAddress: tokenCreatedData.msgSender,
+        tokenScore: null
       });
       sendSlackMessage({
         tokenAddress: createdDbRows.token.address,
@@ -41,7 +43,8 @@ export async function handleEOAMsgSender(
           ? createdDbRows.token.createdAt.getTime() -
             tokenCreatedData.block.timestamp?.getTime()
           : undefined,
-        source: 'handle-eoa-msg-sender'
+        source: 'handle-eoa-msg-sender',
+        tokenScoreDetails: null
       });
     } catch (error) {
       sendSlackIndexerError(error);
@@ -52,9 +55,12 @@ export async function handleEOAMsgSender(
   // Since we've checked userResponse is not empty, we can safely assert this is defined
   const neynarUser = userResponse[0]!;
 
+  const tokenScoreDetails = await getTokenScore(neynarUser);
+
   await handleTokenWithFarcasterUser(
     tokenCreatedData,
     tokenCreatedData.msgSender,
-    neynarUser
+    neynarUser,
+    tokenScoreDetails
   );
 }

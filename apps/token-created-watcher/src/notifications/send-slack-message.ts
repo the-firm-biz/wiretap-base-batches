@@ -5,6 +5,7 @@ import {
   CLANKER_3_1_ADDRESS,
   DELEGATED_CLANKER_DEPLOYER_ADDRESSES
 } from '@wiretap/config';
+import type { TokenScoreDetails } from '../token-score/get-token-score.js';
 
 type SlackMessageDetails = {
   tokenAddress: string;
@@ -20,6 +21,7 @@ type SlackMessageDetails = {
     neynarUserExists: boolean;
   };
   latencyMs?: number;
+  tokenScoreDetails: TokenScoreDetails | null;
 };
 
 const divider = '='.repeat(56);
@@ -71,6 +73,18 @@ ${platformAccounts.map((account) => slackLink(null, `${baseUrl}/${account.userna
   return '';
 };
 
+function getOrdinalSuffix(num: number) {
+  const suffixes = ['th', 'st', 'nd', 'rd'];
+  const tensDigit = num % 100;
+  const lastDigit = num % 10;
+
+  if (tensDigit >= 11 && tensDigit <= 13) {
+    return 'th';
+  }
+
+  return suffixes[lastDigit] || 'th';
+}
+
 export const sendSlackMessage = async ({
   tokenAddress,
   tokenName,
@@ -80,7 +94,8 @@ export const sendSlackMessage = async ({
   neynarUser,
   source,
   latencyMs,
-  castValidation
+  castValidation,
+  tokenScoreDetails
 }: SlackMessageDetails) => {
   console.log(`${source}: ${tokenName} (${tokenSymbol})`);
   if (!env.IS_SLACK_NOTIFICATION_ENABLED) {
@@ -221,6 +236,17 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
           : 'red_circle';
     fullMessage.push(
       `:${indicatorEmoji}: Latency from block to db was ${latencyMs}`
+    );
+  }
+
+  if (tokenScoreDetails) {
+    const launchNumber = tokenScoreDetails.previousDeploymentsCount + 1;
+    const launchText = `${launchNumber}${getOrdinalSuffix(launchNumber)} launch`;
+    const launchEmoji =
+      launchNumber === 1 ? '🏆' : launchNumber === 2 ? '🥈' : '🥉';
+
+    fullMessage.push(
+      `${launchEmoji} this is their ${launchText}\n🧮 the token score is: ${tokenScoreDetails.tokenScore}\n`
     );
   }
 
