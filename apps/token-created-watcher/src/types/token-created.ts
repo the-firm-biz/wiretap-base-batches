@@ -26,7 +26,7 @@ export type TokenCreatedLog = Log<
 
 export async function deconstructLog(
   log: TokenCreatedLog
-): Promise<TokenCreatedOnChainParams> {
+): Promise<TokenCreatedOnChainParams | undefined> {
   const {
     args: { tokenAddress, name: tokenName, symbol, msgSender },
     address: deployerContractAddress,
@@ -34,10 +34,10 @@ export async function deconstructLog(
   } = log;
 
   if (!tokenAddress || !tokenName || !symbol || !msgSender) {
-    // @todo error - handle gracefully
-    throw new Error(
-      `log.args not returning expected values: ${JSON.stringify(log.args, bigIntReplacer)}`
+    console.error(
+      `deconstructLog :: log.args not returning expected values: ${JSON.stringify(log.args, bigIntReplacer)}`
     );
+    return;
   }
 
   const block = await callWithBackOff(
