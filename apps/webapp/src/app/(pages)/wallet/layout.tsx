@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   robots: 'index, follow'
 };
 
-export default function WalletLayout({
+export default function WalletPageLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
@@ -17,7 +17,7 @@ export default function WalletLayout({
     <>
       <Header
         pageTitle="Wallet"
-        headerClassName="bg-background"
+        headerClassName="bg-accent"
         pageTitleClassName="text-accent-foreground"
       />
       <main className="flex-1">{children}</main>

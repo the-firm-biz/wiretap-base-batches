@@ -6,7 +6,7 @@ import { cn } from '@/app/utils/cn';
 import { textStyles } from '@/app/styles/template-strings/text-styles';
 
 const buttonVariants = cva(
-  `${textStyles.button} inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive relative hover:-translate-y-[2px] active:translate-y-[1px] hover:after:content-[''] hover:after:absolute hover:after:inset-0 hover:after:-z-10 active:after:content-[''] active:after:absolute active:after:inset-0 active:after:-z-10`,
+  `${textStyles.button} inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive relative hover:-translate-y-[2px] active:translate-y-[1px] hover:after:content-[''] hover:after:absolute hover:after:inset-0 hover:after:-z-10 active:after:content-[''] active:after:absolute active:after:inset-0 active:after:-z-10`,
   {
     variants: {
       variant: {
