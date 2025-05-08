@@ -6,6 +6,7 @@ import {
   DELEGATED_CLANKER_DEPLOYER_ADDRESSES
 } from '@wiretap/config';
 import type { TokenScoreDetails } from '../token-score/get-token-score.js';
+import { bigIntReplacer } from '@wiretap/utils/shared';
 
 type SlackMessageDetails = {
   tokenAddress: string;
@@ -91,7 +92,10 @@ export async function sendSlackMessage(
   try {
     await _sendSlackMessage(args);
   } catch (error) {
-    console.log(`Failed to send Slack message`, error);
+    console.log(
+      `Failed to send Slack message, ${JSON.stringify(args, bigIntReplacer)}`,
+      error
+    );
   }
 }
 
