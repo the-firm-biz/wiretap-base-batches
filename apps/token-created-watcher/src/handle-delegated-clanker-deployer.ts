@@ -2,6 +2,7 @@ import { getTokenDeploymentSource } from './get-token-deployment-source.js';
 import { handleClankerFarcaster } from './handle-clanker-farcaster.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { getTokenContext } from './get-token-context.js';
+import { bigIntReplacer } from '@wiretap/utils/shared';
 
 export async function handleDelegatedClankerDeployer(
   tokenCreatedData: TokenCreatedOnChainParams
@@ -31,4 +32,7 @@ export async function handleDelegatedClankerDeployer(
   //   source: 'handle-delegated-clanker-deployer',
   //   tokenScoreDetails: null
   // });
+  console.log(
+    `Unsupported deployment source ${deploymentSource} with token ${JSON.stringify(tokenCreatedData, bigIntReplacer)}`
+  );
 }
