@@ -1,0 +1,1 @@
+ALTER TABLE "glider_portfolios" ALTER COLUMN "portfolio_id" SET DATA TYPE text;
