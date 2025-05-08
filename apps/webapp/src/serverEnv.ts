@@ -6,6 +6,7 @@ const serverEnvSchema = z.object({
   DATABASE_URL: secretString,
   SIWE_JWT_SECRET: secretString,
   ZERODEV_RPC: secretString,
+  GLIDER_API_KEY: secretString,
   // For devx - validator private key only required if working with session keys
   KERNEL_VALIDATOR_PRIVATE_KEY: secretString.optional(),
   // For secure storage of session keys

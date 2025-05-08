@@ -16,8 +16,8 @@ export const gliderPortfolios = pgTable(
     wireTapAccountId: integer('wire_tap_account_id')
       .notNull()
       .references(() => wireTapAccounts.id),
-    /** Glider's unique Portfolio ID */
-    portfolioId: integer('portfolio_id').notNull().unique(),
+    /** Glider's unique Portfolio ID i.e. kqxd14od */
+    portfolioId: text('portfolio_id').notNull().unique(),
     /** Session Key Account address for the Glider Portfolio */
     address: text('address').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
