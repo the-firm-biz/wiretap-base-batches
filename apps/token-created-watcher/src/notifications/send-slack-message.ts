@@ -85,7 +85,17 @@ function getOrdinalSuffix(num: number) {
   return suffixes[lastDigit] || 'th';
 }
 
-export const sendSlackMessage = async ({
+export async function sendSlackMessage(
+  args: SlackMessageDetails
+): Promise<void> {
+  try {
+    await _sendSlackMessage(args);
+  } catch (error) {
+    console.log(`Failed to send Slack message`, error);
+  }
+}
+
+const _sendSlackMessage = async ({
   tokenAddress,
   tokenName,
   tokenSymbol,
