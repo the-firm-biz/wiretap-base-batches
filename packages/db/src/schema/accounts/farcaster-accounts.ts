@@ -5,6 +5,9 @@ import { accountEntities } from './account-entities.js';
 export const farcasterAccounts = pgTable('farcaster_accounts', {
   id: serial('id').primaryKey(),
   username: text('username').notNull(),
+  displayName: text('display_name'),
+  pfpUrl: text('pfp_url'),
+  followerCount: integer('follower_count'),
   fid: integer('fid').notNull().unique(),
   accountEntityId: integer('account_entity_id')
     .notNull()

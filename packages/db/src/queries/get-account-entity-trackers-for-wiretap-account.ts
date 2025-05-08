@@ -22,7 +22,7 @@ export async function getAccountEntityTrackersForWireTapAccount(
     !existingAccountEntityTrackers ||
     existingAccountEntityTrackers.length === 0
   ) {
-    return undefined;
+    return undefined; // TODO: return empty array?
   }
 
   return existingAccountEntityTrackers;

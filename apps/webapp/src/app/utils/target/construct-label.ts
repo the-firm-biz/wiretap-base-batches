@@ -1,5 +1,6 @@
 import { Basename } from '@wiretap/utils/shared';
 import { Address } from 'viem';
+import { formatAddress } from '../format/format-address';
 
 type LabelOptions = {
   socialName?: string;
@@ -21,7 +22,7 @@ export const constructLabel = ({
     return basename;
   }
   if (evmAddress) {
-    return evmAddress;
+    return formatAddress(evmAddress);
   }
   if (socialUsername) {
     return socialUsername; // Note: user indeed can have nothing at all except username
