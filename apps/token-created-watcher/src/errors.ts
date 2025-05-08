@@ -19,7 +19,8 @@ export class TokenIndexerError extends Error {
       {
         message: this.message,
         source: this.source,
-        details: this.details
+        details: this.details,
+        stack: this.stack?.replaceAll('\n', ';')
       },
       null,
       2

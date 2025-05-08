@@ -1,26 +1,35 @@
 import { handleNotifySlack } from '@wiretap/utils/server';
 import { TokenIndexerError } from '../errors.js';
 import { env } from '../env.js';
+import { bigIntReplacer } from '@wiretap/utils/shared';
 
 const divider = '='.repeat(56);
 
 const mentionGroup = '<!subteam^S089U6A8WKB>';
 
-export const sendSlackIndexerError = (error: unknown) => {
+export async function sendSlackIndexerError(error: unknown) {
+  try {
+    await _sendSlackIndexerError(error);
+  } catch (e) {
+    console.error(
+      `Failed to send Slack message with error ${JSON.stringify(error, bigIntReplacer)}`,
+      e
+    );
+  }
+}
+
+const _sendSlackIndexerError = async (error: unknown) => {
   if (error instanceof TokenIndexerError) {
-    sendSlackTokenIndexerError(error);
+    await sendSlackTokenIndexerError(error);
     return;
   }
-  if (error instanceof Error) {
-    sendSlackGenericIndexerError(error.message);
-    return;
-  }
-  sendSlackGenericIndexerError(`Unknown error: ${error}`);
+  await sendSlackGenericIndexerError(`Unknown error: ${error}`);
 };
 
 export const sendSlackTokenIndexerError = async (error: TokenIndexerError) => {
-  console.log(`TokenIndexerError in ${error.source} - ${error.message}`);
-  console.log(error.toLogString());
+  console.error(
+    `TokenIndexerError in ${error.source} - ${error.message}: ${error.toLogString()};`
+  );
   if (!env.IS_SLACK_NOTIFICATION_ENABLED) {
     console.log('Slack notifications are disabled');
     return;
@@ -35,13 +44,18 @@ export const sendSlackTokenIndexerError = async (error: TokenIndexerError) => {
   });
 };
 
-export const sendSlackGenericIndexerError = async (errorMessage: string) => {
-  console.log(`Generic indexer error - ${errorMessage}`);
+export const sendSlackGenericIndexerError = async (error: unknown) => {
+  console.error(
+    `Generic indexer error - ${JSON.stringify(error, bigIntReplacer)}`
+  );
   if (!env.IS_SLACK_NOTIFICATION_ENABLED) {
     console.log('Slack notifications are disabled');
     return;
   }
-  const message = `${divider}\n:exclamation: :exclamation: :exclamation: ${mentionGroup} *${errorMessage}*`;
+  let message = `${divider}\n:exclamation: :exclamation: :exclamation: ${mentionGroup}`;
+  if (error instanceof Error) {
+    message = `${message} *${error.message}*\n${error.stack}`;
+  }
   await handleNotifySlack(message, {
     slackToken: env.SLACK_ESPIONAGEBOT_TOKEN,
     slackChannelId: env.WIRETAP_NOTIFICATIONS_CHANNEL_ID

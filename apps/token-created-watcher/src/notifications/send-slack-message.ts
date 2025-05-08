@@ -6,6 +6,7 @@ import {
   DELEGATED_CLANKER_DEPLOYER_ADDRESSES
 } from '@wiretap/config';
 import type { TokenScoreDetails } from '../token-score/get-token-score.js';
+import { bigIntReplacer } from '@wiretap/utils/shared';
 
 type SlackMessageDetails = {
   tokenAddress: string;
@@ -85,7 +86,20 @@ function getOrdinalSuffix(num: number) {
   return suffixes[lastDigit] || 'th';
 }
 
-export const sendSlackMessage = async ({
+export async function sendSlackMessage(
+  args: SlackMessageDetails
+): Promise<void> {
+  try {
+    await _sendSlackMessage(args);
+  } catch (error) {
+    console.log(
+      `Failed to send Slack message, ${JSON.stringify(args, bigIntReplacer)}`,
+      error
+    );
+  }
+}
+
+const _sendSlackMessage = async ({
   tokenAddress,
   tokenName,
   tokenSymbol,

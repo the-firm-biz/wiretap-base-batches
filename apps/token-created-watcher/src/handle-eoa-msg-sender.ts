@@ -7,7 +7,6 @@ import { commitTokenDetailsToDb } from './commits/commit-token-details-to-db.js'
 import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
-import { sendSlackIndexerError } from './notifications/send-slack-indexer-error.js';
 import { getTokenScore } from './token-score/get-token-score.js';
 
 export async function handleEOAMsgSender(
@@ -25,42 +24,36 @@ export async function handleEOAMsgSender(
     tokenCreatedData.msgSender
   ]);
 
+  let createdDbRows = undefined;
   if (!userResponse || userResponse.length === 0) {
-    // [4 concurrent]
-    try {
-      const createdDbRows = await commitTokenDetailsToDb({
-        tokenCreatedData,
-        tokenCreatorAddress: tokenCreatedData.msgSender,
-        tokenScore: null
-      });
-      sendSlackMessage({
-        tokenAddress: createdDbRows.token.address,
-        transactionHash: createdDbRows.token.deploymentTransactionHash,
-        tokenName: createdDbRows.token.name,
-        tokenSymbol: createdDbRows.token.symbol,
-        deployerContractAddress: createdDbRows.deployerContract.address,
-        latencyMs: tokenCreatedData.block.timestamp
-          ? createdDbRows.token.createdAt.getTime() -
-            tokenCreatedData.block.timestamp?.getTime()
-          : undefined,
-        source: 'handle-eoa-msg-sender',
-        tokenScoreDetails: null
-      });
-    } catch (error) {
-      sendSlackIndexerError(error);
-    }
-    return;
+    createdDbRows = await commitTokenDetailsToDb({
+      tokenCreatedData,
+      tokenCreatorAddress: tokenCreatedData.msgSender,
+      tokenScore: null
+    });
+  } else {
+    // Since we've checked userResponse is not empty, we can safely assert this is defined
+    const neynarUser = userResponse[0]!;
+    const tokenScoreDetails = await getTokenScore(neynarUser);
+    createdDbRows = await handleTokenWithFarcasterUser(
+      tokenCreatedData,
+      tokenCreatedData.msgSender,
+      neynarUser,
+      tokenScoreDetails
+    );
   }
 
-  // Since we've checked userResponse is not empty, we can safely assert this is defined
-  const neynarUser = userResponse[0]!;
-
-  const tokenScoreDetails = await getTokenScore(neynarUser);
-
-  await handleTokenWithFarcasterUser(
-    tokenCreatedData,
-    tokenCreatedData.msgSender,
-    neynarUser,
-    tokenScoreDetails
-  );
+  sendSlackMessage({
+    tokenAddress: createdDbRows.token.address,
+    transactionHash: createdDbRows.token.deploymentTransactionHash,
+    tokenName: createdDbRows.token.name,
+    tokenSymbol: createdDbRows.token.symbol,
+    deployerContractAddress: createdDbRows.deployerContract.address,
+    latencyMs: tokenCreatedData.block.timestamp
+      ? createdDbRows.token.createdAt.getTime() -
+        tokenCreatedData.block.timestamp?.getTime()
+      : undefined,
+    source: 'handle-eoa-msg-sender',
+    tokenScoreDetails: null
+  });
 }
