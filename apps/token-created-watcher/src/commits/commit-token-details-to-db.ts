@@ -1,11 +1,11 @@
 import { env } from '../env.js';
 import {
+  type Contract,
+  createBlock,
+  type FarcasterAccount,
   getOrCreateDeployerContract,
   getOrCreateToken,
   PooledDbConnection,
-  createBlock,
-  type Contract,
-  type FarcasterAccount,
   type Token,
   type Wallet,
   type XAccount
@@ -52,7 +52,7 @@ export const commitTokenDetailsToDb = async ({
   const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
 
   try {
-    const txResponse = await dbPool.db.transaction(async (tx) => {
+    return await dbPool.db.transaction(async (tx) => {
       const deployerContract = await getOrCreateDeployerContract(tx, {
         address: deployerContractAddress
       });
@@ -89,7 +89,6 @@ export const commitTokenDetailsToDb = async ({
         xAccounts
       };
     });
-    return txResponse;
   } finally {
     await dbPool.endPoolConnection();
   }
