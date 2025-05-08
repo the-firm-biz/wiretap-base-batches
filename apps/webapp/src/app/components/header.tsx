@@ -1,11 +1,11 @@
 'use client';
 
-import { WalletButton } from '@/app/components/wallet/wallet-button';
+import { HeaderWalletButton } from '@/app/components/wallet/header-wallet-button';
 import { textStyles } from '@/app/styles/template-strings';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
 import { cn } from '@/app/utils/cn';
 import { ClassValue } from 'clsx';
+import { useIsMounted } from '@/app/hooks/use-is-mounted';
 interface HeaderProps {
   pageTitle: string;
   pageTitleClassName?: ClassValue;
@@ -25,7 +25,7 @@ export function Header({
         </h1>
         <div className="flex gap-4 items-center">
           <PaletteSwitcher />
-          <WalletButton />
+          <HeaderWalletButton />
         </div>
       </div>
     </header>
@@ -34,11 +34,9 @@ export function Header({
 
 export function PaletteSwitcher() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const isMounted = useIsMounted();
 
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) return null;
+  if (!isMounted) return null;
 
   return (
     <div className="flex gap-2">

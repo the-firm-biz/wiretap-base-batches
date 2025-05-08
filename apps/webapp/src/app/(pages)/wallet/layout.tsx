@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Header } from '@/app/components/ui/header';
+import { Header } from '@/app/components/header';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),

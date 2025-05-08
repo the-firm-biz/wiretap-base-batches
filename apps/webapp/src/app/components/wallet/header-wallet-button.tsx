@@ -9,11 +9,11 @@ import {
 
 import { Button } from '../ui/button';
 import { base, mainnet } from 'viem/chains';
-import Image from 'next/image';
 import { Skeleton } from '../ui/skeleton';
 import { useIsMounted } from '@/app/hooks/use-is-mounted';
+import Image from 'next/image';
 
-export function WalletButton() {
+export function HeaderWalletButton() {
   const { open } = useAppKit();
   const { address, isConnecting } = useAccount();
 
