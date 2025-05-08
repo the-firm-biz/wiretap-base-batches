@@ -1,7 +1,6 @@
 /**
  * These correspond to semantic typography styles in Figma
  * They should be used in the className prop of a text component to apply the correct styles
- * @todo Bigeon - add real text styles. This is an example implementation.
  */
 export const textStyles = {
   button: 'font-mono text-sm',
