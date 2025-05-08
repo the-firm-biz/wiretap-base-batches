@@ -15,7 +15,46 @@ export default function BigeonsBasementPage() {
       )}
     >
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <h1 className={textStyles['title1']}>WireTap</h1>
+        {/* Logo test area */}
+        <div className="flex items-center gap-2 p-4">
+          <p>Logo used on main background</p>
+          <Image
+            className="block dark:hidden"
+            src="/logo-wiretap-onlight.svg"
+            alt="WireTap Logo"
+            width={168}
+            height={56}
+          />
+          <Image
+            className="hidden dark:block"
+            src="/logo-wiretap-ondark.svg"
+            alt="WireTap Logo"
+            width={168}
+            height={56}
+          />
+        </div>
+        <div className="flex items-center gap-2 p-4 bg-accent text-accent-foreground">
+          <p>Logo version for inverse background</p>
+          <Image
+            className="block dark:hidden"
+            src="/logo-wiretap-ondark.svg"
+            alt="WireTap Logo on dark background"
+            width={168}
+            height={56}
+          />
+          <Image
+            className="hidden dark:block"
+            src="/logo-wiretap-onlight.svg"
+            alt="WireTap Logo on light background"
+            width={168}
+            height={56}
+          />
+        </div>
+        <div className="flex gap-4 items-center flex-col sm:flex-row p-4 bg-[url(/patterns/warning-pattern.png)]">
+          <Button variant="secondary">
+            ! Warning! This button is in a striped area! Aaaah !
+          </Button>
+        </div>
         <p className={textStyles['compact']}>
           Compact Compact Compact Compact Compact{' '}
         </p>
