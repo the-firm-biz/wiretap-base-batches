@@ -36,3 +36,7 @@ export function createHttpPublicClient(
     )
   });
 }
+
+export type ViemClient =
+  | PublicClient<HttpTransport, typeof base>
+  | PublicClient<WebSocketTransport, typeof base>;
