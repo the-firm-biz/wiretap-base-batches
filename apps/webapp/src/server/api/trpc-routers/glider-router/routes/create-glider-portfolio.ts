@@ -59,6 +59,13 @@ export const createGliderPortfolio = privateProcedure
     }): Promise<GliderPortfolio> => {
       const { authedAddress, wireTapAccountId, db } = ctx;
 
+      if (!serverEnv.GLIDER_API_KEY) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'GLIDER_API_KEY is not set'
+        });
+      }
+
       const existingGliderPortfolio = await getGliderPortfolioForWireTapAccount(
         db,
         wireTapAccountId

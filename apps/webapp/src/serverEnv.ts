@@ -5,10 +5,12 @@ const serverEnvSchema = z.object({
   NEYNAR_API_KEY: secretString,
   DATABASE_URL: secretString,
   SIWE_JWT_SECRET: secretString,
-  ZERODEV_RPC: secretString,
-  GLIDER_API_KEY: secretString,
-  // For devx - validator private key only required if working with session keys
+  // Glider API Key is only required if interacting with Glider API
+  GLIDER_API_KEY: secretString.optional(),
+  // Validator private key only required if working with session keys
   KERNEL_VALIDATOR_PRIVATE_KEY: secretString.optional(),
+  // ZeroDev RPC only required if working with session keys
+  ZERODEV_RPC: secretString,
   // For secure storage of session keys
   SESSION_KEY_ENCRYPTION_SECRET: secretString.optional()
 });
