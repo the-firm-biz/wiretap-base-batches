@@ -7,6 +7,7 @@ interface DitheredImageProps {
   alt: string;
   width?: number;
   height?: number;
+  priority?: boolean;
   mode?: 'mono' | 'color';
   bayerMatrix?: 2 | 4 | 'auto'; // Lets us specify the Bayer Matrix grid size (resolution), but by default automatically uses a smaller matrix for smaller images
 }
@@ -16,6 +17,7 @@ export default function DitheredImage({
   alt,
   width,
   height,
+  priority = false,
   mode = 'mono',
   bayerMatrix = 'auto'
 }: DitheredImageProps) {
@@ -229,6 +231,7 @@ export default function DitheredImage({
         alt={alt}
         width={renderWidth}
         height={renderHeight}
+        loading={priority ? 'eager' : 'lazy'} // Use priority for loading
         // The below style hides the image but still lets it load. If removed, it'll be visible briefly before the dithered version is rendered, which could be desirable in a different use case.
         style={{
           position: 'absolute',

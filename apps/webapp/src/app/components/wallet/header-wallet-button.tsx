@@ -12,7 +12,7 @@ import { base, mainnet } from 'viem/chains';
 import { Skeleton } from '../ui/skeleton';
 import { useIsMounted } from '@/app/hooks/use-is-mounted';
 import Image from 'next/image';
-
+import DitheredImage from '../dithered-image';
 export function HeaderWalletButton() {
   const { open } = useAppKit();
   const { address, isConnecting } = useAccount();
@@ -60,7 +60,7 @@ export function HeaderWalletButton() {
 
     if (isLoadingNamesAvatars || isConnecting) {
       return (
-        <Skeleton className="rounded-full bg-background w-[32px] h-[32px]" />
+        <Skeleton className="rounded-full bg-background border border-border w-[32px] h-[32px]" />
       );
     }
 
@@ -72,12 +72,22 @@ export function HeaderWalletButton() {
     const avatarSrc = baseAvatar ?? ensAvatar;
 
     if (!avatarSrc) {
-      // @todo: Bigeon - 'no avatar' scenario
-      return <div className="rounded-full bg-red-400 w-[32px] h-[32px]" />;
+      return (
+        <div className="rounded-full bg-background border border-border w-[32px] h-[32px] overflow-hidden">
+          <DitheredImage
+            src="/user.png"
+            alt={baseName || ensName || address}
+            width={32}
+            height={32}
+            mode="color"
+            priority
+          />
+        </div>
+      );
     }
 
     return (
-      <div className="rounded-full overflow-hidden">
+      <div className="rounded-full bg-background border border-border overflow-hidden">
         <Image
           src={avatarSrc}
           alt={baseName || ensName || address}

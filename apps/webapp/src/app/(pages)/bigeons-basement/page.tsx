@@ -195,21 +195,21 @@ export default function BigeonsBasementPage() {
             mode="color"
           />
           <DitheredImage
-            src="/businessperson.png"
+            src="/user.png"
             alt="Dithered test"
             width={32}
             height={32}
             bayerMatrix={4}
           />
           <DitheredImage
-            src="/businessperson.png"
+            src="/user.png"
             alt="Dithered test"
             width={32}
             height={32}
             // automatically uses smaller matrix at this size
           />
           <DitheredImage
-            src="/businessperson.png"
+            src="/user.png"
             alt="test"
             width={32}
             height={32}
