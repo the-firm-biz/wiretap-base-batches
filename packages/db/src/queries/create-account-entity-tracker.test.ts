@@ -65,7 +65,6 @@ describe('createAccountEntityTracker ', () => {
       .from(accountEntityTrackers);
     expect(dbAccountEntityTrackers.length).toBe(1);
     expect(dbAccountEntityTrackers[0]!).toStrictEqual({
-      id: expect.any(Number),
       createdAt: expect.any(Date),
       ...differentAccountsAccountEntityTracker
     });
@@ -82,7 +81,6 @@ describe('createAccountEntityTracker ', () => {
       .from(accountEntityTrackers);
     expect(dbAccountEntityTrackers.length).toBe(1);
     expect(dbAccountEntityTrackers[0]!).toStrictEqual({
-      id: expect.any(Number),
       createdAt: expect.any(Date),
       ...sameAccountEntityTracker
     });
@@ -97,7 +95,7 @@ describe('createAccountEntityTracker ', () => {
       expect.objectContaining({
         code: '23505', // unique constraint violation
         constraint:
-          'account_entity_trackers_tracker_wire_tap_account_id_tracked_account_entity_id_unique'
+          'account_entity_trackers_tracker_wire_tap_account_id_tracked_acc'
       })
     );
   });
