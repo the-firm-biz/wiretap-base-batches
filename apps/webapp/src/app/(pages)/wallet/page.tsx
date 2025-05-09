@@ -7,6 +7,8 @@ import { useAccount } from 'wagmi';
 import { wagmiConfig } from '@/app/utils/wagmi';
 
 import { Hex } from 'viem';
+import { GliderPortfolioBalance } from './components/glider-portfolio-balance';
+import { Button } from '@/app/components/ui/button';
 
 export default function WalletPage() {
   const { address } = useAccount();
@@ -34,9 +36,16 @@ export default function WalletPage() {
 
   return (
     <div>
-      <button onClick={() => handleGetSignatureClick()}>
-        Get Signature & Create Portfolio
-      </button>
+      <div className="bg-accent pb-4">
+        <div className="flex flex-col gap-4 max-w-screen-md w-full mx-auto py-2">
+          <GliderPortfolioBalance />
+        </div>
+      </div>
+      <div className="p-4">
+        <Button onClick={() => handleGetSignatureClick()}>
+          Get Signature & Create Portfolio
+        </Button>
+      </div>
     </div>
   );
 }
