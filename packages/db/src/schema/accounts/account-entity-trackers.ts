@@ -33,5 +33,5 @@ export const accountEntityTrackers = pgTable(
   ]
 );
 
-export type TrackedAccountEntity = typeof accountEntityTrackers.$inferSelect;
-export type NewTrackedAccountEntity = typeof accountEntityTrackers.$inferInsert;
+export type AccountEntityTracker = typeof accountEntityTrackers.$inferSelect;
+export type NewAccountEntityTracker = typeof accountEntityTrackers.$inferInsert;
