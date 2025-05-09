@@ -29,7 +29,11 @@ export default function WalletPage() {
       accountIndex: response.accountIndex
     });
 
-    console.log(createdPortfolio);
+    const depositCallData = await trpc.glider.getGliderDepositCallData.query({
+      portfolioId: createdPortfolio.portfolioId
+    });
+
+    console.log(depositCallData);
   };
 
   return (

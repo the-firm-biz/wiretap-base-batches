@@ -1,8 +1,8 @@
 import { privateProcedure } from '@/server/api/trpc';
 import { serverEnv } from '@/serverEnv';
-import { base } from 'viem/chains';
+import { z } from 'zod';
 
-export interface GliderCreatePortfolioSignatureData {
+export interface GliderDepositCallData {
   userAddress: string;
   signatureAction: {
     reason: string;
@@ -19,32 +19,42 @@ export interface GliderCreatePortfolioSignatureData {
   permissions: any[];
 }
 
-interface GliderCreatePortfolioSignatureResponse {
-  data: GliderCreatePortfolioSignatureData;
+interface GliderDepositCallDataResponse {
+  data: GliderDepositCallData;
 }
 
-export const getGliderCreatePortfolioSignatureData = privateProcedure.query(
-  async ({ ctx }): Promise<GliderCreatePortfolioSignatureData> => {
-    const { authedAddress } = ctx;
+export const getGliderDepositCallData = privateProcedure
+  .input(
+    z.object({
+      portfolioId: z.string()
+    })
+  )
+  .query(
+    async ({ ctx, input: { portfolioId } }): Promise<GliderDepositCallData> => {
+      const { authedAddress } = ctx;
 
-    const response = await fetch(
-      'https://api.glider.fi/v1/portfolio/create/signature',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-KEY': serverEnv.GLIDER_API_KEY
-        },
-        body: JSON.stringify({
-          userAddress: authedAddress, // The wallet that will own the portfolio
-          chainIds: [base.id] // Chain IDs where the portfolio will exist
-        })
-      }
-    );
+      const depositResponse = await fetch(
+        `https://api.glider.fi/v1/portfolio/${portfolioId}/deposit`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-KEY': serverEnv.GLIDER_API_KEY
+          },
+          body: JSON.stringify({
+            amount: '1000000000000000000', // 1 ETH in wei
+            tokenAddress: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH
+            chainId: 8453, // Base
+            senderAddress: authedAddress
+          })
+        }
+      );
 
-    const createSignatureResponse =
-      (await response.json()) as GliderCreatePortfolioSignatureResponse;
+      const depositCallData =
+        (await depositResponse.json()) as GliderDepositCallDataResponse;
 
-    return createSignatureResponse.data;
-  }
-);
+      console.log(depositCallData);
+
+      return depositCallData.data;
+    }
+  );
