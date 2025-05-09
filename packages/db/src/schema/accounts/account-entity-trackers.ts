@@ -3,8 +3,8 @@ import {
   serial,
   timestamp,
   integer,
-  uniqueIndex,
-  bigint
+  bigint,
+  primaryKey
 } from 'drizzle-orm/pg-core';
 import { wireTapAccounts } from './wire-tap-accounts.js';
 import { accountEntities } from './account-entities.js';
@@ -27,9 +27,9 @@ export const accountEntityTrackers = pgTable(
     updatedAt: timestamp('updated_at')
   },
   (table) => [
-    uniqueIndex(
-      'tracked_account_entities_tracker_wire_tap_account_id_tracked_account_entity_id_unique'
-    ).on(table.trackerWireTapAccountId, table.trackedAccountEntityId)
+    primaryKey({
+      columns: [table.trackerWireTapAccountId, table.trackedAccountEntityId]
+    })
   ]
 );
 
