@@ -53,8 +53,6 @@ describe('createAccountEntityTracker ', () => {
     };
   });
 
-  // Is fine to have the same Account Entity Tracker for the same WireTap account
-
   it('creates and returns Account Entity Tracker', async () => {
     const response = await createAccountEntityTracker(
       db,
