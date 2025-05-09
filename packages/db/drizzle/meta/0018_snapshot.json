@@ -78,12 +78,8 @@
           "name": "farcaster_accounts_account_entity_id_account_entities_id_fk",
           "tableFrom": "farcaster_accounts",
           "tableTo": "account_entities",
-          "columnsFrom": [
-            "account_entity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_entity_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -93,9 +89,7 @@
         "farcaster_accounts_fid_unique": {
           "name": "farcaster_accounts_fid_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "fid"
-          ]
+          "columns": ["fid"]
         }
       },
       "policies": {},
@@ -160,12 +154,8 @@
           "name": "wallets_account_entity_id_account_entities_id_fk",
           "tableFrom": "wallets",
           "tableTo": "account_entities",
-          "columnsFrom": [
-            "account_entity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_entity_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -173,12 +163,8 @@
           "name": "wallets_verification_source_id_verification_sources_id_fk",
           "tableFrom": "wallets",
           "tableTo": "verification_sources",
-          "columnsFrom": [
-            "verification_source_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["verification_source_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -231,12 +217,8 @@
           "name": "x_accounts_account_entity_id_account_entities_id_fk",
           "tableFrom": "x_accounts",
           "tableTo": "account_entities",
-          "columnsFrom": [
-            "account_entity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_entity_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -246,9 +228,7 @@
         "x_accounts_xid_unique": {
           "name": "x_accounts_xid_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "xid"
-          ]
+          "columns": ["xid"]
         }
       },
       "policies": {},
@@ -291,12 +271,8 @@
           "name": "wire_tap_accounts_account_entity_id_account_entities_id_fk",
           "tableFrom": "wire_tap_accounts",
           "tableTo": "account_entities",
-          "columnsFrom": [
-            "account_entity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_entity_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -306,9 +282,7 @@
         "wire_tap_accounts_account_entity_id_unique": {
           "name": "wire_tap_accounts_account_entity_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "account_entity_id"
-          ]
+          "columns": ["account_entity_id"]
         }
       },
       "policies": {},
@@ -459,12 +433,8 @@
           "name": "glider_portfolios_wire_tap_account_id_wire_tap_accounts_id_fk",
           "tableFrom": "glider_portfolios",
           "tableTo": "wire_tap_accounts",
-          "columnsFrom": [
-            "wire_tap_account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["wire_tap_account_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -474,9 +444,7 @@
         "glider_portfolios_portfolio_id_unique": {
           "name": "glider_portfolios_portfolio_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "portfolio_id"
-          ]
+          "columns": ["portfolio_id"]
         }
       },
       "policies": {},
@@ -553,12 +521,8 @@
           "name": "targets_wire_tap_account_id_wire_tap_accounts_id_fk",
           "tableFrom": "targets",
           "tableTo": "wire_tap_accounts",
-          "columnsFrom": [
-            "wire_tap_account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["wire_tap_account_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -566,12 +530,8 @@
           "name": "targets_target_account_entity_id_account_entities_id_fk",
           "tableFrom": "targets",
           "tableTo": "account_entities",
-          "columnsFrom": [
-            "target_account_entity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["target_account_entity_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -685,12 +645,8 @@
           "name": "tokens_deployment_contract_id_contracts_id_fk",
           "tableFrom": "tokens",
           "tableTo": "contracts",
-          "columnsFrom": [
-            "deployment_contract_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["deployment_contract_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -698,12 +654,8 @@
           "name": "tokens_account_entity_id_account_entities_id_fk",
           "tableFrom": "tokens",
           "tableTo": "account_entities",
-          "columnsFrom": [
-            "account_entity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_entity_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -711,12 +663,8 @@
           "name": "tokens_block_blocks_number_fk",
           "tableFrom": "tokens",
           "tableTo": "blocks",
-          "columnsFrom": [
-            "block"
-          ],
-          "columnsTo": [
-            "number"
-          ],
+          "columnsFrom": ["block"],
+          "columnsTo": ["number"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -841,12 +789,8 @@
           "name": "wire_tap_session_keys_wire_tap_account_id_wire_tap_accounts_id_fk",
           "tableFrom": "wire_tap_session_keys",
           "tableTo": "wire_tap_accounts",
-          "columnsFrom": [
-            "wire_tap_account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["wire_tap_account_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -856,9 +800,7 @@
         "wire_tap_session_keys_encrypted_session_key_unique": {
           "name": "wire_tap_session_keys_encrypted_session_key_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "encrypted_session_key"
-          ]
+          "columns": ["encrypted_session_key"]
         }
       },
       "policies": {},
