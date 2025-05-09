@@ -11,6 +11,8 @@ import { tokens } from '../schema/tokens.js';
 import { blocks } from '../schema/blocks.js';
 import { verificationSources } from '../schema/verification-sources.js';
 import { wireTapSessionKeys } from '../schema/wire-tap-session-keys.js';
+import { gliderPortfolios } from '../schema/glider-portfolio.js';
+import { targets } from '../schema/targets.js';
 
 /**
  * WARNING: This function is unsafe and should only be used in test files
@@ -19,6 +21,8 @@ import { wireTapSessionKeys } from '../schema/wire-tap-session-keys.js';
  */
 export const unsafe__clearDbTables = async (db: NeonHttpDatabase) => {
   await db.delete(tokens);
+  await db.delete(targets);
+  await db.delete(gliderPortfolios);
   await db.delete(wallets);
   await db.delete(farcasterAccounts);
   await db.delete(xAccounts);
