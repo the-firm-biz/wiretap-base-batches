@@ -6,12 +6,11 @@ import {
   useAvatar as useBaseNameAvatar,
   useName as useBaseName
 } from '@coinbase/onchainkit/identity';
-
+import Image from 'next/image';
 import { Button } from '../ui/button';
 import { base, mainnet } from 'viem/chains';
 import { Skeleton } from '../ui/skeleton';
 import { useIsMounted } from '@/app/hooks/use-is-mounted';
-import DitheredImage from '../dithered-image';
 
 export function HeaderWalletButton() {
   const { open } = useAppKit();
@@ -74,12 +73,11 @@ export function HeaderWalletButton() {
     if (!avatarSrc) {
       return (
         <div className="rounded-full bg-background border border-border w-[32px] h-[32px] overflow-hidden">
-          <DitheredImage
-            src="/user.png"
+          <Image
+            src="/user-dithered.png"
             alt={baseName || ensName || address}
             width={32}
             height={32}
-            mode="color"
             priority
           />
         </div>
@@ -88,12 +86,11 @@ export function HeaderWalletButton() {
 
     return (
       <div className="rounded-full bg-background border border-border overflow-hidden">
-        <DitheredImage
+        <Image
           src={avatarSrc}
           alt={baseName || ensName || address}
           width={32}
           height={32}
-          mode="color"
           priority
         />
       </div>
