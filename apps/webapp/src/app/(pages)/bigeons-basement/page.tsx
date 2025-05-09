@@ -5,7 +5,6 @@ import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { cn } from '@/app/utils/cn';
 import DitheredImage from '../../components/dithered-image';
-
 export default function BigeonsBasementPage() {
   return (
     <div
@@ -107,17 +106,114 @@ export default function BigeonsBasementPage() {
           <Input placeholder="password" type="password"></Input>
         </div>
         <div className="flex gap-4 items-center flex-col sm:flex-row">
+          <p>96</p>
           <DitheredImage
             src="/glory.png"
             alt="Dithered test"
-            width={184}
-            height={240}
+            width={256}
+            height={256}
           />
-          <Image
+          <DitheredImage
             src="/glory.png"
-            alt="Non-dithered test"
-            width={184}
-            height={240}
+            alt="Dithered test"
+            width={96}
+            height={96}
+            bayerMatrix={2}
+          />
+          <DitheredImage
+            src="/glory.png"
+            alt="Dithered test"
+            width={96}
+            height={96}
+            mode="color"
+          />
+          <p>64</p>
+          <DitheredImage
+            src="/glory.png"
+            alt="Dithered test"
+            width={64}
+            height={64}
+          />
+          <DitheredImage
+            src="/glory.png"
+            alt="Dithered test"
+            width={64}
+            height={64}
+            bayerMatrix={2}
+          />
+          <DitheredImage
+            src="/glory.png"
+            alt="Dithered test"
+            width={64}
+            height={64}
+            mode="color"
+          />
+        </div>
+        <div className="flex gap-4 items-center flex-col sm:flex-row">
+          <p>48</p>
+          <DitheredImage
+            src="/glory.png"
+            alt="Dithered test"
+            width={48}
+            height={48}
+            bayerMatrix={4}
+          />
+          <DitheredImage
+            src="/glory.png"
+            alt="Dithered test"
+            width={48}
+            height={48}
+            // automatically uses smaller matrix at this size
+          />
+          <DitheredImage
+            src="/glory.png"
+            alt="Dithered test"
+            width={48}
+            height={48}
+            mode="color"
+          />
+          <p>32</p>
+          <DitheredImage
+            src="/glory.png"
+            alt="Dithered test"
+            width={32}
+            height={32}
+            bayerMatrix={4}
+          />
+          <DitheredImage
+            src="/glory.png"
+            alt="Dithered test"
+            width={32}
+            height={32}
+            // automatically uses smaller matrix at this size
+          />
+          <DitheredImage
+            src="/glory.png"
+            alt="test"
+            width={32}
+            height={32}
+            mode="color"
+          />
+          <DitheredImage
+            src="/businessperson.png"
+            alt="Dithered test"
+            width={32}
+            height={32}
+            bayerMatrix={4}
+          />
+          <DitheredImage
+            src="/businessperson.png"
+            alt="Dithered test"
+            width={32}
+            height={32}
+            // automatically uses smaller matrix at this size
+          />
+          <DitheredImage
+            src="/businessperson.png"
+            alt="test"
+            width={32}
+            height={32}
+            mode="color"
           />
         </div>
         <div className="flex gap-4 items-center flex-col sm:flex-row">
