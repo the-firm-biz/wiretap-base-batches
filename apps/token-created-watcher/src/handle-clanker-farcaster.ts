@@ -1,6 +1,5 @@
 import {
   callWithBackOff,
-  fetchBulkUsers,
   getSingletonNeynarClient,
   lookupCastConversation,
   type NeynarAPIClient,
@@ -37,19 +36,14 @@ export async function handleClankerFarcaster(
       clankerFarcasterArgs
     );
 
-  const userResponse = await fetchBulkUsers(neynarClient, [
-    clankerFarcasterArgs.fid
-  ]);
-
-  const neynarUser =
-    userResponse && userResponse.length > 0 ? userResponse[0] : undefined;
+  const neynarUser = castAndConversations?.author;
 
   let latencyMs: number | undefined = undefined;
   const tokenScoreDetails = neynarUser ? await getTokenScore(neynarUser) : null;
 
   if (castAndConversations && isValidCast && neynarUser) {
-    const tokenCreatorAddress = neynarUser.verified_addresses.primary
-      .eth_address as Address;
+    const tokenCreatorAddress = castAndConversations?.author.verified_addresses
+      .primary.eth_address as Address;
     const createdDbRows = await handleTokenWithFarcasterUser(
       tokenCreatedData,
       tokenCreatorAddress,
