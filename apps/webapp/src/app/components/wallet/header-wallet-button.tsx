@@ -11,8 +11,8 @@ import { Button } from '../ui/button';
 import { base, mainnet } from 'viem/chains';
 import { Skeleton } from '../ui/skeleton';
 import { useIsMounted } from '@/app/hooks/use-is-mounted';
-import Image from 'next/image';
 import DitheredImage from '../dithered-image';
+
 export function HeaderWalletButton() {
   const { open } = useAppKit();
   const { address, isConnecting } = useAccount();
