@@ -2,7 +2,7 @@ import { getTokenDeploymentSource } from './get-token-deployment-source.js';
 import { handleClankerFarcaster } from './handle-clanker-farcaster.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { getTokenContext } from './get-token-context.js';
-import { sendSlackMessage } from './notifications/send-slack-message.js';
+import { bigIntReplacer } from '@wiretap/utils/shared';
 
 export async function handleDelegatedClankerDeployer(
   tokenCreatedData: TokenCreatedOnChainParams
@@ -22,13 +22,17 @@ export async function handleDelegatedClankerDeployer(
     return;
   }
 
-  sendSlackMessage({
-    tokenAddress: tokenCreatedData.tokenAddress,
-    transactionHash: tokenCreatedData.transactionHash,
-    tokenName: tokenCreatedData.tokenName,
-    tokenSymbol: tokenCreatedData.symbol,
-    deployerContractAddress: tokenCreatedData.deployerContractAddress,
-    source: 'handle-delegated-clanker-deployer',
-    tokenScoreDetails: null
-  });
+  // TODO: this is slack noice, we do not store anything
+  // sendSlackMessage({
+  //   tokenAddress: tokenCreatedData.tokenAddress,
+  //   transactionHash: tokenCreatedData.transactionHash,
+  //   tokenName: tokenCreatedData.tokenName,
+  //   tokenSymbol: tokenCreatedData.symbol,
+  //   deployerContractAddress: tokenCreatedData.deployerContractAddress,
+  //   source: 'handle-delegated-clanker-deployer',
+  //   tokenScoreDetails: null
+  // });
+  console.log(
+    `Unsupported deployment source ${deploymentSource} with token ${JSON.stringify(tokenCreatedData, bigIntReplacer)}`
+  );
 }
