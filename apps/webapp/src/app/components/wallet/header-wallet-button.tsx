@@ -88,11 +88,13 @@ export function HeaderWalletButton() {
 
     return (
       <div className="rounded-full bg-background border border-border overflow-hidden">
-        <Image
+        <DitheredImage
           src={avatarSrc}
           alt={baseName || ensName || address}
           width={32}
           height={32}
+          mode="color"
+          priority
         />
       </div>
     );
