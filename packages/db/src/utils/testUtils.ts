@@ -12,7 +12,7 @@ import { blocks } from '../schema/blocks.js';
 import { verificationSources } from '../schema/verification-sources.js';
 import { wireTapSessionKeys } from '../schema/wire-tap-session-keys.js';
 import { gliderPortfolios } from '../schema/glider-portfolio.js';
-import { targets } from '../schema/targets.js';
+import { accountEntityTrackers } from '../schema/accounts/account-entity-trackers.js';
 
 /**
  * WARNING: This function is unsafe and should only be used in test files
@@ -21,7 +21,7 @@ import { targets } from '../schema/targets.js';
  */
 export const unsafe__clearDbTables = async (db: NeonHttpDatabase) => {
   await db.delete(tokens);
-  await db.delete(targets);
+  await db.delete(accountEntityTrackers);
   await db.delete(gliderPortfolios);
   await db.delete(wallets);
   await db.delete(farcasterAccounts);
