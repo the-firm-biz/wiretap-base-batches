@@ -7,13 +7,19 @@ interface DitheredImageProps {
   alt: string;
   width?: number;
   height?: number;
+  priority?: boolean;
+  mode?: 'mono' | 'color';
+  bayerMatrix?: 2 | 4 | 'auto'; // Lets us specify the Bayer Matrix grid size (resolution), but by default automatically uses a smaller matrix for smaller images
 }
 
 export default function DitheredImage({
   src,
   alt,
   width,
-  height
+  height,
+  priority = false,
+  mode = 'mono',
+  bayerMatrix = 'auto'
 }: DitheredImageProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -56,7 +62,11 @@ export default function DitheredImage({
         uImageSize: { value: new THREE.Vector2(imgSize.width, imgSize.height) },
         uColor1: { value: new THREE.Color(0.7843, 0.8235, 0.78) }, // Our sage-200
         uColor2: { value: new THREE.Color(0.153, 0.18, 0.16) }, // Our sage-900
-        uDitherLevel: { value: 0 }
+        uDitherLevel: { value: 0 },
+        uWidth: { value: renderWidth },
+        uHeight: { value: renderHeight },
+        uMode: { value: mode === 'color' ? 1 : 0 },
+        uBayerSize: { value: bayerMatrix === 2 ? 2 : bayerMatrix === 4 ? 4 : 0 }
       },
       vertexShader: `
         varying vec2 vUv;
@@ -72,8 +82,20 @@ export default function DitheredImage({
         uniform vec3 uColor1;
         uniform vec3 uColor2;
         uniform float uDitherLevel;
+        uniform float uWidth;
+        uniform float uHeight;
+        uniform int uMode;
+        uniform int uBayerSize;
         varying vec2 vUv;
 
+        // 2x2 Bayer matrix
+        float bayer2x2(vec2 pos) {
+          int x = int(mod(pos.x, 2.0));
+          int y = int(mod(pos.y, 2.0));
+          int index = x + y * 2;
+          float[4] bayer = float[4](0.0, 2.0, 3.0, 1.0);
+          return bayer[index] / 4.0;
+        }
         // 4x4 Bayer matrix
         float bayer4x4(vec2 pos) {
           int x = int(mod(pos.x, 4.0));
@@ -88,31 +110,69 @@ export default function DitheredImage({
           return bayer[index] / 16.0;
         }
 
-        // Fit image into plane with letterboxing (contain)
-        vec2 getContainUv(vec2 uv, vec2 plane, vec2 image) {
+        // Fit image into plane with cropping (cover)
+        vec2 getCoverUv(vec2 uv, vec2 plane, vec2 image) {
           float planeRatio = plane.x / plane.y;
           float imageRatio = image.x / image.y;
-          vec2 newUv = uv;
-          if (imageRatio > planeRatio) {
-            float scale = planeRatio / imageRatio;
-            newUv.y = (uv.y - 0.5) * scale + 0.5;
-          } else {
-            float scale = imageRatio / planeRatio;
-            newUv.x = (uv.x - 0.5) * scale + 0.5;
-          }
-          return newUv;
+          float scale = (imageRatio > planeRatio)
+            ? plane.y / image.y
+            : plane.x / image.x;
+          vec2 scaledImage = image * scale;
+          vec2 offset = (plane - scaledImage) * 0.5;
+          vec2 coverUv = (uv * plane - offset) / scaledImage;
+          return coverUv;
+        }
+
+        // Color quantization function
+        vec3 quantizeColor(vec3 color, float levels) {
+          return floor(color * levels + 0.5) / levels;
         }
 
         void main() {
-          vec2 uv = getContainUv(vUv, uResolution, uImageSize);
-          vec4 color = texture2D(uTexture, uv);
-          float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-          float contrast = 1.3; // Increase for more contrast
-          gray = (gray - 0.5) * contrast + 0.5;
-          gray = clamp(gray, 0.0, 1.0);
-          float threshold = bayer4x4(gl_FragCoord.xy);
-          float dithered = step(threshold, gray * uDitherLevel);
-          gl_FragColor = vec4(mix(uColor2, uColor1, dithered), 1.0);
+          vec2 coverUv = getCoverUv(vUv, uResolution, uImageSize);
+          if (coverUv.x < 0.0 || coverUv.x > 1.0 || coverUv.y < 0.0 || coverUv.y > 1.0) {
+            discard;
+          }
+          vec4 color = texture2D(uTexture, coverUv);
+          float levels = 4.0;
+          float threshold;
+
+          // Bayer matrix selection logic: automatically use a smaller matrix for smaller images
+          if (uBayerSize == 2) {
+            threshold = bayer2x2(gl_FragCoord.xy);
+          } else if (uBayerSize == 4) {
+            threshold = bayer4x4(gl_FragCoord.xy);
+          } else {
+            // Adjust the below threshold to change size at which matrix changes
+            if (uWidth <= 48.0 || uHeight <= 48.0) { 
+              threshold = bayer2x2(gl_FragCoord.xy);
+            } else {
+              threshold = bayer4x4(gl_FragCoord.xy);
+            }
+          }
+          
+          // If mode is color, use color dithering, otherwise use monochrome dithering
+          if (uMode == 1) {
+            // Color dithering
+            vec3 quantized = quantizeColor(color.rgb, levels);
+            vec3 dithered = quantized + (threshold - 0.5) * (1.0 / levels) * uDitherLevel;
+            dithered = clamp(dithered, 0.0, 1.0);
+            gl_FragColor = vec4(dithered, color.a);
+          } else {
+            // Monochrome dithering
+            float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+            float contrast = 1.5; // Increase for more contrast
+            float gamma = 0.8;
+            gray = (gray - 0.5) * contrast + 0.5;
+            gray = pow(gray, gamma);
+            gray = clamp(gray, 0.0, 1.0);
+            float dithered = step(threshold, gray * uDitherLevel);
+            if (gray <= 0.015) {
+              gl_FragColor = vec4(uColor2, 1.0); // force dark
+              return;
+            }
+            gl_FragColor = vec4(mix(uColor2, uColor1, dithered), 1.0);
+          }
         }
       `
     });
@@ -146,7 +206,7 @@ export default function DitheredImage({
       geometry.dispose();
       texture.dispose();
     };
-  }, [renderWidth, renderHeight, src, imgLoaded, imgSize]);
+  }, [renderWidth, renderHeight, src, imgLoaded, imgSize, mode, bayerMatrix]);
 
   useEffect(() => {
     if (imgRef.current && imgRef.current.complete && !imgLoaded) {
@@ -171,6 +231,7 @@ export default function DitheredImage({
         alt={alt}
         width={renderWidth}
         height={renderHeight}
+        loading={priority ? 'eager' : 'lazy'} // Use priority for loading
         // The below style hides the image but still lets it load. If removed, it'll be visible briefly before the dithered version is rendered, which could be desirable in a different use case.
         style={{
           position: 'absolute',
