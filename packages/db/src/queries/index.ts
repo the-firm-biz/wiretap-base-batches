@@ -8,6 +8,7 @@ export * from './create-wallets.js';
 export * from './create-wire-tap-account.js';
 export * from './create-x-account.js';
 export * from './create-x-accounts.js';
+export * from './create-account-entity-tracker.js';
 export * from './get-farcaster-account.js';
 export * from './get-farcaster-accounts.js';
 export * from './get-glider-portfolio-for-wire-tap-account.js';
