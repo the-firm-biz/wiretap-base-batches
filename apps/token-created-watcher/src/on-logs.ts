@@ -3,7 +3,12 @@ import {
   type ClankerAbi,
   DELEGATED_CLANKER_DEPLOYER_ADDRESSES
 } from '@wiretap/config';
-import { isAddressEqual } from '@wiretap/utils/shared';
+import {
+  type Context,
+  isAddressEqual,
+  Span,
+  trace
+} from '@wiretap/utils/shared';
 import { handleDelegatedClankerDeployer } from './handle-delegated-clanker-deployer.js';
 import { handleEOAMsgSender } from './handle-eoa-msg-sender.js';
 import { deconstructLog, type TokenCreatedLog } from './types/token-created.js';
@@ -16,16 +21,32 @@ export function onLogs(
   resetReconnectReties();
   // @todo parallelize in case multiple logs are returned
   logs.forEach(async (log: TokenCreatedLog) => {
+    const span = new Span(log.address);
     try {
-      await onLog(log);
+      await onLog({ tracing: { parentSpan: span } }, log);
+      span.finish('ok');
     } catch (error) {
+      span.finish('failed');
       sendSlackIndexerError(error);
     }
   });
 }
 
-export async function onLog(log: TokenCreatedLog) {
-  const onChainToken = await deconstructLog(log);
+export async function onLog(ctx: Context, log: TokenCreatedLog) {
+  const { tracing: { parentSpan } = {} } = ctx;
+  const onChainToken = await trace(
+    (contextSpan) =>
+      deconstructLog(
+        {
+          tracing: { parentSpan: contextSpan }
+        },
+        log
+      ),
+    {
+      name: 'deconstructLog',
+      parentSpan: parentSpan
+    }
+  );
 
   if (!onChainToken) {
     return;
@@ -37,7 +58,19 @@ export async function onLog(log: TokenCreatedLog) {
   ).some((address) => isAddressEqual(address, onChainToken.msgSender));
 
   if (isDelegatedDeployer) {
-    await handleDelegatedClankerDeployer(onChainToken);
+    await trace(
+      (contextSpan) =>
+        handleDelegatedClankerDeployer(
+          {
+            tracing: { parentSpan: contextSpan }
+          },
+          onChainToken
+        ),
+      {
+        name: 'handleDelegatedClankerDeployer',
+        parentSpan
+      }
+    );
     return;
   }
 

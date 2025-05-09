@@ -4,7 +4,7 @@ import type { ExtractAbiEvent } from 'abitype';
 import { httpPublicClient } from '../rpc-clients.js';
 import type { Block } from './block.js';
 import { callWithBackOff } from '@wiretap/utils/server';
-import { bigIntReplacer } from '@wiretap/utils/shared';
+import { bigIntReplacer, type Context } from '@wiretap/utils/shared';
 
 export type TokenCreatedOnChainParams = {
   transactionHash: `0x${string}`;
@@ -25,6 +25,7 @@ export type TokenCreatedLog = Log<
 >;
 
 export async function deconstructLog(
+  { tracing }: Context,
   log: TokenCreatedLog
 ): Promise<TokenCreatedOnChainParams | undefined> {
   const {
@@ -42,7 +43,10 @@ export async function deconstructLog(
 
   const block = await callWithBackOff(
     () => httpPublicClient.getBlock({ blockNumber }),
-    'getBlock'
+    {
+      name: 'getBlock',
+      tracing
+    }
   );
 
   const timestamp = block

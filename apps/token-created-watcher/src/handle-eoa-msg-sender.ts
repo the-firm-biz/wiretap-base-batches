@@ -49,10 +49,12 @@ export async function handleEOAMsgSender(
     tokenName: createdDbRows.token.name,
     tokenSymbol: createdDbRows.token.symbol,
     deployerContractAddress: createdDbRows.deployerContract.address,
-    latencyMs: tokenCreatedData.block.timestamp
-      ? createdDbRows.token.createdAt.getTime() -
-        tokenCreatedData.block.timestamp?.getTime()
-      : undefined,
+    tracing: {
+      latencyMs: tokenCreatedData.block.timestamp
+        ? createdDbRows.token.createdAt.getTime() -
+          tokenCreatedData.block.timestamp?.getTime()
+        : undefined
+    },
     source: 'handle-eoa-msg-sender',
     tokenScoreDetails: null
   });
