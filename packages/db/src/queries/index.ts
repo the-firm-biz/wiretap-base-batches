@@ -1,3 +1,4 @@
+export * from './create-account-entity-tracker.js';
 export * from './count-tokens-by-creator.js';
 export * from './create-account-entity.js';
 export * from './create-block.js';
@@ -8,7 +9,7 @@ export * from './create-wallets.js';
 export * from './create-wire-tap-account.js';
 export * from './create-x-account.js';
 export * from './create-x-accounts.js';
-export * from './create-account-entity-tracker.js';
+export * from './get-account-entity-trackers-for-wiretap-account.js';
 export * from './get-farcaster-account.js';
 export * from './get-farcaster-accounts.js';
 export * from './get-glider-portfolio-for-wire-tap-account.js';
