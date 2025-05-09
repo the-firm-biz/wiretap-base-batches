@@ -9,8 +9,8 @@ import {
 import { wireTapAccounts } from './wire-tap-accounts.js';
 import { accountEntities } from './account-entities.js';
 
-export const trackedAccountEntities = pgTable(
-  'tracked_account_entities',
+export const accountEntityTrackers = pgTable(
+  'account_entity_trackers',
   {
     id: serial('id').primaryKey(),
     /** WireTapAccount doing the tracking */
@@ -33,6 +33,5 @@ export const trackedAccountEntities = pgTable(
   ]
 );
 
-export type TrackedAccountEntity = typeof trackedAccountEntities.$inferSelect;
-export type NewTrackedAccountEntity =
-  typeof trackedAccountEntities.$inferInsert;
+export type TrackedAccountEntity = typeof accountEntityTrackers.$inferSelect;
+export type NewTrackedAccountEntity = typeof accountEntityTrackers.$inferInsert;
