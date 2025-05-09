@@ -1,6 +1,5 @@
 import {
   pgTable,
-  serial,
   timestamp,
   integer,
   bigint,
@@ -12,7 +11,6 @@ import { accountEntities } from './account-entities.js';
 export const accountEntityTrackers = pgTable(
   'account_entity_trackers',
   {
-    id: serial('id').primaryKey(),
     /** WireTapAccount doing the tracking */
     trackerWireTapAccountId: integer('tracker_wire_tap_account_id')
       .notNull()
