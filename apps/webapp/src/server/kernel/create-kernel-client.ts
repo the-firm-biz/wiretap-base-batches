@@ -31,9 +31,14 @@ const publicClient = createPublicClient({
  */
 export const createKernelClient = async (serializedSessionKey: string) => {
   const kernelValidatorPrivateKey = serverEnv.KERNEL_VALIDATOR_PRIVATE_KEY;
+  const zeroDevRpc = serverEnv.ZERODEV_RPC;
 
   if (!kernelValidatorPrivateKey) {
     throw new Error('KERNEL_VALIDATOR_PRIVATE_KEY is not set');
+  }
+
+  if (!zeroDevRpc) {
+    throw new Error('ZERODEV_RPC is not set');
   }
 
   // STEP 1: Create backend validator signer with the PRIVATE key

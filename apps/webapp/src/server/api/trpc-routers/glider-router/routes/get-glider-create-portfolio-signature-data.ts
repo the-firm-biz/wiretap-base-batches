@@ -1,5 +1,6 @@
 import { privateProcedure } from '@/server/api/trpc';
 import { serverEnv } from '@/serverEnv';
+import { TRPCError } from '@trpc/server';
 import { base } from 'viem/chains';
 
 export interface GliderCreatePortfolioSignatureData {
@@ -26,6 +27,13 @@ interface GliderCreatePortfolioSignatureResponse {
 export const getGliderCreatePortfolioSignatureData = privateProcedure.query(
   async ({ ctx }): Promise<GliderCreatePortfolioSignatureData> => {
     const { authedAddress } = ctx;
+
+    if (!serverEnv.GLIDER_API_KEY) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'GLIDER_API_KEY is not set'
+      });
+    }
 
     const response = await fetch(
       'https://api.glider.fi/v1/portfolio/create/signature',
