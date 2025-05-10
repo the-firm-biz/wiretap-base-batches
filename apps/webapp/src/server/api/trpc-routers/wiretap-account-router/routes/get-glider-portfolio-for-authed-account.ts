@@ -10,6 +10,6 @@ export const getGliderPortfolioForAuthedAccount = privateProcedure.query(
       wireTapAccountId
     );
 
-    return gliderPortfolio;
+    return gliderPortfolio || null;
   }
 );
