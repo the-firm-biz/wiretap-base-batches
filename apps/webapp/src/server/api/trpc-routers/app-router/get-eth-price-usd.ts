@@ -16,7 +16,13 @@ export const getEthPriceUsd = publicProcedure.query(
   async (): Promise<number> => {
     const URL = `https://api.g.alchemy.com/prices/v1/${clientEnv.NEXT_PUBLIC_ALCHEMY_API_KEY}/tokens/by-symbol`;
 
-    const response = await fetch(`${URL}?${['ETH']}`, {
+    // Define token symbols we want to fetch prices for.
+    const symbols = ['ETH'];
+    const params = new URLSearchParams();
+    symbols.forEach((symbol) => params.append('symbols', symbol));
+    const urlWithParams = `${URL}?${params.toString()}`;
+
+    const response = await fetch(urlWithParams, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
