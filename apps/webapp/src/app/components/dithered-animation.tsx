@@ -1,17 +1,7 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import * as THREE from 'three';
 import { useTheme } from 'next-themes';
-
-function resolveCssVar(varName: string, fallback: string) {
-  if (typeof window !== 'undefined') {
-    const value = getComputedStyle(document.documentElement)
-      .getPropertyValue(varName)
-      .trim();
-    if (value) return value;
-  }
-  return fallback;
-}
 
 export default function DitheredAnimation({ speed = 0.2, style = {} }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -26,12 +16,20 @@ export default function DitheredAnimation({ speed = 0.2, style = {} }) {
   }, []);
 
   const isDarkMode = resolvedTheme === 'dark';
-  const color1 = isDarkMode
-    ? new THREE.Color(0.7843, 0.8235, 0.7882)
-    : new THREE.Color(0.153, 0.18, 0.16);
-  const color2 = isDarkMode
-    ? new THREE.Color(0.153, 0.18, 0.16)
-    : new THREE.Color(0.7843, 0.8235, 0.7882);
+  const color1 = useMemo(
+    () =>
+      isDarkMode
+        ? new THREE.Color(0.7843, 0.8235, 0.7882)
+        : new THREE.Color(0.153, 0.18, 0.16),
+    [isDarkMode]
+  );
+  const color2 = useMemo(
+    () =>
+      isDarkMode
+        ? new THREE.Color(0.153, 0.18, 0.16)
+        : new THREE.Color(0.7843, 0.8235, 0.7882),
+    [isDarkMode]
+  );
 
   useEffect(() => {
     if (!mounted || !resolvedTheme) return;
@@ -181,7 +179,6 @@ export default function DitheredAnimation({ speed = 0.2, style = {} }) {
       ref={containerRef}
       className="absolute inset-0 w-full h-full overflow-hidden"
       style={{
-        background: `var(--color-background)`,
         ...style
       }}
     >

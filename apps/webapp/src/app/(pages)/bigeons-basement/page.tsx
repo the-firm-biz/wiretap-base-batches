@@ -74,7 +74,7 @@ export default function BigeonsBasementPage() {
                 'inline bg-background'
               )}
             >
-              ...before regular shmucks even know they've launched.
+              ...before regular shmucks even know they&apos;ve launched.
             </p>
           </div>
           <div className="flex p-4 w-full mt-4">
