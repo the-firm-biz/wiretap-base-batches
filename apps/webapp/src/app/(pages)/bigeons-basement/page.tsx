@@ -49,7 +49,7 @@ export default function BigeonsBasementPage() {
             height={56}
           />
         </div>
-        <div className="flex gap-4 items-center flex-col sm:flex-row p-4 bg-[url(/patterns/warning-pattern.png)]">
+        <div className="flex gap-4 items-center flex-col sm:flex-row p-4 bg-[url(/patterns/warning-pattern.png)] [image-rendering:pixelated]">
           <Button variant="secondary">
             ! Warning! This button is in a striped area! Aaaah !
           </Button>
