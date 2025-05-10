@@ -23,7 +23,7 @@ const _sendSlackIndexerError = async (error: unknown) => {
     await sendSlackTokenIndexerError(error);
     return;
   }
-  await sendSlackGenericIndexerError(`Unknown error: ${error}`);
+  await sendSlackGenericIndexerError(error);
 };
 
 export const sendSlackTokenIndexerError = async (error: TokenIndexerError) => {
@@ -52,9 +52,9 @@ export const sendSlackGenericIndexerError = async (error: unknown) => {
     console.log('Slack notifications are disabled');
     return;
   }
-  let message = `${divider}\n:exclamation: :exclamation: :exclamation: ${mentionGroup}`;
+  let message = `${divider}\n:exclamation: :exclamation: :exclamation: ${mentionGroup}\n Unknown error`;
   if (error instanceof Error) {
-    message = `${message} *${error.message}*\n${error.stack}`;
+    message = `${message}: *${error.message}*\n${error.stack}`;
   }
   await handleNotifySlack(message, {
     slackToken: env.SLACK_ESPIONAGEBOT_TOKEN,
