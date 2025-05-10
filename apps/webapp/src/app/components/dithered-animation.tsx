@@ -13,7 +13,7 @@ function resolveCssVar(varName: string, fallback: string) {
   return fallback;
 }
 
-export default function DitheredAnimation({ speed = 0.1, style = {} }) {
+export default function DitheredAnimation({ speed = 0.2, style = {} }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [visible, setVisible] = useState(false);
@@ -97,8 +97,15 @@ export default function DitheredAnimation({ speed = 0.1, style = {} }) {
         void main() {
           vec2 uv = vUv;
           float t = u_time * u_speed;
-          // 
-          float grad = smoothstep(0.0, 1.0, (uv.y + 0.3) + 0.2 * sin(t + uv.x * 2.0));
+        // adjust uv.y + x to move the gradient up and to the right
+          float grad = smoothstep(
+            0.0, 1.0,
+            (uv.y + 0.3)
+              + 0.02 * sin(t * 1.0)
+              + 0.02 * cos(t * 0.7 + uv.x * 3.0)
+              + 0.015 * sin(t * 1.7 - uv.x * 5.0)
+              + 0.2 * sin(t + uv.x * 2.0)
+          );
           float threshold = bayer8x8(gl_FragCoord.xy);
           float dithered = step(threshold * uDitherLevel, grad);
           vec3 color = mix(u_color1, u_color2, dithered);
@@ -184,7 +191,7 @@ export default function DitheredAnimation({ speed = 0.1, style = {} }) {
         style={{
           imageRendering: 'pixelated',
           opacity: visible ? 1 : 0,
-          transition: 'opacity 0.4s'
+          transition: 'opacity 0.5s'
         }}
       />
     </div>
