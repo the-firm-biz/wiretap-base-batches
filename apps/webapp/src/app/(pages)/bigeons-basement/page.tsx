@@ -180,24 +180,27 @@ export default function BigeonsBasementPage() {
           />
         </div>
         <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <DitheredImage
-            src="/banner-clanker.png"
-            alt="Clanker"
-            width={240}
-            height={72}
-          />
-          <DitheredImage
-            src="/banner-bankr.png"
-            alt="Bankr"
-            width={240}
-            height={72}
-          />
-          <DitheredImage
-            src="/banner-zora.png"
-            alt="Zora"
-            width={240}
-            height={72}
-          />
+          <DitheredImage src="/banner-clanker.png" alt="Clanker" />
+          <DitheredImage src="/banner-bankr.png" alt="Bankr" />
+
+          {/* Example "coming soon" banner with blurry overlay */}
+          <div className="relative">
+            <DitheredImage src="/banner-bankr.png" alt="Bankr" />
+            <div
+              className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none"
+              style={{
+                backgroundImage:
+                  "url('/patterns/translucent-grill-pattern.png') ",
+                backgroundRepeat: 'repeat',
+                backgroundSize: 'auto',
+                imageRendering: 'pixelated'
+              }}
+            >
+              <Badge variant="secondary">Coming Soon</Badge>
+            </div>
+          </div>
+
+          <DitheredImage src="/banner-zora.png" alt="Zora" />
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
