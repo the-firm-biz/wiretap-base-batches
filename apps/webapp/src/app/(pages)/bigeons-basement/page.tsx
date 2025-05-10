@@ -51,7 +51,9 @@ export default function BigeonsBasementPage() {
             height={56}
           />
         </div>
-        <div className="relative w-full min-h-[400px]">
+
+        {/* Start of dithered animation section */}
+        <div className="relative w-full min-h-[400px] rounded-lg border border-border overflow-hidden">
           <DitheredAnimation
             style={{
               position: 'absolute',
@@ -60,10 +62,23 @@ export default function BigeonsBasementPage() {
               pointerEvents: 'none'
             }}
           />
-          <div className="relative z-10 p-4">
-            <h2>Hello, World!</h2>
-            <p>The content appears above the animated dithered background.</p>
-            <button>Click me</button>
+          <div className="relative z-10 p-4 w-2/3">
+            <p className={cn(textStyles['body'], 'inline bg-background')}>
+              Automatically snap up tokens from social accounts you follow...
+            </p>
+            <br />
+            <br />
+            <p
+              className={cn(
+                textStyles['body-emphasis'],
+                'inline bg-background'
+              )}
+            >
+              ...before regular shmucks even know they've launched.
+            </p>
+          </div>
+          <div className="flex p-4 w-full mt-4">
+            <Button size="lg">Initiate Protocol</Button>
           </div>
         </div>
 

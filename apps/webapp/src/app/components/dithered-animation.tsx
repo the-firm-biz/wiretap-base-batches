@@ -27,11 +27,11 @@ export default function DitheredAnimation({ speed = 0.1, style = {} }) {
 
   const isDarkMode = resolvedTheme === 'dark';
   const color1 = isDarkMode
-    ? resolveCssVar('--color-foreground', '#c8d2c9')
-    : resolveCssVar('--color-foreground', '#262e29');
+    ? new THREE.Color(0.7843, 0.8235, 0.7882)
+    : new THREE.Color(0.153, 0.18, 0.16);
   const color2 = isDarkMode
-    ? resolveCssVar('--color-background', '#262e29')
-    : resolveCssVar('--color-background', '#c8d2c9');
+    ? new THREE.Color(0.153, 0.18, 0.16)
+    : new THREE.Color(0.7843, 0.8235, 0.7882);
 
   useEffect(() => {
     if (!mounted || !resolvedTheme) return;
@@ -55,8 +55,8 @@ export default function DitheredAnimation({ speed = 0.1, style = {} }) {
       uniforms: {
         u_time: { value: 0 },
         u_resolution: { value: new THREE.Vector2(width, height) },
-        u_color1: { value: new THREE.Color(color1) },
-        u_color2: { value: new THREE.Color(color2) },
+        u_color1: { value: color1 },
+        u_color2: { value: color2 },
         u_speed: { value: speed },
         uDitherLevel: { value: 0 }
       },
@@ -77,26 +77,29 @@ export default function DitheredAnimation({ speed = 0.1, style = {} }) {
         uniform float uDitherLevel;
         varying vec2 vUv;
 
-        float bayer4x4(vec2 pos) {
-          int x = int(mod(pos.x, 4.0));
-          int y = int(mod(pos.y, 4.0));
-          int index = x + y * 4;
-          float[16] bayer = float[16](
-            0.0,  8.0,  2.0, 10.0,
-            12.0, 4.0, 14.0, 6.0,
-            3.0, 11.0, 1.0, 9.0,
-            15.0, 7.0, 13.0, 5.0
+        float bayer8x8(vec2 pos) {
+          int x = int(mod(pos.x, 8.0));
+          int y = int(mod(pos.y, 8.0));
+          int index = x + y * 8;
+          float[64] bayer = float[64](
+            0.0, 32.0, 8.0, 40.0, 2.0, 34.0, 10.0, 42.0,
+            48.0, 16.0, 56.0, 24.0, 50.0, 18.0, 58.0, 26.0,
+            12.0, 44.0, 4.0, 36.0, 14.0, 46.0, 6.0, 38.0,
+            60.0, 28.0, 52.0, 20.0, 62.0, 30.0, 54.0, 22.0,
+            3.0, 35.0, 11.0, 43.0, 1.0, 33.0, 9.0, 41.0,
+            51.0, 19.0, 59.0, 27.0, 49.0, 17.0, 57.0, 25.0,
+            15.0, 47.0, 7.0, 39.0, 13.0, 45.0, 5.0, 37.0,
+            63.0, 31.0, 55.0, 23.0, 61.0, 29.0, 53.0, 21.0
           );
-          return bayer[index] / 16.0;
+          return bayer[index] / 64.0;
         }
 
         void main() {
           vec2 uv = vUv;
           float t = u_time * u_speed;
-          float grad = smoothstep(0.0, 1.0, uv.y + 0.1 * sin(t + uv.x * 2.0));
-          float fade = smoothstep(1.0, 0.7, uv.y);
-          grad *= fade;
-          float threshold = bayer4x4(gl_FragCoord.xy);
+          // 
+          float grad = smoothstep(0.0, 1.0, (uv.y + 0.3) + 0.2 * sin(t + uv.x * 2.0));
+          float threshold = bayer8x8(gl_FragCoord.xy);
           float dithered = step(threshold * uDitherLevel, grad);
           vec3 color = mix(u_color1, u_color2, dithered);
           gl_FragColor = vec4(color, 1.0);
@@ -171,7 +174,7 @@ export default function DitheredAnimation({ speed = 0.1, style = {} }) {
       ref={containerRef}
       className="absolute inset-0 w-full h-full overflow-hidden"
       style={{
-        background: color1,
+        background: `var(--color-background)`,
         ...style
       }}
     >
