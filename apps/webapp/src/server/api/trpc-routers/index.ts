@@ -1,8 +1,17 @@
 import { createTRPCRouter } from '../trpc';
-import { sessionRouter } from './session-router/create-session-router';
-import { appRouter } from './app-router/create-app-router';
-import { gliderRouter } from './glider-router/create-glider-router';
-import { wireTapAccountRouter } from './wiretap-account-router/create-wiretap-account-router';
+import {
+  sessionRouter,
+  SessionRouterKeys
+} from './session-router/create-session-router';
+import { appRouter, AppRouterKeys } from './app-router/create-app-router';
+import {
+  gliderRouter,
+  GliderRouterKeys
+} from './glider-router/create-glider-router';
+import {
+  wireTapAccountRouter,
+  WireTapAccountRouterKeys
+} from './wiretap-account-router/create-wiretap-account-router';
 
 export const trpcRouter = createTRPCRouter({
   app: appRouter,
@@ -13,3 +22,9 @@ export const trpcRouter = createTRPCRouter({
 
 export type TrpcRouter = typeof trpcRouter;
 export type TrpcRouterKeys = keyof typeof trpcRouter;
+
+export type AllTrpcRouterKeys =
+  | AppRouterKeys
+  | GliderRouterKeys
+  | SessionRouterKeys
+  | WireTapAccountRouterKeys;
