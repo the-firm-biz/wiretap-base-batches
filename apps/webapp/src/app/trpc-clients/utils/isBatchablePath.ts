@@ -1,6 +1,9 @@
 import { AllTrpcRouterKeys } from '@/server/api/trpc-routers';
 
-const NON_BATCHABLE_PATHS: AllTrpcRouterKeys[] = ['getPopularTargets'];
+const NON_BATCHABLE_PATHS: AllTrpcRouterKeys[] = [
+  'getPopularTargets',
+  'targetSearch'
+];
 
 /**
  * Determines if a tRPC operation can be batched in a single HTTP request.

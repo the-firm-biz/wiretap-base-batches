@@ -13,6 +13,11 @@ const CACHE_SETTINGS: Partial<Record<AllTrpcRouterKeys, CacheSettings>> = {
     path: '/api/trpc/app.getPopularTargets',
     cacheSeconds: HOUR_IN_SECONDS,
     cdnCacheSeconds: HOUR_IN_SECONDS
+  },
+  targetSearch: {
+    path: '/api/trpc/app.targetSearch',
+    cacheSeconds: 30,
+    cdnCacheSeconds: 30
   }
 };
 
