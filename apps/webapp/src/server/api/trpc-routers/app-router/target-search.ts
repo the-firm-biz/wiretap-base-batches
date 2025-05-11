@@ -154,7 +154,7 @@ export const targetSearch = publicProcedure
           apiKey: serverEnv.NEYNAR_API_KEY
         });
         const publicClient = createHttpPublicClient({
-          alchemyApiKey: serverEnv.ALCHEMY_API_KEY
+          alchemyApiKey: serverEnv.SERVER_ALCHEMY_API_KEY
         });
 
         const { users: neynarSearchedUsers, nextCursor } =
