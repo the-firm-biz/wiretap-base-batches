@@ -3,5 +3,9 @@ export default function PageContainer({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <main className="p-4 max-w-screen-md w-full mx-auto">{children}</main>;
+  return (
+    <main className="p-4 max-w-screen-md w-full mx-auto flex-1">
+      {children}
+    </main>
+  );
 }
