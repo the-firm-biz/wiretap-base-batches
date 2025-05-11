@@ -6,6 +6,7 @@ import Providers from '@/app/components/providers';
 import './styles/globals.css';
 import { departureMono, ppMondwest, loRes12 } from './styles/font-family';
 import { headers } from 'next/headers';
+import './styles/lcd-grid.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),
@@ -33,6 +34,7 @@ export default async function RootLayout({
       <body
         className={`${ppMondwest.variable} ${loRes12.variable} ${departureMono.variable} antialiased`}
       >
+        <div className="lcd-grid-overlay" aria-hidden="true"></div>
         <Providers cookies={cookies}>
           <div className="flex flex-col min-h-screen">{children}</div>
         </Providers>
