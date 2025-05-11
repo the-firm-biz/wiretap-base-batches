@@ -18,6 +18,7 @@ import {
   isAddressEqual,
   type ViemClient
 } from '@wiretap/utils/shared';
+import { clientEnv } from '@/clientEnv';
 
 export type TargetEntity = {
   fid?: number;
@@ -154,7 +155,7 @@ export const targetSearch = publicProcedure
           apiKey: serverEnv.NEYNAR_API_KEY
         });
         const publicClient = createHttpPublicClient({
-          alchemyApiKey: serverEnv.ALCHEMY_API_KEY
+          alchemyApiKey: clientEnv.NEXT_PUBLIC_ALCHEMY_API_KEY
         });
 
         const { users: neynarSearchedUsers, nextCursor } =
