@@ -18,7 +18,6 @@ import {
   isAddressEqual,
   type ViemClient
 } from '@wiretap/utils/shared';
-import { clientEnv } from '@/clientEnv';
 
 export type TargetEntity = {
   fid?: number;
