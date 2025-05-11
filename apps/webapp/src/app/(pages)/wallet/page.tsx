@@ -39,7 +39,7 @@ export default function WalletPage() {
 
   return (
     <div>
-      <div className="bg-accent pb-4 ">
+      <div className="bg-accent p-4">
         <div className="flex flex-col gap-4 max-w-screen-md w-full mx-auto py-2">
           <GliderPortfolioBalance />
           <div className="flex gap-2">
