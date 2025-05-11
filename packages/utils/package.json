@@ -22,7 +22,8 @@
     "@neynar/nodejs-sdk": "^2.27.1",
     "exponential-backoff": "^3.1.2",
     "viem": "^2.27.0",
-    "zod": "4.0.0-beta.20250415T232143"
+    "zod": "4.0.0-beta.20250415T232143",
+    "@wiretap/config": "workspace:*"
   },
   "devDependencies": {
     "@wiretap/typescript-config": "workspace:*",

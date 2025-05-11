@@ -7,6 +7,7 @@ const optionalInDevSecretString = isDev
   : secretString;
 
 const serverEnvSchema = z.object({
+  ALCHEMY_API_KEY: secretString,
   NEYNAR_API_KEY: secretString,
   DATABASE_URL: secretString,
   SIWE_JWT_SECRET: secretString,
