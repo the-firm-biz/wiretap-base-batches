@@ -1,5 +1,5 @@
+import { Basename } from '@wiretap/utils/shared';
 import { Address } from 'viem';
-import { Basename } from '../../../../../../packages/utils/dist/src/shared/viem';
 
 type LabelOptions = {
   socialName?: string;
