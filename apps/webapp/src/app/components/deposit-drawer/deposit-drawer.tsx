@@ -1,42 +1,55 @@
-import {
-  DrawerContent,
-  DrawerTrigger,
-  DrawerTitle,
-  Drawer
-} from '../ui/drawer';
-import { ReactNode } from 'react';
-import { DepositDrawerFundsSummary } from './funds-summary';
-import { EthDepositForm } from './eth-deposit-form';
-import { useAccount, useBalance } from 'wagmi';
-import { formatUnits } from '@/app/utils/format/format-units';
+import { DrawerContent, DrawerTrigger, Drawer } from '../ui/drawer';
+import { ReactNode, useState } from 'react';
+import { DrawerStepInputDepositAmount } from './drawer-step-input-deposit-amount';
+import { DrawerStepSignGliderMessage } from './drawer-step-sign-glider-message';
+import { Address } from 'viem';
 
 interface DepositDrawerProps {
   trigger: ReactNode;
 }
 
+export type DepositDrawerStep =
+  | 'input-deposit-amount'
+  | 'sign-glider-message'
+  | 'confirm-deposit-tx';
+
+export interface DepositDrawerState {
+  step: DepositDrawerStep;
+  amountEthToDeposit: number;
+  gliderPortfolioAddress: Address | undefined;
+}
+
+const DEFAULT_STATE: DepositDrawerState = {
+  step: 'input-deposit-amount',
+  amountEthToDeposit: 0,
+  gliderPortfolioAddress: undefined
+};
+
 export function DepositDrawer({ trigger }: DepositDrawerProps) {
-  const { address } = useAccount();
-
-  const { data: balance } = useBalance({
-    address: address,
-    query: {
-      enabled: !!address
-    }
-  });
-
-  const balanceAsEth = formatUnits(balance?.value || BigInt(0), 18, 4);
+  const [depositDrawerState, setDepositDrawerState] =
+    useState<DepositDrawerState>(DEFAULT_STATE);
 
   return (
-    <Drawer>
+    <Drawer
+      onOpenChange={() => {
+        // Reset state after the drawer's closing animation is complete
+        setTimeout(() => {
+          setDepositDrawerState(DEFAULT_STATE);
+        }, 500);
+      }}
+    >
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
-        <div className="flex flex-col">
-          <DrawerTitle>Deposit Funds</DrawerTitle>
-          <div className="mt-6" />
-          <DepositDrawerFundsSummary />
-          <div className="mt-8" />
-          <EthDepositForm userBalance={balanceAsEth} />
-        </div>
+        {depositDrawerState?.step === 'input-deposit-amount' && (
+          <DrawerStepInputDepositAmount
+            setDepositDrawerState={setDepositDrawerState}
+          />
+        )}
+        {depositDrawerState?.step === 'sign-glider-message' && (
+          <DrawerStepSignGliderMessage
+            setDepositDrawerState={setDepositDrawerState}
+          />
+        )}
       </DrawerContent>
     </Drawer>
   );

@@ -1,0 +1,42 @@
+@theme {
+  /*
+  @note - Part 1 of AnimatedEllipsisText
+  */
+  --animate-ellipsis1: ellipsis1 1.2s infinite ease-in;
+  @keyframes ellipsis1 {
+    0% {
+      opacity: 0;
+    }
+    25% {
+      opacity: 1;
+    }
+  }
+
+  /*
+  @note - Part 2 of AnimatedEllipsisText
+  */
+  --animate-ellipsis2: ellipsis2 1.2s infinite ease-in;
+  @keyframes ellipsis2 {
+    0%,
+    25% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  /*
+  @note - Part 3 of AnimatedEllipsisText
+  */
+  --animate-ellipsis3: ellipsis3 1.2s infinite ease-in;
+  @keyframes ellipsis3 {
+    0%,
+    50% {
+      opacity: 0;
+    }
+    75% {
+      opacity: 1;
+    }
+  }
+}

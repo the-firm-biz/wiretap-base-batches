@@ -1,5 +1,6 @@
 import z from 'zod';
 import { useForm } from 'react-hook-form';
+import { Dispatch, SetStateAction } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { textStyles } from '@/app/styles/template-strings';
 import { Input } from '../ui/input';
@@ -14,15 +15,20 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { formatUsd } from '@/app/utils/format/format-usd';
+import { DepositDrawerState, DepositDrawerStep } from './deposit-drawer';
 
 interface EthDepositFormProps {
   userBalance: number;
+  setDepositDrawerState: Dispatch<SetStateAction<DepositDrawerState>>;
 }
 
 const REQUIRED_FIELD_MESSAGE = 'Required';
 const TRANSFER_GAS_ESTIMATE_ETH = 0.0000005; // @todo: Can run an actual estimate to get this
 
-export function EthDepositForm({ userBalance }: EthDepositFormProps) {
+export function EthDepositForm({
+  userBalance,
+  setDepositDrawerState
+}: EthDepositFormProps) {
   const trpc = useTRPC();
 
   const formSchema = z.object({
@@ -44,14 +50,26 @@ export function EthDepositForm({ userBalance }: EthDepositFormProps) {
   const hasError = !form.formState.isValid;
   const ethToDepositFormValue = form.watch('ethToDeposit');
 
+  const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery(
+    trpc.wireTapAccount.getGliderPortfolioForAuthedAccount.queryOptions()
+  );
+  const hasExistingPortfolio = !!portfolio;
+
   const { data: ethPriceUsd } = useQuery(
     trpc.app.getEthPriceUsd.queryOptions()
   );
   const usdDisplayValue = formatUsd(ethToDepositFormValue * (ethPriceUsd || 0));
 
   function onSubmitForm(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    console.log(values);
+    const nextStep: DepositDrawerStep = hasExistingPortfolio
+      ? 'confirm-deposit-tx'
+      : 'sign-glider-message';
+
+    setDepositDrawerState((prev) => ({
+      ...prev,
+      amountEthToDeposit: values.ethToDeposit,
+      step: nextStep
+    }));
   }
 
   function getPercentOfBalance(percent: number, roundingDecimals = 5) {
@@ -108,6 +126,7 @@ export function EthDepositForm({ userBalance }: EthDepositFormProps) {
 
                 <div className="relative flex flex-row gap-1 w-full">
                   <Button
+                    type="button"
                     variant="outline"
                     className="flex-1"
                     onClick={() => field.onChange(getPercentOfBalance(25))}
@@ -115,6 +134,7 @@ export function EthDepositForm({ userBalance }: EthDepositFormProps) {
                     25%
                   </Button>
                   <Button
+                    type="button"
                     variant="outline"
                     className="flex-1"
                     onClick={() => field.onChange(getPercentOfBalance(50))}
@@ -122,6 +142,7 @@ export function EthDepositForm({ userBalance }: EthDepositFormProps) {
                     50%
                   </Button>
                   <Button
+                    type="button"
                     variant="outline"
                     className="flex-1"
                     onClick={() => field.onChange(getPercentOfBalance(75))}
@@ -129,6 +150,7 @@ export function EthDepositForm({ userBalance }: EthDepositFormProps) {
                     75%
                   </Button>
                   <Button
+                    type="button"
                     variant="outline"
                     className="flex-1"
                     onClick={() => {
@@ -145,7 +167,11 @@ export function EthDepositForm({ userBalance }: EthDepositFormProps) {
         </div>
 
         <div className="mt-8 flex w-full">
-          <Button className="flex-1" disabled={hasError} type="submit">
+          <Button
+            className="flex-1"
+            disabled={hasError || isLoadingPortfolio}
+            type="submit"
+          >
             Confirm Deposit
           </Button>
         </div>
