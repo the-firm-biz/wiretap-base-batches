@@ -13,7 +13,7 @@
   }
   /* Default body styles */
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }
 /* Text selection styles moved out of the base layer to avoid browser default styles */
