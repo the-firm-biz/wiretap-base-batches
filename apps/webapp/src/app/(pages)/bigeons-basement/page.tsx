@@ -5,6 +5,8 @@ import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { cn } from '@/app/utils/cn';
 import DitheredImage from '../../components/dithered-image';
+import DitheredAnimation from '../../components/dithered-animation';
+
 export default function BigeonsBasementPage() {
   return (
     <div
@@ -49,9 +51,40 @@ export default function BigeonsBasementPage() {
             height={56}
           />
         </div>
+
+        {/* Start of dithered animation section */}
+        <div className="relative w-full min-h-[400px] rounded-lg border border-border overflow-hidden">
+          <DitheredAnimation
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 0,
+              pointerEvents: 'none'
+            }}
+          />
+          <div className="relative z-10 p-4 w-2/3">
+            <p className={cn(textStyles['body'], 'inline bg-background')}>
+              Automatically snap up tokens from social accounts you follow...
+            </p>
+            <br />
+            <br />
+            <p
+              className={cn(
+                textStyles['body-emphasis'],
+                'inline bg-background'
+              )}
+            >
+              ...before regular shmucks even know they&apos;ve launched.
+            </p>
+          </div>
+          <div className="flex p-4 w-full mt-4">
+            <Button size="lg">Initiate Protocol</Button>
+          </div>
+        </div>
+
         <div className="flex gap-4 items-center flex-col sm:flex-row p-4 bg-[url(/patterns/warning-pattern.png)] [image-rendering:pixelated]">
           <Button variant="secondary">
-            ! Warning! This button is in a striped area! Aaaah !
+            ! Warning! Button in striped area! !
           </Button>
         </div>
         <p className={textStyles['compact']}>
@@ -78,8 +111,7 @@ export default function BigeonsBasementPage() {
             Save and see your changes instantly.
           </li>
         </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+        <div className="flex gap-4 items-center flex-wrap">
           <Button>Default</Button>
           <Button variant="secondary">Secondary</Button>
           <Button variant="destructive" size="sm">
@@ -91,21 +123,18 @@ export default function BigeonsBasementPage() {
           <Button variant="ghost">Ghost</Button>
           <Button variant="link">Link</Button>
         </div>
-        <div className="flex gap-4 items-center flex-col sm:flex-row flex-wrap">
+        <div className="flex gap-4 items-center flex-wrap">
           <Badge>Default Badge</Badge>
           <Badge variant="secondary">Secondary Badge</Badge>
           <Badge variant="destructive">Destructive Badge</Badge>
           <Badge variant="outline">Outline Badge</Badge>
         </div>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+        <div className="flex gap-4 items-center flex-wrap">
           <Input placeholder="Placeholder"></Input>
           <Input placeholder="disabled" disabled></Input>
           <Input placeholder="readOnly" readOnly></Input>
-          <Input placeholder="required" required></Input>
-          <Input placeholder="email" type="email"></Input>
-          <Input placeholder="password" type="password"></Input>
         </div>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+        <div className="flex gap-4 items-center flex-wrap">
           <p>96</p>
           <DitheredImage
             src="/glory.png"
@@ -148,15 +177,6 @@ export default function BigeonsBasementPage() {
             height={64}
             mode="color"
           />
-        </div>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <DitheredImage
-            src="/glory.png"
-            alt="test"
-            width={32}
-            height={32}
-            mode="color"
-          />
           <DitheredImage
             src="/user.png"
             alt="Dithered test"
@@ -179,6 +199,7 @@ export default function BigeonsBasementPage() {
             mode="color"
           />
         </div>
+
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <DitheredImage src="/banner-clanker.png" alt="Clanker" />
           <DitheredImage src="/banner-bankr.png" alt="Bankr" />
@@ -201,6 +222,7 @@ export default function BigeonsBasementPage() {
           </div>
 
           <DitheredImage src="/banner-zora.png" alt="Zora" />
+
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
