@@ -9,6 +9,9 @@ import { wagmiConfig } from '@/app/utils/wagmi';
 import { Hex } from 'viem';
 import { GliderPortfolioBalance } from './components/glider-portfolio-balance';
 import { Button } from '@/app/components/ui/button';
+import { DownloadIcon } from '@/app/components/icons/DownloadIcon';
+import { UploadIcon } from '@/app/components/icons/UploadIcon';
+import { DepositDrawer } from '@/app/components/deposit-drawer/deposit-drawer';
 
 export default function WalletPage() {
   const { address } = useAccount();
@@ -36,11 +39,24 @@ export default function WalletPage() {
 
   return (
     <div>
-      <div className="bg-accent pb-4">
+      <div className="bg-accent pb-4 ">
         <div className="flex flex-col gap-4 max-w-screen-md w-full mx-auto py-2">
           <GliderPortfolioBalance />
+          <div className="flex gap-2">
+            <DepositDrawer
+              trigger={
+                <Button variant="outline">
+                  <DownloadIcon className="size-4" /> Deposit
+                </Button>
+              }
+            />
+            <Button variant="outline">
+              <UploadIcon className="size-4" /> Withdraw
+            </Button>
+          </div>
         </div>
       </div>
+
       <div className="p-4">
         <Button onClick={() => handleGetSignatureClick()}>
           Get Signature & Create Portfolio
