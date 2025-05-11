@@ -15,15 +15,11 @@ export function getEnv<T extends z.ZodObject<Record<string, z.ZodTypeAny>>>(
 }
 
 /**
- * Util to prevent leaking secrets in error messages
+ * Validate env boolean values are "0" or "1"
+ * @note with zod 4.0.0, this can be replaced with z.stringbool()
  */
-function secretErrorMap(issue: z.core.$ZodRawIssue<z.core.$ZodIssue>) {
-  return `Error (${issue.code}) for ${issue.path?.join('.')}`;
-}
-
-/**
- * String validation without logging the content
- */
-export const secretString = z.string({
-  error: secretErrorMap
-});
+export const stringBool = z
+  .string()
+  .refine((val) => val === '1' || val === '0', {
+    message: 'Must be "1" or "0"'
+  });
