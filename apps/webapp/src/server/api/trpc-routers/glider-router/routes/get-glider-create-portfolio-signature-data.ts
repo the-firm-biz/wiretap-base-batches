@@ -16,7 +16,6 @@ export interface GliderCreatePortfolioSignatureData {
   accountIndex: string;
   chainIds: number[];
   // @todo jeffrey - glider are creating sdk to help with typing this
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   permissions: any[];
 }
 

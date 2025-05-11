@@ -2,6 +2,10 @@ import { NextRequest } from 'next/server';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
 import { trpcRouter } from '@/server/api/trpc-routers';
 import { createInnerContext } from '@/server/api/trpc';
+import {
+  getCacheControlHeader,
+  getDefaultCacheControlHeader
+} from '@/app/utils/routeCaching';
 
 /**
  * This wraps the `createInnerContext` helper and provides the required context for the tRPC API when
@@ -28,7 +32,25 @@ const handler = (req: NextRequest) =>
               `❌ tRPC failed on ${path ?? '<no-path>'}: ${error.message}`
             );
           }
-        : undefined
+        : undefined,
+    responseMeta: (opts) => {
+      const { pathname } = new URL(req.url);
+      const cacheControlHeader = getCacheControlHeader(pathname);
+      if (opts.errors.length > 0) {
+        // Override cache settings to a short duration for error responses
+        // since browsers like Chrome cache even 500 responses with Cache-Control headers
+        return {
+          headers: {
+            'cache-control': getDefaultCacheControlHeader()
+          }
+        };
+      }
+      return {
+        headers: {
+          'cache-control': cacheControlHeader
+        }
+      };
+    }
   });
 
 export { handler as GET, handler as POST };
