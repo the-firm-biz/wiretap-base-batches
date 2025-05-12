@@ -38,7 +38,7 @@ export function EthDepositForm({
   const trpc = useTRPC();
 
   const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery(
-    trpc.wireTapAccount.getGliderPortfolioForAuthedAccount.queryOptions()
+    trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
   const hasExistingPortfolio = !!portfolio;
 

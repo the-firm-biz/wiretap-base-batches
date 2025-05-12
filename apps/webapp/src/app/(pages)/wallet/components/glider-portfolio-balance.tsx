@@ -13,7 +13,7 @@ export function GliderPortfolioBalance() {
   const trpc = useTRPC();
 
   const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery(
-    trpc.wireTapAccount.getGliderPortfolioForAuthedAccount.queryOptions()
+    trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
   const { data: tokenPrice, isLoading: isLoadingTokenPrice } = useQuery(
     trpc.app.getEthPriceUsd.queryOptions()

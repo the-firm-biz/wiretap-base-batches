@@ -102,7 +102,7 @@ export const DrawerStepDepositTransaction = ({
     if (isTxConfirmed) {
       toast.success(`Deposit Complete. ${amountEthToDeposit} ETH`);
       // Invalidate authed user portfolio query
-      trpcClientUtils.wireTapAccount.getGliderPortfolioForAuthedAccount.invalidate();
+      trpcClientUtils.wireTapAccount.getAuthedAccountGliderPortfolio.invalidate();
       // Refetch balance
       refetchPortfolioBalance();
     }
