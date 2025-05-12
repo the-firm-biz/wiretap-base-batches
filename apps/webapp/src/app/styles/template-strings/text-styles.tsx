@@ -6,11 +6,12 @@ export const textStyles = {
   button: 'font-mono text-sm',
 
   label: 'font-sans text-xs',
+  'label-mid': 'font-sans text-xs font-bold', //Bigeon may or may not have something up sleeve
   'label-emphasis': 'font-sans text-xs font-bold',
   'code-01': 'font-mono text-xs font-normal',
 
   compact: 'font-sans text-sm',
-  'compact-mid': 'font-sans text-sm font-medium',
+  'compact-mid': 'font-sans text-sm font-semibold',
   'compact-emphasis': 'font-sans text-sm font-bold',
   'code-02': 'font-mono text-sm font-normal',
 

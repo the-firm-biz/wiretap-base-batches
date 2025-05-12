@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Header } from '@/app/components/header';
+import { Footer } from '@/app/components/footer/footer';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),
@@ -21,6 +22,7 @@ export default function WalletPageLayout({
         pageTitleClassName="text-accent-foreground"
       />
       <main className="flex-1">{children}</main>
+      <Footer currentPagePath="wallet" />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import { isApiErrorResponse, NeynarAPIClient } from '@neynar/nodejs-sdk';
+import type { NeynarUser } from './types.js';
 
 /**
  * https://docs.neynar.com/reference/fetch-bulk-users-by-eth-or-sol-address
@@ -6,12 +7,12 @@ import { isApiErrorResponse, NeynarAPIClient } from '@neynar/nodejs-sdk';
 export async function fetchBulkUsersByEthOrSolAddress(
   neynarClient: NeynarAPIClient,
   addresses: string[]
-) {
+): Promise<NeynarUser[]> {
   try {
     const response = await neynarClient.fetchBulkUsersByEthOrSolAddress({
       addresses
     });
-    return response.users;
+    return Object.values(response).flat();
   } catch (error) {
     if (isApiErrorResponse(error)) {
       if (error.status === 404) {

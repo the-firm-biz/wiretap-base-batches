@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Header } from '@/app/components/header';
 import PageContainer from '@/app/components/page-container';
+import { Footer } from '@/app/components/footer/footer';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),
@@ -18,6 +19,7 @@ export default function DiscoverLayout({
     <>
       <Header pageTitle="Discover" />
       <PageContainer>{children}</PageContainer>
+      <Footer currentPagePath="discover" />
     </>
   );
 }

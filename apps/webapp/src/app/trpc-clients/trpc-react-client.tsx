@@ -3,12 +3,19 @@
 import { useState } from 'react';
 import { env } from 'process';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createTRPCClient, httpBatchLink, loggerLink } from '@trpc/client';
+import {
+  createTRPCClient,
+  httpBatchLink,
+  httpLink,
+  loggerLink,
+  splitLink
+} from '@trpc/client';
 import { createTRPCQueryUtils } from '@trpc/react-query';
 import { createTRPCContext } from '@trpc/tanstack-react-query';
 import { TrpcRouter } from '@/server/api/trpc-routers';
 import { createQueryClient } from './create-query-client';
 import { getJwtSiweSessionCookie } from '../utils/siwe/siwe-cookies';
+import { isBatchablePath } from './utils/isBatchablePath';
 
 export const { TRPCProvider, useTRPC, useTRPCClient } =
   createTRPCContext<TrpcRouter>();
@@ -40,11 +47,20 @@ const trpcClient = createTRPCClient<TrpcRouter>({
         process.env.NODE_ENV === 'development' ||
         (op.direction === 'down' && op.result instanceof Error)
     }),
-    httpBatchLink({
-      // @todo trpc - superjson?
-      // transformer: superjson,
-      url: getBaseUrl() + '/api/trpc',
-      headers: getRequestHeaders
+    splitLink({
+      condition: (op) => isBatchablePath(op.path),
+      true: httpBatchLink({
+        // @todo trpc - superjson?
+        // transformer: superjson,
+        url: getBaseUrl() + '/api/trpc',
+        headers: getRequestHeaders
+      }),
+      false: httpLink({
+        // @todo trpc - superjson?
+        // transformer: superjson,
+        url: getBaseUrl() + '/api/trpc',
+        headers: getRequestHeaders
+      })
     })
   ]
 });
