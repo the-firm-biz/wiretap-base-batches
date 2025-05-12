@@ -11,14 +11,15 @@ import {
 import { Address, Hex } from 'viem';
 import { wagmiConfig } from '@/app/utils/wagmi';
 import { signMessage } from '@wagmi/core';
+import { DrawerDescription, DrawerTitle } from '../ui/drawer';
 
-interface DepositDrawerProps {
+interface SignGliderMessageStepProps {
   setDepositDrawerState: Dispatch<SetStateAction<DepositDrawerState>>;
 }
 
 export function DrawerStepSignGliderMessage({
   setDepositDrawerState
-}: DepositDrawerProps) {
+}: SignGliderMessageStepProps) {
   const { address } = useAccount();
   const trpcClient = useTRPCClient();
 
@@ -61,6 +62,12 @@ export function DrawerStepSignGliderMessage({
 
   return (
     <div className="flex flex-col items-center justify-center p-6 gap-6">
+      {/* Start visually hidden title & description */}
+      <DrawerTitle className="sr-only">Sign Glider Message</DrawerTitle>
+      <DrawerDescription className="sr-only">
+        Sign & create Glider Portfolio for your wallet
+      </DrawerDescription>
+      {/* End visually hidden title & description */}
       <Image
         src="/signature.png"
         alt="Signing with ink"
