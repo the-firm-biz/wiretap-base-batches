@@ -15,6 +15,7 @@ import {
 import type { Address } from 'viem';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
 import { getTokenScore } from './token-score/get-token-score.js';
+import { TokenIndexerError } from './errors.js';
 import { type Context, trace } from '@wiretap/utils/shared';
 
 export interface HandleClankerFarcasterArgs {
@@ -58,6 +59,16 @@ export async function handleClankerFarcaster(
   if (castAndConversations && isValidCast && neynarUser) {
     const tokenCreatorAddress = neynarUser.verified_addresses.primary
       .eth_address as Address;
+    if (!tokenCreatorAddress) {
+      throw new TokenIndexerError(
+        'neynarUser without verified primary address',
+        'handleClankerFarcaster',
+        {
+          neynarUser: neynarUser,
+          cast: clankerFarcasterArgs.messageId
+        }
+      );
+    }
     const createdDbRows = await trace(
       () =>
         handleTokenWithFarcasterUser(
