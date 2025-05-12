@@ -1,14 +1,24 @@
-import { singletonDb } from '@wiretap/db';
+import { HttpDb, singletonDb } from '@wiretap/db';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { ZodError } from 'zod';
 import { serverEnv } from '@/serverEnv';
 import { verifyJwt } from '@/app/utils/jwt/verify-jwt';
 import { SiweMessage } from 'siwe';
 import { VerifySiweMessageJwtPayload } from '@/app/utils/siwe/types';
-import { createHttpPublicClient } from '@wiretap/utils/shared';
-import { getSingletonNeynarClient } from '@wiretap/utils/server';
+import { createHttpPublicClient, ViemClient } from '@wiretap/utils/shared';
+import {
+  getSingletonNeynarClient,
+  NeynarAPIClient
+} from '@wiretap/utils/server';
 
-export const createInnerContext = (opts: { headers: Headers }) => {
+export const createInnerContext = (opts: {
+  headers: Headers;
+}): {
+  db: HttpDb;
+  neynarClient: NeynarAPIClient;
+  viemClient: ViemClient;
+  headers: Headers;
+} => {
   const db = singletonDb({ databaseUrl: serverEnv.DATABASE_URL });
   const neynarClient = getSingletonNeynarClient({
     apiKey: serverEnv.NEYNAR_API_KEY

@@ -9,6 +9,7 @@ import { DownloadIcon } from '@/app/components/icons/DownloadIcon';
 import { UploadIcon } from '@/app/components/icons/UploadIcon';
 import { DepositDrawer } from '@/app/components/deposit-drawer/deposit-drawer';
 import { useQuery } from '@tanstack/react-query';
+import { WalletNotice } from './components/wallet-notice';
 
 export default function WalletPage() {
   const trpc = useTRPC();
@@ -39,6 +40,9 @@ export default function WalletPage() {
             </Button>
           </div>
         </div>
+      </div>
+      <div className="max-w-screen-md w-full mx-auto pt-[32px] px-4">
+        <WalletNotice />
       </div>
     </div>
   );
