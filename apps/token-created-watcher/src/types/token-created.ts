@@ -1,10 +1,14 @@
-import { type ClankerAbi } from '@wiretap/config';
-import { type Address, type Log } from 'viem';
+import {
+  CLANKER_3_1_TOTAL_SUPPLY,
+  CURRENCY_ADDRESSES,
+  type ClankerAbi
+} from '@wiretap/config';
+import { type Address, type Block, type Log } from 'viem';
 import type { ExtractAbiEvent } from 'abitype';
-import { httpPublicClient } from '../rpc-clients.js';
-import type { Block } from './block.js';
-import { callWithBackOff } from '@wiretap/utils/server';
+import type { MinimalBlock } from './block.js';
 import { bigIntReplacer } from '@wiretap/utils/shared';
+import type { DeployTokenArgs } from '../get-transaction-context.js';
+import { getPoolContext, type PoolContext } from '../get-pool-context.js';
 
 export type TokenCreatedOnChainParams = {
   transactionHash: `0x${string}`;
@@ -13,7 +17,9 @@ export type TokenCreatedOnChainParams = {
   tokenName: string;
   deployerContractAddress: Address;
   msgSender: Address;
-  block: Block;
+  block: MinimalBlock;
+  totalSupply: number;
+  poolContext: PoolContext;
 };
 
 export type TokenCreatedLog = Log<
@@ -25,7 +31,9 @@ export type TokenCreatedLog = Log<
 >;
 
 export async function deconstructLog(
-  log: TokenCreatedLog
+  log: TokenCreatedLog,
+  args: DeployTokenArgs,
+  block?: Block
 ): Promise<TokenCreatedOnChainParams | undefined> {
   const {
     args: { tokenAddress, name: tokenName, symbol, msgSender },
@@ -40,14 +48,18 @@ export async function deconstructLog(
     return;
   }
 
-  const block = await callWithBackOff(
-    () => httpPublicClient.getBlock({ blockNumber }),
-    'getBlock'
-  );
+  if (args.poolConfig.pairedToken !== CURRENCY_ADDRESSES.WETH) {
+    console.error(
+      `deconstructLog :: poolConfig.pairedToken is not WETH: ${args.poolConfig.pairedToken}`
+    );
+    return;
+  }
 
-  const timestamp = block
+  const timestamp = block?.timestamp
     ? new Date(Number(block.timestamp) * 1000)
     : undefined;
+
+  const poolContext = await getPoolContext(tokenAddress, args);
 
   return {
     block: {
@@ -59,6 +71,8 @@ export async function deconstructLog(
     symbol,
     tokenName,
     deployerContractAddress,
-    msgSender
+    msgSender,
+    totalSupply: CLANKER_3_1_TOTAL_SUPPLY,
+    poolContext
   } as const;
 }

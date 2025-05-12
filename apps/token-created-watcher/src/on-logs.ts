@@ -9,6 +9,7 @@ import { handleEOAMsgSender } from './handle-eoa-msg-sender.js';
 import { deconstructLog, type TokenCreatedLog } from './types/token-created.js';
 import { resetReconnectReties } from './on-error.js';
 import { sendSlackIndexerError } from './notifications/send-slack-indexer-error.js';
+import { getTransactionContext } from './get-transaction-context.js';
 
 export function onLogs(
   logs: WatchContractEventOnLogsParameter<ClankerAbi, 'TokenCreated', true>
@@ -25,7 +26,12 @@ export function onLogs(
 }
 
 export async function onLog(log: TokenCreatedLog) {
-  const onChainToken = await deconstructLog(log);
+  const { block, args: transactionArgs } = await getTransactionContext(
+    log.blockNumber,
+    log.transactionHash
+  );
+
+  const onChainToken = await deconstructLog(log, transactionArgs, block);
 
   if (!onChainToken) {
     return;
@@ -37,9 +43,9 @@ export async function onLog(log: TokenCreatedLog) {
   ).some((address) => isAddressEqual(address, onChainToken.msgSender));
 
   if (isDelegatedDeployer) {
-    await handleDelegatedClankerDeployer(onChainToken);
+    await handleDelegatedClankerDeployer(onChainToken, transactionArgs);
     return;
   }
 
-  await handleEOAMsgSender(onChainToken);
+  await handleEOAMsgSender(onChainToken, transactionArgs);
 }

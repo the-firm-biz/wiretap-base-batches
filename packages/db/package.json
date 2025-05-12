@@ -18,10 +18,12 @@
     "db:migration-generate": "tsx ./src/scripts/db-generate.ts",
     "db:migration-push": "tsx ./src/scripts/db-push.ts",
     "db:migration": "pnpm run db:migration-generate && pnpm run db:migration-push",
-    "test-db:migration": "NODE_OPTIONS='--import tsx' drizzle-kit generate && drizzle-kit migrate --config drizzle.test.config.ts"
+    "test-db:migration": "NODE_OPTIONS='--import tsx' drizzle-kit generate && drizzle-kit migrate --config drizzle.test.config.ts",
+    "local-script:reindex-pools-addresses": "tsx ./src/scripts/reindex-pools-addresses.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
+    "@wiretap/config": "workspace:*",
     "@wiretap/utils": "workspace:*",
     "dotenv": "^16.5.0",
     "drizzle-kit": "^0.31.0",
@@ -35,6 +37,8 @@
     "@wiretap/prettier-config": "workspace:*",
     "@wiretap/typescript-config": "workspace:*",
     "vite": "^6.3.2",
-    "vitest": "^3.1.2"
+    "vitest": "^3.1.2",
+    "@uniswap/sdk-core": "^7.7.2",
+    "@uniswap/v3-sdk": "^3.25.2"
   }
 }

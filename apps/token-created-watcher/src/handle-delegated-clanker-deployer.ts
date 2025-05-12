@@ -3,22 +3,27 @@ import { handleClankerFarcaster } from './handle-clanker-farcaster.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { getTokenContext } from './get-token-context.js';
 import { bigIntReplacer } from '@wiretap/utils/shared';
+import type { DeployTokenArgs } from './get-transaction-context.js';
 
 export async function handleDelegatedClankerDeployer(
-  tokenCreatedData: TokenCreatedOnChainParams
+  tokenCreatedData: TokenCreatedOnChainParams,
+  transactionArgs: DeployTokenArgs
 ) {
-  const tokenContext = await getTokenContext(tokenCreatedData.transactionHash);
-
+  const tokenContext = getTokenContext(transactionArgs);
   const deploymentSource = getTokenDeploymentSource({
     tokenContextInterface: tokenContext.interface,
     platform: tokenContext.platform
   });
 
   if (deploymentSource === 'clanker_farcaster') {
-    await handleClankerFarcaster(tokenCreatedData, {
-      fid: Number(tokenContext.id),
-      messageId: tokenContext.messageId
-    });
+    await handleClankerFarcaster(
+      tokenCreatedData,
+      {
+        fid: Number(tokenContext.id),
+        messageId: tokenContext.messageId
+      },
+      transactionArgs
+    );
     return;
   }
 

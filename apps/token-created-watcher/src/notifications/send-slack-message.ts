@@ -7,6 +7,7 @@ import {
 } from '@wiretap/config';
 import type { TokenScoreDetails } from '../token-score/get-token-score.js';
 import { bigIntReplacer } from '@wiretap/utils/shared';
+import type { DeployTokenArgs } from '../get-transaction-context.js';
 
 type SlackMessageDetails = {
   tokenAddress: string;
@@ -23,6 +24,7 @@ type SlackMessageDetails = {
   };
   latencyMs?: number;
   tokenScoreDetails: TokenScoreDetails | null;
+  transactionArgs: DeployTokenArgs;
 };
 
 const divider = '='.repeat(56);
@@ -109,7 +111,8 @@ const _sendSlackMessage = async ({
   source,
   latencyMs,
   castValidation,
-  tokenScoreDetails
+  tokenScoreDetails,
+  transactionArgs
 }: SlackMessageDetails) => {
   console.log(`${source}: ${tokenName} (${tokenSymbol})`);
   if (!env.IS_SLACK_NOTIFICATION_ENABLED) {
@@ -125,9 +128,7 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
 
   let tokenContext: string | undefined;
   try {
-    const tokenContextJson = await getTokenContext(
-      transactionHash as `0x${string}`
-    );
+    const tokenContextJson = getTokenContext(transactionArgs);
     tokenContext =
       '```\n' + JSON.stringify(tokenContextJson, null, 2) + '\n```';
 

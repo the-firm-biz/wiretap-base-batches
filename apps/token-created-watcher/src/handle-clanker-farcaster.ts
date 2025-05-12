@@ -15,7 +15,7 @@ import {
 import type { Address } from 'viem';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
 import { getTokenScore } from './token-score/get-token-score.js';
-
+import type { DeployTokenArgs } from './get-transaction-context.js';
 export interface HandleClankerFarcasterArgs {
   fid: number;
   messageId: string;
@@ -23,7 +23,8 @@ export interface HandleClankerFarcasterArgs {
 
 export async function handleClankerFarcaster(
   tokenCreatedData: TokenCreatedOnChainParams,
-  clankerFarcasterArgs: HandleClankerFarcasterArgs
+  clankerFarcasterArgs: HandleClankerFarcasterArgs,
+  transactionArgs: DeployTokenArgs
 ) {
   const neynarClient = getSingletonNeynarClient({
     apiKey: env.NEYNAR_API_KEY
@@ -72,7 +73,8 @@ export async function handleClankerFarcaster(
       castIsValid: isValidCast,
       neynarUserExists: !!neynarUser
     },
-    tokenScoreDetails
+    tokenScoreDetails,
+    transactionArgs
   });
 }
 
