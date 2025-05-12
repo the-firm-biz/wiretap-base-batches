@@ -11,8 +11,8 @@ export type BackoffOptions = ExponentialBackOffOptions;
 
 export async function callWithBackOff<T>(
   fn: (span: Span) => Promise<T>,
+  backoffOptions: BackoffOptions = {},
   { name: contextName, tracing: { parentSpan } = {} }: Context,
-  backoffOptions: BackoffOptions = {}
 ): Promise<T | undefined> {
   const sanitizedOptions = getSanitizedOptions(backoffOptions);
   const sanitizedOptionsWithLog: IBackOffOptions = {

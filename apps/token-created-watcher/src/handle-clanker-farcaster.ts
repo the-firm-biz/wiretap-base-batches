@@ -23,9 +23,9 @@ export interface HandleClankerFarcasterArgs {
 }
 
 export async function handleClankerFarcaster(
-  { tracing: { parentSpan } = {} }: Context,
   tokenCreatedData: TokenCreatedOnChainParams,
-  clankerFarcasterArgs: HandleClankerFarcasterArgs
+  clankerFarcasterArgs: HandleClankerFarcasterArgs,
+  { tracing: { parentSpan } = {} }: Context
 ) {
   const neynarClient = getSingletonNeynarClient({
     apiKey: env.NEYNAR_API_KEY
@@ -34,10 +34,10 @@ export async function handleClankerFarcaster(
   const { castAndConversations, isValidCast } = await trace(
     (span) =>
       lookupAndValidateCastConversationWithBackoff(
-        { tracing: { parentSpan: span } },
         neynarClient,
         tokenCreatedData,
-        clankerFarcasterArgs
+        clankerFarcasterArgs,
+        { tracing: { parentSpan: span } },
       ),
     {
       name: 'lookupAndValidateCastConversationWithBackoff',
@@ -106,10 +106,10 @@ type CastWithValidation = {
 };
 
 async function lookupAndValidateCastConversationWithBackoff(
-  { tracing }: Context,
   neynarClient: NeynarAPIClient,
   tokenCreatedData: TokenCreatedOnChainParams,
-  clankerFarcasterArgs: HandleClankerFarcasterArgs
+  clankerFarcasterArgs: HandleClankerFarcasterArgs,
+  { tracing }: Context,
 ): Promise<CastWithValidation> {
   const { messageId: castHash } = clankerFarcasterArgs;
 
@@ -147,13 +147,13 @@ async function lookupAndValidateCastConversationWithBackoff(
       return { castAndConversations, isValidCast: true };
     },
     {
+      startingDelay: 500,
+      timeMultiple: 1.3
+    },
+    {
       name: 'lookupAndValidateCastConversation',
       tracing
     },
-    {
-      startingDelay: 500,
-      timeMultiple: 1.3
-    }
   );
 
   return (

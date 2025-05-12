@@ -23,7 +23,7 @@ export function onLogs(
   logs.forEach(async (log: TokenCreatedLog) => {
     const span = new Span(log.address);
     try {
-      await onLog({ tracing: { parentSpan: span } }, log);
+      await onLog(log, { tracing: { parentSpan: span } });
       span.finish('ok');
     } catch (error) {
       span.finish('failed');
@@ -32,16 +32,13 @@ export function onLogs(
   });
 }
 
-export async function onLog(ctx: Context, log: TokenCreatedLog) {
+export async function onLog(log: TokenCreatedLog, ctx: Context) {
   const { tracing: { parentSpan } = {} } = ctx;
   const onChainToken = await trace(
     (contextSpan) =>
-      deconstructLog(
-        {
-          tracing: { parentSpan: contextSpan }
-        },
-        log
-      ),
+      deconstructLog(log, {
+        tracing: { parentSpan: contextSpan }
+      }),
     {
       name: 'deconstructLog',
       parentSpan: parentSpan
@@ -60,12 +57,9 @@ export async function onLog(ctx: Context, log: TokenCreatedLog) {
   if (isDelegatedDeployer) {
     await trace(
       (contextSpan) =>
-        handleDelegatedClankerDeployer(
-          {
-            tracing: { parentSpan: contextSpan }
-          },
-          onChainToken
-        ),
+        handleDelegatedClankerDeployer(onChainToken, {
+          tracing: { parentSpan: contextSpan }
+        }),
       {
         name: 'handleDelegatedClankerDeployer',
         parentSpan

@@ -5,8 +5,8 @@ import { getTokenContext } from './get-token-context.js';
 import { bigIntReplacer, type Context, trace } from '@wiretap/utils/shared';
 
 export async function handleDelegatedClankerDeployer(
-  { tracing: { parentSpan } = {} }: Context,
-  tokenCreatedData: TokenCreatedOnChainParams
+  tokenCreatedData: TokenCreatedOnChainParams,
+  { tracing: { parentSpan } = {} }: Context
 ) {
   const tokenContext = await getTokenContext(tokenCreatedData.transactionHash);
 
@@ -19,12 +19,12 @@ export async function handleDelegatedClankerDeployer(
     await trace(
       (contextSpan) =>
         handleClankerFarcaster(
-          { tracing: { parentSpan: contextSpan } },
           tokenCreatedData,
           {
             fid: Number(tokenContext.id),
             messageId: tokenContext.messageId
-          }
+          },
+          { tracing: { parentSpan: contextSpan } },
         ),
       {
         name: 'handleClankerFarcaster',

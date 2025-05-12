@@ -25,8 +25,8 @@ export type TokenCreatedLog = Log<
 >;
 
 export async function deconstructLog(
-  { tracing }: Context,
-  log: TokenCreatedLog
+  log: TokenCreatedLog,
+  { tracing }: Context
 ): Promise<TokenCreatedOnChainParams | undefined> {
   const {
     args: { tokenAddress, name: tokenName, symbol, msgSender },
@@ -43,6 +43,7 @@ export async function deconstructLog(
 
   const block = await callWithBackOff(
     () => httpPublicClient.getBlock({ blockNumber }),
+    undefined,
     {
       name: 'getBlock',
       tracing
