@@ -21,6 +21,7 @@ export async function getTargetsByTokenAddress(
 ) {
   const targets = await db
     .select({
+      maxSpend: accountEntityTrackers.maxSpend,
       wireTapAccounts,
       gliderPortfolios
     })
