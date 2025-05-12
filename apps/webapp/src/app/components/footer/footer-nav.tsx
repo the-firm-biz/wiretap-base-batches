@@ -19,16 +19,16 @@ export function FooterNav({ currentPagePath }: FooterNavProps) {
         isActive={currentPagePath === 'targets'}
       />
       <FooterNavButton
-        label="Wallet"
-        pagePath="wallet"
-        icon={<WalletIcon className="size-4" />}
-        isActive={currentPagePath === 'wallet'}
-      />
-      <FooterNavButton
         label="Discover"
         pagePath="discover"
         icon={<DiscoverIcon className="size-4" />}
         isActive={currentPagePath === 'discover'}
+      />
+      <FooterNavButton
+        label="Wallet"
+        pagePath="wallet"
+        icon={<WalletIcon className="size-4" />}
+        isActive={currentPagePath === 'wallet'}
       />
     </div>
   );
