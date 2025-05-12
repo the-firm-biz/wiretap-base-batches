@@ -35,9 +35,7 @@ const DEFAULT_STATE: DepositDrawerState = {
   gliderPortfolioAddress: '0x0591eDeF86a68597336Fa37a356843b86fFC1a4e'
 };
 
-export const DepositDrawer = memo(function DepositDrawer({
-  trigger
-}: DepositDrawerProps) {
+export const DepositDrawer = ({ trigger }: DepositDrawerProps) => {
   const [depositDrawerState, setDepositDrawerState] =
     useState<DepositDrawerState>(DEFAULT_STATE);
 
@@ -47,14 +45,14 @@ export const DepositDrawer = memo(function DepositDrawer({
     <Drawer
       onOpenChange={() => {
         // Reset state after the drawer's closing animation is complete
-        // setTimeout(() => {
-        //   setDepositDrawerState(DEFAULT_STATE);
-        // }, 500);
+        setTimeout(() => {
+          setDepositDrawerState(DEFAULT_STATE);
+        }, 500);
       }}
     >
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
-        {/* {depositDrawerState?.step === 'input-deposit-amount' && (
+        {depositDrawerState?.step === 'input-deposit-amount' && (
           <DrawerStepInputDepositAmount
             setDepositDrawerState={setDepositDrawerState}
           />
@@ -63,14 +61,14 @@ export const DepositDrawer = memo(function DepositDrawer({
           <DrawerStepSignGliderMessage
             setDepositDrawerState={setDepositDrawerState}
           />
-        )} */}
-        {/* {depositDrawerState?.step === 'confirm-deposit-tx' && ( */}
-        <DrawerStepDepositTransaction
-          setDepositDrawerState={setDepositDrawerState}
-          depositDrawerState={depositDrawerState}
-        />
-        {/* )} */}
+        )}
+        {depositDrawerState?.step === 'confirm-deposit-tx' && (
+          <DrawerStepDepositTransaction
+            setDepositDrawerState={setDepositDrawerState}
+            depositDrawerState={depositDrawerState}
+          />
+        )}
       </DrawerContent>
     </Drawer>
   );
-});
+};
