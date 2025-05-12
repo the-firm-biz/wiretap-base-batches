@@ -1,5 +1,5 @@
-export type FinisSpanStatus = 'ok' | 'failed';
-type SpanStatus = 'pending' | FinisSpanStatus;
+export type TerminalSpanStatus = 'ok' | 'failed';
+type SpanStatus = 'pending' | TerminalSpanStatus;
 
 export interface TraceParams {
   name: string;
@@ -18,7 +18,7 @@ export class Span {
 
   constructor(readonly name: string) {}
 
-  public finish(status: FinisSpanStatus) {
+  public finish(status: TerminalSpanStatus) {
     this.end = new Date();
     this.status = status;
   }
