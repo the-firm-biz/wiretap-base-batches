@@ -11,7 +11,7 @@ export const textStyles = {
   'code-01': 'font-mono text-xs font-normal',
 
   compact: 'font-sans text-sm',
-  'compact-mid': 'font-sans text-sm font-medium',
+  'compact-mid': 'font-sans text-sm font-semibold',
   'compact-emphasis': 'font-sans text-sm font-bold',
   'code-02': 'font-mono text-sm font-normal',
 

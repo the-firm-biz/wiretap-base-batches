@@ -19,7 +19,7 @@ export const ExternalImage = React.forwardRef<
       setSafeSrc(safeSrc);
     };
     fetchSafeSrc();
-  }, [src]);
+  }, [src, fallbackSrc]);
 
   if (!safeSrc) return <Skeleton className={rest.className} />;
 

@@ -5,12 +5,22 @@ import { serverEnv } from '@/serverEnv';
 import { verifyJwt } from '@/app/utils/jwt/verify-jwt';
 import { SiweMessage } from 'siwe';
 import { VerifySiweMessageJwtPayload } from '@/app/utils/siwe/types';
+import { createHttpPublicClient } from '@wiretap/utils/shared';
+import { getSingletonNeynarClient } from '@wiretap/utils/server';
 
 export const createInnerContext = (opts: { headers: Headers }) => {
   const db = singletonDb({ databaseUrl: serverEnv.DATABASE_URL });
+  const neynarClient = getSingletonNeynarClient({
+    apiKey: serverEnv.NEYNAR_API_KEY
+  });
+  const viemClient = createHttpPublicClient({
+    alchemyApiKey: serverEnv.SERVER_ALCHEMY_API_KEY
+  });
 
   return {
     db,
+    neynarClient,
+    viemClient,
     ...opts
   };
 };

@@ -112,7 +112,6 @@ export const verifySiweMessage = publicProcedure
         }
       );
       return signedJwt;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       console.error('login', e);
       throw new TRPCError({
