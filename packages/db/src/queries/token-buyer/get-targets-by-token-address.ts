@@ -8,22 +8,34 @@ import {
   accountEntityTrackers,
   gliderPortfolios,
   tokens,
+  wallets,
   wireTapAccounts
 } from '../../schema/index.js';
 import { lowerEq } from '../../utils/pg-helpers.js';
 
-/**
- * Counts the number of tokens deployed by a specific token creator entity
- */
+export type BuyTrigger = {
+  wireTapId: number;
+  accountEntityId: number;
+  accountEntityAddress: string;
+  portfolioId: string | null;
+  portfolioAddress: string | null;
+  tokenAddress: string;
+  maxSpend: number;
+};
+
 export async function getTargetsByTokenAddress(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   tokenAddress: string
-) {
+): Promise<BuyTrigger[]> {
   const targets = await db
     .select({
       maxSpend: accountEntityTrackers.maxSpend,
-      wireTapAccounts,
-      gliderPortfolios
+      wireTapId: wireTapAccounts.id,
+      accountEntityAddress: wallets.address,
+      accountEntityId: wireTapAccounts.accountEntityId,
+      portfolioId: gliderPortfolios.portfolioId,
+      portfolioAddress: gliderPortfolios.address,
+      tokenAddress: tokens.address
     })
     .from(tokens)
     .innerJoin(
@@ -33,6 +45,10 @@ export async function getTargetsByTokenAddress(
     .innerJoin(
       wireTapAccounts,
       eq(wireTapAccounts.id, accountEntityTrackers.trackerWireTapAccountId)
+    )
+    .innerJoin(
+      wallets,
+      eq(wallets.accountEntityId, wireTapAccounts.accountEntityId)
     )
     .leftJoin(
       gliderPortfolios,
