@@ -15,23 +15,25 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { formatUsd } from '@/app/utils/format/format-usd';
-import { DepositDrawerState, DepositDrawerStep } from './deposit-drawer';
+import { DepositState, DepositDrawerStep } from './deposit-drawer';
 import { Address } from 'viem';
 import { useBalance } from 'wagmi';
 import { formatUnits } from '@/app/utils/format/format-units';
 
 interface EthDepositFormProps {
   userBalance: number;
-  setDepositDrawerState: Dispatch<SetStateAction<DepositDrawerState>>;
+  setDepositState: Dispatch<SetStateAction<DepositState>>;
 }
 
 const REQUIRED_FIELD_MESSAGE = 'Required';
 const TRANSFER_GAS_ESTIMATE_ETH = 0.0000005; // @todo: Could be improved by running an eth transfer gas estimate
 const MAX_ALPHA_TESTING_DEPOSIT_AMOUNT = 0.05;
+// @TODO release - update to 0.0001
+const MIN_GLIDER_REBALANCE_AMOUNT_ETH = 0.00001; // Glider will not rebalance trades lower that $0.50
 
 export function EthDepositForm({
   userBalance,
-  setDepositDrawerState
+  setDepositState
 }: EthDepositFormProps) {
   const trpc = useTRPC();
 
@@ -61,6 +63,9 @@ export function EthDepositForm({
     ethToDeposit: z
       .number({ message: REQUIRED_FIELD_MESSAGE })
       .min(0.1e-17, { message: REQUIRED_FIELD_MESSAGE }) // 1 wei
+      .min(MIN_GLIDER_REBALANCE_AMOUNT_ETH, {
+        message: `Min deposit ${MIN_GLIDER_REBALANCE_AMOUNT_ETH} ETH`
+      })
       .max(userBalance, { message: 'Insufficient ETH in your wallet' })
       .max(MAX_ALPHA_TESTING_DEPOSIT_AMOUNT, {
         message: `Max ${MAX_ALPHA_TESTING_DEPOSIT_AMOUNT} ETH: Alpha testing phase`
@@ -89,7 +94,7 @@ export function EthDepositForm({
       ? 'confirm-deposit-tx'
       : 'sign-glider-message';
 
-    setDepositDrawerState(() => ({
+    setDepositState(() => ({
       amountEthToDeposit: values.ethToDeposit,
       step: nextStep,
       gliderPortfolioAddress: portfolio?.address as Address | undefined

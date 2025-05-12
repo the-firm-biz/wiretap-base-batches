@@ -1,8 +1,11 @@
+'use client';
+
 import { DrawerContent, DrawerTrigger, Drawer } from '../ui/drawer';
 import { ReactNode, useState } from 'react';
+import { Address } from 'viem';
 import { DrawerStepInputDepositAmount } from './drawer-step-input-deposit-amount';
 import { DrawerStepSignGliderMessage } from './drawer-step-sign-glider-message';
-import { Address } from 'viem';
+import { DrawerStepDepositTransaction } from './drawer-step-deposit-tx';
 
 interface DepositDrawerProps {
   trigger: ReactNode;
@@ -13,44 +16,47 @@ export type DepositDrawerStep =
   | 'sign-glider-message'
   | 'confirm-deposit-tx';
 
-export interface DepositDrawerState {
+export interface DepositState {
   step: DepositDrawerStep;
   amountEthToDeposit: number;
   gliderPortfolioAddress: Address | undefined;
 }
 
-const DEFAULT_STATE: DepositDrawerState = {
+const DEFAULT_STATE: DepositState = {
   step: 'input-deposit-amount',
   amountEthToDeposit: 0,
   gliderPortfolioAddress: undefined
 };
 
-export function DepositDrawer({ trigger }: DepositDrawerProps) {
-  const [depositDrawerState, setDepositDrawerState] =
-    useState<DepositDrawerState>(DEFAULT_STATE);
+export const DepositDrawer = ({ trigger }: DepositDrawerProps) => {
+  const [drawerIsOpen, setDrawerIsOpen] = useState(false);
+  const [depositState, setDepositState] = useState<DepositState>(DEFAULT_STATE);
+
+  const handleOpenCloseDrawer = (isOpen: boolean) => {
+    setDrawerIsOpen(isOpen);
+    // Reset state after the drawer's closing animation is complete
+    setTimeout(() => {
+      setDepositState(DEFAULT_STATE);
+    }, 500);
+  };
 
   return (
-    <Drawer
-      onOpenChange={() => {
-        // Reset state after the drawer's closing animation is complete
-        setTimeout(() => {
-          setDepositDrawerState(DEFAULT_STATE);
-        }, 500);
-      }}
-    >
+    <Drawer open={drawerIsOpen} onOpenChange={handleOpenCloseDrawer}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
-        {depositDrawerState?.step === 'input-deposit-amount' && (
-          <DrawerStepInputDepositAmount
-            setDepositDrawerState={setDepositDrawerState}
-          />
+        {depositState?.step === 'input-deposit-amount' && (
+          <DrawerStepInputDepositAmount setDepositState={setDepositState} />
         )}
-        {depositDrawerState?.step === 'sign-glider-message' && (
-          <DrawerStepSignGliderMessage
-            setDepositDrawerState={setDepositDrawerState}
+        {depositState?.step === 'sign-glider-message' && (
+          <DrawerStepSignGliderMessage setDepositState={setDepositState} />
+        )}
+        {depositState?.step === 'confirm-deposit-tx' && (
+          <DrawerStepDepositTransaction
+            handleOpenCloseDrawer={handleOpenCloseDrawer}
+            depositState={depositState}
           />
         )}
       </DrawerContent>
     </Drawer>
   );
-}
+};
