@@ -22,18 +22,11 @@ export interface DepositState {
   gliderPortfolioAddress: Address | undefined;
 }
 
-// @todo reinstate
-const DEFAULT_STATE: DepositState = {
+export const DEFAULT_STATE: DepositState = {
   step: 'input-deposit-amount',
   amountEthToDeposit: 0,
   gliderPortfolioAddress: undefined
 };
-
-// const DEFAULT_STATE: DepositState = {
-//   step: 'confirm-deposit-tx',
-//   amountEthToDeposit: 0.01,
-//   gliderPortfolioAddress: '0x0591eDeF86a68597336Fa37a356843b86fFC1a4e'
-// };
 
 export const DepositDrawer = ({ trigger }: DepositDrawerProps) => {
   const [drawerIsOpen, setDrawerIsOpen] = useState(false);
@@ -60,8 +53,8 @@ export const DepositDrawer = ({ trigger }: DepositDrawerProps) => {
         )}
         {depositState?.step === 'confirm-deposit-tx' && (
           <DrawerStepDepositTransaction
-            setDepositState={setDepositState}
             setDrawerIsOpen={setDrawerIsOpen}
+            setDepositState={setDepositState}
             depositState={depositState}
           />
         )}

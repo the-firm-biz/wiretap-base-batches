@@ -1,13 +1,17 @@
 'use client';
 
 import { SetStateAction, Dispatch, useEffect, useState, useRef } from 'react';
-import { useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
+import {
+  useBalance,
+  useSendTransaction,
+  useWaitForTransactionReceipt
+} from 'wagmi';
 import { toast } from 'sonner';
-import { DepositState } from './deposit-drawer';
+import { DEFAULT_STATE, DepositState } from './deposit-drawer';
 import Image from 'next/image';
 import { textStyles } from '@/app/styles/template-strings';
 import AnimatedEllipsisText from '../animated-ellipsis-text';
-import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
+import { trpcClientUtils, useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { Address, parseEther } from 'viem';
 import { formatUsd } from '@/app/utils/format/format-usd';
 import { useQuery } from '@tanstack/react-query';
@@ -18,16 +22,17 @@ import { Button } from '../ui/button';
 import { DrawerDescription, DrawerTitle } from '../ui/drawer';
 
 interface DepositDrawerProps {
-  setDepositState: Dispatch<SetStateAction<DepositState>>;
   setDrawerIsOpen: Dispatch<SetStateAction<boolean>>;
+  setDepositState: Dispatch<SetStateAction<DepositState>>;
   depositState: DepositState;
 }
 
 export const DrawerStepDepositTransaction = ({
-  setDepositState,
   setDrawerIsOpen,
+  setDepositState,
   depositState
 }: DepositDrawerProps) => {
+  const trpc = useTRPC();
   // A hack to prevent calling sendTransaction twice
   const hasDeclaritivelyCalledSendTransaction = useRef(false);
 
@@ -38,15 +43,20 @@ export const DrawerStepDepositTransaction = ({
   const isTxError = !!txError;
 
   const { amountEthToDeposit, gliderPortfolioAddress } = depositState;
-  const trpc = useTRPC();
+
+  const { refetch: refetchPortfolioBalance } = useBalance({
+    address: gliderPortfolioAddress,
+    query: {
+      enabled: !!gliderPortfolioAddress
+    }
+  });
 
   const { sendTransaction } = useSendTransaction({
     mutation: {
-      // note useSendTransaction's 'error' return is out of sync with the render, so we use this callback
       onError: (error: unknown) => {
         const baseError = error as BaseError;
         // @todo sonner - style and add button
-        toast(`Error. ${baseError.shortMessage}`);
+        toast.error(`Error. ${baseError.shortMessage}`);
         setTxError(baseError);
       },
       onSuccess: (hash: Address) => {
@@ -70,17 +80,19 @@ export const DrawerStepDepositTransaction = ({
 
   console.log({ isTxConfirming, isTxConfirmed, isTxError });
 
+  // Declaritively call sendTransaction
   useEffect(() => {
     const handleDeposit = () => {
       // Condition should never be met
       if (!gliderPortfolioAddress) {
         throw new Error(`GliderPortfolio is ${gliderPortfolioAddress}`);
       }
-      // Create the transfer transaction
+
       sendTransaction({
         to: gliderPortfolioAddress,
         value: parseEther(amountEthToDeposit.toString())
       });
+
       hasDeclaritivelyCalledSendTransaction.current = true;
     };
 
@@ -88,6 +100,19 @@ export const DrawerStepDepositTransaction = ({
       handleDeposit();
     }
   }, [amountEthToDeposit, gliderPortfolioAddress, sendTransaction]);
+
+  // Success lifecycle event
+  useEffect(() => {
+    if (isTxConfirmed) {
+      toast.success(`Deposit Complete. ${amountEthToDeposit} ETH`);
+
+      // Invalidate authed user portfolio query
+      trpcClientUtils.wireTapAccount.getGliderPortfolioForAuthedAccount.invalidate();
+
+      // Refetch balance
+      refetchPortfolioBalance();
+    }
+  }, [amountEthToDeposit, isTxConfirmed, refetchPortfolioBalance]);
 
   const getImage = () => {
     if (isTxError) {
@@ -97,7 +122,6 @@ export const DrawerStepDepositTransaction = ({
         </div>
       );
     }
-
     if (isTxConfirming) {
       return (
         <Image
@@ -108,7 +132,6 @@ export const DrawerStepDepositTransaction = ({
         />
       );
     }
-
     return (
       <Image
         src={'/handshake.png'}
@@ -123,13 +146,9 @@ export const DrawerStepDepositTransaction = ({
     if (isTxError) {
       return <span className={textStyles['title3']}>Error</span>;
     }
-
     if (isTxConfirmed) {
       return <span className={textStyles['title3']}>Deposit Complete</span>;
     }
-
-    <div className="p-" />;
-
     if (isTxConfirming) {
       return (
         <AnimatedEllipsisText className={textStyles['title3']}>
@@ -137,21 +156,17 @@ export const DrawerStepDepositTransaction = ({
         </AnimatedEllipsisText>
       );
     }
-
     return <span className={textStyles['title3']}>Confirm Transaction</span>;
   };
 
   const getDescriptionText = () => {
     if (isTxError) {
-      const txErrorShortMessage = (txError as BaseError).shortMessage;
-
       return (
         <p className={cn(textStyles['compact'], 'text-center')}>
-          {txErrorShortMessage || 'An unknown error occurred'}
+          {txError.shortMessage || 'An unknown error occurred'}
         </p>
       );
     }
-
     if (isTxConfirmed) {
       return (
         <p className={`${textStyles['compact']} text-center`}>
@@ -161,7 +176,6 @@ export const DrawerStepDepositTransaction = ({
         </p>
       );
     }
-
     if (isTxConfirming) {
       return (
         <AnimatedEllipsisText className={textStyles['compact']}>
@@ -169,7 +183,6 @@ export const DrawerStepDepositTransaction = ({
         </AnimatedEllipsisText>
       );
     }
-
     return (
       <p className={textStyles['compact']}>
         Kindly open wallet app to confirm transfer:
@@ -181,7 +194,6 @@ export const DrawerStepDepositTransaction = ({
     if (isTxConfirmed || isTxError) {
       return null;
     }
-
     return (
       <p className={textStyles['compact-emphasis']}>
         {depositState.amountEthToDeposit} ETH (${usdDisplayValue})
@@ -208,17 +220,25 @@ export const DrawerStepDepositTransaction = ({
         </div>
       );
     }
-
     if (isTxConfirmed) {
       return (
         <div className="mt-4">
-          <Button variant="outline" onClick={() => setDrawerIsOpen(false)}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setTimeout(() => {
+                setDepositState(DEFAULT_STATE);
+              }, 500);
+              setTxError(null);
+              setTxHash(null);
+              setDrawerIsOpen(false);
+            }}
+          >
             Pleasure Doing Business
           </Button>
         </div>
       );
     }
-
     return null;
   };
 
