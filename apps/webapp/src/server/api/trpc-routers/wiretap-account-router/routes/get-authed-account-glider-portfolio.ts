@@ -1,15 +1,37 @@
 import { privateProcedure } from '@/server/api/trpc';
-import { getGliderPortfolioForWireTapAccount } from '@wiretap/db';
+import {
+  getGliderPortfolioForWireTapAccount,
+  GliderPortfolio
+} from '@wiretap/db';
+import { Address } from 'viem';
+import { getBalance } from 'viem/actions';
+
+interface GliderPortfolioWithBalance extends GliderPortfolio {
+  address: Address;
+  balanceWei: string;
+}
 
 export const getAuthedAccountGliderPortfolio = privateProcedure.query(
-  async ({ ctx }) => {
-    const { db, wireTapAccountId } = ctx;
+  async ({ ctx }): Promise<GliderPortfolioWithBalance | null> => {
+    const { db, wireTapAccountId, viemClient } = ctx;
 
     const gliderPortfolio = await getGliderPortfolioForWireTapAccount(
       db,
       wireTapAccountId
     );
 
-    return gliderPortfolio || null;
+    if (!gliderPortfolio) {
+      return null;
+    }
+
+    const balanceWei = await getBalance(viemClient, {
+      address: gliderPortfolio.address as Address
+    });
+
+    return {
+      ...gliderPortfolio,
+      address: gliderPortfolio.address as Address,
+      balanceWei: balanceWei.toString()
+    };
   }
 );

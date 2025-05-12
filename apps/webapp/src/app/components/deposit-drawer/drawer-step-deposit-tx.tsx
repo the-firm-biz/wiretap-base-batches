@@ -1,11 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import {
-  useBalance,
-  useSendTransaction,
-  useWaitForTransactionReceipt
-} from 'wagmi';
+import { useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import { toast } from 'sonner';
 import { DepositState } from './deposit-drawer';
 import Image from 'next/image';
@@ -41,13 +37,6 @@ export const DrawerStepDepositTransaction = ({
   const isTxError = !!txError;
 
   const { amountEthToDeposit, gliderPortfolioAddress } = depositState;
-
-  const { refetch: refetchPortfolioBalance } = useBalance({
-    address: gliderPortfolioAddress,
-    query: {
-      enabled: !!gliderPortfolioAddress
-    }
-  });
 
   const { sendTransaction } = useSendTransaction({
     mutation: {
@@ -103,10 +92,8 @@ export const DrawerStepDepositTransaction = ({
       toast.success(`Deposit Complete. ${amountEthToDeposit} ETH`);
       // Invalidate authed user portfolio query
       trpcClientUtils.wireTapAccount.getAuthedAccountGliderPortfolio.invalidate();
-      // Refetch balance
-      refetchPortfolioBalance();
     }
-  }, [amountEthToDeposit, isTxConfirmed, refetchPortfolioBalance]);
+  }, [amountEthToDeposit, isTxConfirmed]);
 
   const getImage = () => {
     if (isTxError) {

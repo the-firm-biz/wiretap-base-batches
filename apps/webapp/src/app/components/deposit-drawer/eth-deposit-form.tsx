@@ -17,7 +17,6 @@ import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { formatUsd } from '@/app/utils/format/format-usd';
 import { DepositState, DepositDrawerStep } from './deposit-drawer';
 import { Address } from 'viem';
-import { useBalance } from 'wagmi';
 import { formatUnits } from '@/app/utils/format/format-units';
 
 interface EthDepositFormProps {
@@ -42,14 +41,8 @@ export function EthDepositForm({
   );
   const hasExistingPortfolio = !!portfolio;
 
-  const { data: portfolioBalance } = useBalance({
-    address: portfolio?.address as Address,
-    query: {
-      enabled: !!portfolio?.address
-    }
-  });
   const portfolioBalanceEth = formatUnits(
-    portfolioBalance?.value || BigInt(0),
+    BigInt(portfolio?.balanceWei || 0),
     18,
     false
   );

@@ -12,9 +12,11 @@ export interface ViemClientOptions {
   alchemyApiKey: string;
 }
 
+export type WebSocketViemClient = PublicClient<WebSocketTransport, typeof base>;
+
 export function createWebsocketPublicClient(
   opts: ViemClientOptions
-): PublicClient<WebSocketTransport, typeof base> {
+): WebSocketViemClient {
   return viemCreatePublicClient({
     chain: base,
     transport: webSocket(
@@ -26,9 +28,11 @@ export function createWebsocketPublicClient(
   });
 }
 
+export type HttpViemClient = PublicClient<HttpTransport, typeof base>;
+
 export function createHttpPublicClient(
   opts: ViemClientOptions
-): PublicClient<HttpTransport, typeof base> {
+): HttpViemClient {
   return viemCreatePublicClient({
     chain: base,
     transport: http(
@@ -37,6 +41,4 @@ export function createHttpPublicClient(
   });
 }
 
-export type ViemClient =
-  | PublicClient<HttpTransport, typeof base>
-  | PublicClient<WebSocketTransport, typeof base>;
+export type ViemClient = HttpViemClient | WebSocketViemClient;
