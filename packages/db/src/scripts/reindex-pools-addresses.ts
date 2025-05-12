@@ -22,8 +22,8 @@ import { CLANKER_3_1_TOTAL_SUPPLY } from '@wiretap/config';
 config({ path: '.env.local' });
 
 const main = async () => {
-  if (!process.env.ALCHEMY_API_KEY || !process.env.DATABASE_URL) {
-    throw new Error('ALCHEMY_API_KEY and DATABASE_URL must be set');
+  if (!process.env.SERVER_ALCHEMY_API_KEY || !process.env.DATABASE_URL) {
+    throw new Error('SERVER_ALCHEMY_API_KEY and DATABASE_URL must be set');
   }
 
   const db = getDb({ databaseUrl: process.env.DATABASE_URL });
@@ -59,7 +59,7 @@ const main = async () => {
     });
 
     const client = createHttpPublicClient({
-      alchemyApiKey: process.env.ALCHEMY_API_KEY
+      alchemyApiKey: process.env.SERVER_ALCHEMY_API_KEY
     });
 
     const slot0 = await client
