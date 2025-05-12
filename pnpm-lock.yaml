@@ -55,16 +55,16 @@ importers:
         version: link:../../packages/utils
       abitype:
         specifier: ^1.0.8
-        version: 1.0.8(typescript@5.8.3)(zod@4.0.0-beta.20250415T232143)
+        version: 1.0.8(typescript@5.8.3)(zod@3.24.4)
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
       viem:
         specifier: ^2.29.2
-        version: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@4.0.0-beta.20250415T232143)
+        version: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
       zod:
-        specifier: 4.0.0-beta.20250415T232143
-        version: 4.0.0-beta.20250415T232143
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@wiretap/eslint-config':
         specifier: workspace:*
@@ -418,6 +418,9 @@ importers:
       exponential-backoff:
         specifier: ^3.1.2
         version: 3.1.2
+      viem:
+        specifier: ^2.29.2
+        version: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
       zod:
         specifier: ^3.24.4
         version: 3.24.4
@@ -2637,9 +2640,6 @@ packages:
     resolution: {integrity: sha512-LgBwViiGdOD5K6mP+ko/mPD82Be3yQBb+fSQwsz6YB7cwbcRXmYPWgL2ozvhHmEuR+fkpHscazPDGoCm1pii4Q==}
     peerDependencies:
       viem: ^2.28.0
-
-  '@zod/core@0.5.1':
-    resolution: {integrity: sha512-Iqa3r1weIYaG1pjR+vNhfmaQ+5YtdQEp839R7bil0CC30cwiExXuBI5AAEjZMMS2CzGcBlAWca+0+vxzUmdJ6Q==}
 
   '@zodios/core@10.9.6':
     resolution: {integrity: sha512-aH4rOdb3AcezN7ws8vDgBfGboZMk2JGGzEq/DtW65MhnRxyTGRuLJRWVQ/2KxDgWvV2F5oTkAS+5pnjKbl0n+A==}
@@ -5983,9 +5983,6 @@ packages:
   zod@3.24.4:
     resolution: {integrity: sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==}
 
-  zod@4.0.0-beta.20250415T232143:
-    resolution: {integrity: sha512-qy5jcyX/4Vt003S9II2NxTeAU31CQ71wJxk54stbrU+dhF+RcZL6xMwj8vGBbRVJi26pjCbTe2BldpK75nzlDw==}
-
   zustand@5.0.0:
     resolution: {integrity: sha512-LE+VcmbartOPM+auOjCCLQOsQ05zUTp8RkgwRzefUk+2jISdMMFnxvyTjA4YNWr5ZGXYbVsEMZosttuxUBkojQ==}
     engines: {node: '>=12.20.0'}
@@ -9050,8 +9047,6 @@ snapshots:
       '@simplewebauthn/types': 12.0.0
       viem: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
 
-  '@zod/core@0.5.1': {}
-
   '@zodios/core@10.9.6(axios@1.8.4)(zod@3.24.4)':
     dependencies:
       axios: 1.8.4
@@ -9066,11 +9061,6 @@ snapshots:
     optionalDependencies:
       typescript: 5.8.3
       zod: 3.24.4
-
-  abitype@1.0.8(typescript@5.8.3)(zod@4.0.0-beta.20250415T232143):
-    optionalDependencies:
-      typescript: 5.8.3
-      zod: 4.0.0-beta.20250415T232143
 
   acorn-jsx@5.3.2(acorn@8.14.1):
     dependencies:
@@ -11341,20 +11331,6 @@ snapshots:
     transitivePeerDependencies:
       - zod
 
-  ox@0.6.9(typescript@5.8.3)(zod@4.0.0-beta.20250415T232143):
-    dependencies:
-      '@adraffy/ens-normalize': 1.11.0
-      '@noble/curves': 1.8.2
-      '@noble/hashes': 1.7.2
-      '@scure/bip32': 1.6.2
-      '@scure/bip39': 1.5.4
-      abitype: 1.0.8(typescript@5.8.3)(zod@4.0.0-beta.20250415T232143)
-      eventemitter3: 5.0.1
-    optionalDependencies:
-      typescript: 5.8.3
-    transitivePeerDependencies:
-      - zod
-
   p-limit@2.3.0:
     dependencies:
       p-try: 2.2.0
@@ -12500,23 +12476,6 @@ snapshots:
       - utf-8-validate
       - zod
 
-  viem@2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@4.0.0-beta.20250415T232143):
-    dependencies:
-      '@noble/curves': 1.8.2
-      '@noble/hashes': 1.7.2
-      '@scure/bip32': 1.6.2
-      '@scure/bip39': 1.5.4
-      abitype: 1.0.8(typescript@5.8.3)(zod@4.0.0-beta.20250415T232143)
-      isows: 1.0.6(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      ox: 0.6.9(typescript@5.8.3)(zod@4.0.0-beta.20250415T232143)
-      ws: 8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-    optionalDependencies:
-      typescript: 5.8.3
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-      - zod
-
   vite-node@3.1.2(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.19.3):
     dependencies:
       cac: 6.7.14
@@ -12800,10 +12759,6 @@ snapshots:
   zod@3.22.4: {}
 
   zod@3.24.4: {}
-
-  zod@4.0.0-beta.20250415T232143:
-    dependencies:
-      '@zod/core': 0.5.1
 
   zustand@5.0.0(@types/react@19.1.2)(react@19.1.0)(use-sync-external-store@1.4.0(react@19.1.0)):
     optionalDependencies:

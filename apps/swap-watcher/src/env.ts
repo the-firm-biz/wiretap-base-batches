@@ -1,13 +1,13 @@
 import { config } from 'dotenv';
 import { z } from 'zod';
-import { getEnv, secretString } from '@wiretap/utils/shared';
+import { getEnv } from '@wiretap/utils/shared';
 
 config({ path: '.env.local' });
 
 const envSchema = z.object({
-  ALCHEMY_API_KEY: secretString,
-  DATABASE_URL: secretString,
-  REDIS_URL: secretString
+  ALCHEMY_API_KEY: z.string(),
+  DATABASE_URL: z.string(),
+  REDIS_URL: z.string()
 });
 
 export type Env = z.infer<typeof envSchema>;
