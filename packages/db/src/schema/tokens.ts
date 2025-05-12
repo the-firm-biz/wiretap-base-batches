@@ -37,7 +37,7 @@ export const tokens = pgTable(
     createdAt: timestamp('created_at').defaultNow().notNull()
   },
   (table) => [
-    index('tokens_block_idx').on(table.name),
+    index('tokens_account_entity_id_idx').on(table.accountEntityId),
     uniqueIndex('tokens_address_lower_unique').on(lower(table.address))
   ]
 );
