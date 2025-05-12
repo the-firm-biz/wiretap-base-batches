@@ -5,7 +5,7 @@ import { getEnv } from '@wiretap/utils/shared';
 config({ path: '.env.local' });
 
 const envSchema = z.object({
-  ALCHEMY_API_KEY: z.string(),
+  SERVER_ALCHEMY_API_KEY: z.string(),
   DATABASE_URL: z.string(),
   REDIS_URL: z.string()
 });

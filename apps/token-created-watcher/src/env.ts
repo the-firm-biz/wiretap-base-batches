@@ -10,7 +10,7 @@ const envSchema = z.object({
   WIRETAP_NOTIFICATIONS_CHANNEL_ID: z.string(),
   INFRA_NOTIFICATIONS_CHANNEL_ID: z.string(),
   NEYNAR_API_KEY: z.string(),
-  ALCHEMY_API_KEY: z.string(),
+  SERVER_ALCHEMY_API_KEY: z.string(),
   DATABASE_URL: z.string(),
   IS_SLACK_NOTIFICATION_ENABLED: stringBool,
   REDIS_URL: z.string()

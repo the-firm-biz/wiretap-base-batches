@@ -10,10 +10,10 @@ export const websocketPublicClient: PublicClient<
   WebSocketTransport,
   typeof base
 > = createWebsocketPublicClient({
-  alchemyApiKey: env.ALCHEMY_API_KEY
+  alchemyApiKey: env.SERVER_ALCHEMY_API_KEY
 });
 
 export const httpPublicClient: PublicClient<HttpTransport, typeof base> =
   createHttpPublicClient({
-    alchemyApiKey: env.ALCHEMY_API_KEY
+    alchemyApiKey: env.SERVER_ALCHEMY_API_KEY
   });
