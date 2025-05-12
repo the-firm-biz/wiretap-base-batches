@@ -1,7 +1,7 @@
 import { privateProcedure } from '@/server/api/trpc';
 import { getGliderPortfolioForWireTapAccount } from '@wiretap/db';
 
-export const getGliderPortfolioForAuthedAccount = privateProcedure.query(
+export const getAuthedAccountGliderPortfolio = privateProcedure.query(
   async ({ ctx }) => {
     const { db, wireTapAccountId } = ctx;
 

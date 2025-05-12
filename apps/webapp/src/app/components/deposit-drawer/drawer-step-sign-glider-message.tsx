@@ -45,7 +45,7 @@ export function DrawerStepSignGliderMessage({
         });
 
       // Invalidate authed user portfolio query
-      trpcClientUtils.wireTapAccount.getGliderPortfolioForAuthedAccount.invalidate();
+      trpcClientUtils.wireTapAccount.getAuthedAccountGliderPortfolio.invalidate();
 
       // Progress to the next step
       setDepositState((prev) => ({

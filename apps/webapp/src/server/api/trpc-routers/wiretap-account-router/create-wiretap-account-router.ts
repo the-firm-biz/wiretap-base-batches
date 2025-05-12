@@ -1,13 +1,15 @@
 import { createTRPCRouter } from '../../trpc';
-import { getGliderPortfolioForAuthedAccount } from './routes/get-glider-portfolio-for-authed-account';
-import { getTargetsForAuthedAccount } from './routes/get-targets-for-authed-account';
+import { getAuthedAccountGliderPortfolio } from './routes/get-authed-account-glider-portfolio';
+import { getAuthedAccountTargets } from './routes/get-authed-account-targets';
+import { verifySiweMessage } from './routes/verify-siwe-message';
 
 /**
  * Routes specific to getting/setting data for the connected WireTap account
  */
 export const wireTapAccountRouter = createTRPCRouter({
-  getGliderPortfolioForAuthedAccount: getGliderPortfolioForAuthedAccount,
-  getTargetsForAuthedAccount: getTargetsForAuthedAccount
+  getAuthedAccountGliderPortfolio: getAuthedAccountGliderPortfolio,
+  getAuthedAccountTargets: getAuthedAccountTargets,
+  verifySiweMessage: verifySiweMessage
 });
 
 export type WireTapAccountRouter = typeof wireTapAccountRouter;
