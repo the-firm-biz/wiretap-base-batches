@@ -5,7 +5,10 @@ import { serverEnv } from '@/serverEnv';
 import { verifyJwt } from '@/app/utils/jwt/verify-jwt';
 import { SiweMessage } from 'siwe';
 import { VerifySiweMessageJwtPayload } from '@/app/utils/siwe/types';
-import { createHttpPublicClient, ViemClient } from '@wiretap/utils/shared';
+import {
+  createHttpPublicClient,
+  type HttpViemClient
+} from '@wiretap/utils/shared';
 import {
   getSingletonNeynarClient,
   NeynarAPIClient
@@ -16,7 +19,7 @@ export const createInnerContext = (opts: {
 }): {
   db: HttpDb;
   neynarClient: NeynarAPIClient;
-  viemClient: ViemClient;
+  viemClient: HttpViemClient;
   headers: Headers;
 } => {
   const db = singletonDb({ databaseUrl: serverEnv.DATABASE_URL });
