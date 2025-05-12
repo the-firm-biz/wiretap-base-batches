@@ -12,7 +12,8 @@ const envSchema = z.object({
   NEYNAR_API_KEY: z.string(),
   ALCHEMY_API_KEY: z.string(),
   DATABASE_URL: z.string(),
-  IS_SLACK_NOTIFICATION_ENABLED: stringBool
+  IS_SLACK_NOTIFICATION_ENABLED: stringBool,
+  REDIS_URL: z.string()
 });
 
 export type Env = z.infer<typeof envSchema>;

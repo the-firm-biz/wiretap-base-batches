@@ -2,8 +2,9 @@ import { CLANKER_3_1_ADDRESS, CLANKER_ABI } from '@wiretap/config';
 import { onLogs } from './on-logs.js';
 import { onError } from './on-error.js';
 import { websocketPublicClient } from './rpc-clients.js';
+import { initPriceFeeds } from '@wiretap/utils/server';
 
-export function startTokenCreatedWatcher() {
+export async function startTokenCreatedWatcher() {
   let unwatch: (() => void) | null = null;
 
   const startWatcher = () => {
@@ -18,11 +19,14 @@ export function startTokenCreatedWatcher() {
     });
   };
 
+  const priceFeedUnwatch = await initPriceFeeds();
+
   // Start the TokenCreated log watcher
   startWatcher();
 
   // Return cleanup function
   return () => {
     if (unwatch) unwatch();
+    if (priceFeedUnwatch) priceFeedUnwatch();
   };
 }

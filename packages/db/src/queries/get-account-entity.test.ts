@@ -82,7 +82,8 @@ describe('getAccountEntity', () => {
       deploymentContractId: contract!.id,
       accountEntityId: testAccountEntity!.id,
       score: null,
-      block: block!.number
+      block: block!.number,
+      totalSupply: 100_000_000_000
     };
     await db.insert(tokens).values(newToken);
   });

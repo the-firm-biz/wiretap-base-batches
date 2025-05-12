@@ -80,21 +80,24 @@ describe('countTokensByCreator', () => {
         address: '0x60C2c576310892d741ac6faFB74D82D3dd49F4B6',
         accountEntityId: accountEntityId1,
         deploymentContractId: contractId,
-        block: blockNumber
+        block: blockNumber,
+        totalSupply: 100_000_000_000
       },
       {
         ...baseToken,
         address: '0x70C2c576310892d741ac6faFB74D82D3dd49F4B7',
         accountEntityId: accountEntityId1,
         deploymentContractId: contractId,
-        block: blockNumber
+        block: blockNumber,
+        totalSupply: 100_000_000_000
       },
       {
         ...baseToken,
         address: '0x80C2c576310892d741ac6faFB74D82D3dd49F4B8',
         accountEntityId: accountEntityId1,
         deploymentContractId: contractId,
-        block: blockNumber
+        block: blockNumber,
+        totalSupply: 100_000_000_000
       }
     ]);
 
@@ -104,7 +107,8 @@ describe('countTokensByCreator', () => {
       address: '0x90C2c576310892d741ac6faFB74D82D3dd49F4B9',
       accountEntityId: accountEntityId2,
       deploymentContractId: contractId,
-      block: blockNumber
+      block: blockNumber,
+      totalSupply: 100_000_000_000
     });
 
     const count1 = await countTokensByCreator(db, accountEntityId1);

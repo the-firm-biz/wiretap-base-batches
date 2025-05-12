@@ -46,6 +46,14 @@ const testTokenCreatedData: TokenCreatedOnChainParams = {
   block: {
     number: BLOCK_NUMBER,
     timestamp: BLOCK_TIMESTAMP
+  },
+  totalSupply: 100_000_000_000,
+  poolContext: {
+    address: '0x8888888888888888888888888888888888888888' as Address,
+    pairedAddress: '0x8888888888888888888888888888888888888888' as Address,
+    token0IsNewToken: true,
+    priceEth: 100.0,
+    priceUsd: 100.0
   }
 };
 

@@ -1,0 +1,39 @@
+{
+  "name": "@wiretap/swap-watcher",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/main.ts",
+    "start": "node src/main.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "ts:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@uniswap/sdk-core": "^7.7.2",
+    "@uniswap/v3-sdk": "^3.25.2",
+    "@wiretap/config": "workspace:*",
+    "@wiretap/db": "workspace:*",
+    "@wiretap/redis": "workspace:*",
+    "@wiretap/utils": "workspace:*",
+    "abitype": "^1.0.8",
+    "dotenv": "^16.5.0",
+    "viem": "^2.29.2",
+    "zod": "4.0.0-beta.20250415T232143"
+  },
+  "devDependencies": {
+    "@wiretap/eslint-config": "workspace:*",
+    "@wiretap/prettier-config": "workspace:*",
+    "@wiretap/typescript-config": "workspace:*",
+    "vite": "^6.3.2",
+    "vitest": "^3.1.2"
+  }
+}

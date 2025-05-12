@@ -17,6 +17,7 @@ import { sendSlackMessage } from './notifications/send-slack-message.js';
 import { getTokenScore } from './token-score/get-token-score.js';
 import { TokenIndexerError } from './errors.js';
 import { type Context, trace } from '@wiretap/utils/shared';
+import type { DeployTokenArgs } from './get-transaction-context.js';
 
 export interface HandleClankerFarcasterArgs {
   fid: number;
@@ -26,6 +27,7 @@ export interface HandleClankerFarcasterArgs {
 export async function handleClankerFarcaster(
   tokenCreatedData: TokenCreatedOnChainParams,
   clankerFarcasterArgs: HandleClankerFarcasterArgs,
+  transactionArgs: DeployTokenArgs,
   { tracing: { parentSpan } = {} }: Context
 ) {
   const neynarClient = getSingletonNeynarClient({
@@ -38,7 +40,7 @@ export async function handleClankerFarcaster(
         neynarClient,
         tokenCreatedData,
         clankerFarcasterArgs,
-        { tracing: { parentSpan: span } },
+        { tracing: { parentSpan: span } }
       ),
     {
       name: 'lookupAndValidateCastConversationWithBackoff',
@@ -107,7 +109,8 @@ export async function handleClankerFarcaster(
       castIsValid: isValidCast,
       neynarUserExists: !!neynarUser
     },
-    tokenScoreDetails
+    tokenScoreDetails,
+    transactionArgs
   });
 }
 
@@ -120,7 +123,7 @@ async function lookupAndValidateCastConversationWithBackoff(
   neynarClient: NeynarAPIClient,
   tokenCreatedData: TokenCreatedOnChainParams,
   clankerFarcasterArgs: HandleClankerFarcasterArgs,
-  { tracing }: Context,
+  { tracing }: Context
 ): Promise<CastWithValidation> {
   const { messageId: castHash } = clankerFarcasterArgs;
 
@@ -164,7 +167,7 @@ async function lookupAndValidateCastConversationWithBackoff(
     {
       name: 'lookupAndValidateCastConversation',
       tracing
-    },
+    }
   );
 
   return (
