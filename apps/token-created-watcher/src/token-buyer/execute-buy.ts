@@ -3,11 +3,13 @@ import { callWithBackOff } from '@wiretap/utils/server';
 import { httpPublicClient } from '../rpc-clients.js';
 import { type Address, parseEther } from 'viem';
 import { updatePortfolio } from './glider-api/update-portfolio.js';
+import { rebalancePortfolio } from './glider-api/rebalance-portfolio.js';
 
 const BALANCE_TRADE_THRESHOLDS: bigint = parseEther('0.0001', 'wei');
 
 export async function executeBuy(buyTrigger: BuyTrigger): Promise<void> {
-  if (!buyTrigger.portfolioId || !buyTrigger.portfolioAddress) {
+  const { portfolioId, portfolioAddress, accountEntityAddress } = buyTrigger;
+  if (!portfolioId || !portfolioAddress) {
     console.log(`No portfolio for ${JSON.stringify(buyTrigger)}`);
     return;
   }
@@ -15,28 +17,34 @@ export async function executeBuy(buyTrigger: BuyTrigger): Promise<void> {
   const balance = await callWithBackOff(
     () =>
       httpPublicClient.getBalance({
-        address: buyTrigger.portfolioAddress as Address,
+        address: portfolioAddress as Address,
         blockTag: 'latest'
       }),
-    `getBalance for portfolio ${buyTrigger.portfolioAddress}`
+    `getBalance for portfolio ${portfolioAddress}`
   );
   const isBalanceSufficient = balance && balance >= BALANCE_TRADE_THRESHOLDS;
   if (!isBalanceSufficient) {
-    console.log(
-      `Insufficient portfolio balance ${buyTrigger.portfolioAddress}`
-    );
+    console.log(`Insufficient portfolio balance ${portfolioAddress}`);
     return;
   }
 
-  const baseAssetPercentage =
+  const tokenPercentage =
     computeBaseAssetRation(buyTrigger.maxSpend, balance) * 100;
-
-  const updatedResult = await updatePortfolio({
-    accountEntityAddress: buyTrigger.accountEntityAddress,
-    portfolioId: buyTrigger.portfolioId,
+  const isUpdatedSuccessful = updatePortfolio({
+    accountEntityAddress,
+    portfolioId,
     tokenAddress: buyTrigger.tokenAddress as Address,
-    tokenPercentage: baseAssetPercentage}
-  );
+    tokenPercentage
+  });
+
+  if (!isUpdatedSuccessful) {
+    return;
+  }
+
+  const isRebalanceSuccessful = await rebalancePortfolio(portfolioId);
+  if (!isRebalanceSuccessful) {
+    // TODO: reset back to 100% eth ?!
+  }
 }
 
 function computeBaseAssetRation(maxSpend: number, balance: bigint) {
