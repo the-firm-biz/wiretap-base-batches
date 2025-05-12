@@ -14,7 +14,7 @@ const buttonVariants = cva(
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive/20',
         outline:
-          'border bg-background hover:bg-accent hover:text-accent-foreground',
+          'border border-b-2 bg-background hover:bg-accent hover:text-accent-foreground',
         secondary:
           'bg-secondary text-secondary-foreground hover:bg-[url(/patterns/selection-pattern-light.png)] dark:hover:bg-[url(/patterns/selection-pattern-dark.png)] hover:bg-repeat [&:hover]:[image-rendering:pixelated]',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
@@ -23,7 +23,7 @@ const buttonVariants = cva(
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
         sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
-        lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
+        lg: 'h-[48px] rounded-md px-6 has-[>svg]:px-4',
         icon: 'size-8'
       }
     },

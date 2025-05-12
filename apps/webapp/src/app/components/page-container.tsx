@@ -4,7 +4,7 @@ export default function PageContainer({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="p-4 max-w-screen-md w-full mx-auto flex-1">
+    <main className="p-4 max-w-screen-md w-full mx-auto flex-1 h-full flex flex-col">
       {children}
     </main>
   );
