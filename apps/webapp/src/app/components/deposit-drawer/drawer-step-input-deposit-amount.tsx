@@ -4,14 +4,14 @@ import { DepositDrawerFundsSummary } from './funds-summary';
 import { EthDepositForm } from './eth-deposit-form';
 import { useAccount, useBalance } from 'wagmi';
 import { formatUnits } from '@/app/utils/format/format-units';
-import { DepositDrawerState } from './deposit-drawer';
+import { DepositState } from './deposit-drawer';
 
 interface InputDepositAmountStepProps {
-  setDepositDrawerState: Dispatch<SetStateAction<DepositDrawerState>>;
+  setDepositState: Dispatch<SetStateAction<DepositState>>;
 }
 
 export function DrawerStepInputDepositAmount({
-  setDepositDrawerState
+  setDepositState
 }: InputDepositAmountStepProps) {
   const { address } = useAccount();
 
@@ -37,7 +37,7 @@ export function DrawerStepInputDepositAmount({
       <div className="mt-8" />
       <EthDepositForm
         userBalance={balanceAsEth}
-        setDepositDrawerState={setDepositDrawerState}
+        setDepositState={setDepositState}
       />
     </div>
   );

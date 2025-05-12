@@ -6,6 +6,7 @@ import Providers from '@/app/components/providers';
 import './styles/globals.css';
 import { departureMono, ppMondwest, loRes12 } from './styles/font-family';
 import { headers } from 'next/headers';
+import { Toaster } from './components/ui/sonner';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),
@@ -34,6 +35,7 @@ export default async function RootLayout({
         className={`${ppMondwest.variable} ${loRes12.variable} ${departureMono.variable} antialiased`}
       >
         <div className="lcd-grid-overlay" aria-hidden="true"></div>
+        <Toaster />
         <Providers cookies={cookies}>
           <div className="flex flex-col min-h-screen">{children}</div>
         </Providers>

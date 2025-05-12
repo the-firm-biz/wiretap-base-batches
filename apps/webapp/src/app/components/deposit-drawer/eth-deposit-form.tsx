@@ -15,14 +15,14 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { formatUsd } from '@/app/utils/format/format-usd';
-import { DepositDrawerState, DepositDrawerStep } from './deposit-drawer';
+import { DepositState, DepositDrawerStep } from './deposit-drawer';
 import { Address } from 'viem';
 import { useBalance } from 'wagmi';
 import { formatUnits } from '@/app/utils/format/format-units';
 
 interface EthDepositFormProps {
   userBalance: number;
-  setDepositDrawerState: Dispatch<SetStateAction<DepositDrawerState>>;
+  setDepositState: Dispatch<SetStateAction<DepositState>>;
 }
 
 const REQUIRED_FIELD_MESSAGE = 'Required';
@@ -31,7 +31,7 @@ const MAX_ALPHA_TESTING_DEPOSIT_AMOUNT = 0.05;
 
 export function EthDepositForm({
   userBalance,
-  setDepositDrawerState
+  setDepositState
 }: EthDepositFormProps) {
   const trpc = useTRPC();
 
@@ -89,7 +89,7 @@ export function EthDepositForm({
       ? 'confirm-deposit-tx'
       : 'sign-glider-message';
 
-    setDepositDrawerState(() => ({
+    setDepositState(() => ({
       amountEthToDeposit: values.ethToDeposit,
       step: nextStep,
       gliderPortfolioAddress: portfolio?.address as Address | undefined

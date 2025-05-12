@@ -2,12 +2,13 @@
 
 import { SetStateAction, Dispatch, useEffect, useState, useRef } from 'react';
 import { useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
-import { DepositDrawerState } from './deposit-drawer';
+import { toast } from 'sonner';
+import { DepositState } from './deposit-drawer';
 import Image from 'next/image';
 import { textStyles } from '@/app/styles/template-strings';
 import AnimatedEllipsisText from '../animated-ellipsis-text';
 import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
-import { parseEther } from 'viem';
+import { Address, parseEther } from 'viem';
 import { formatUsd } from '@/app/utils/format/format-usd';
 import { useQuery } from '@tanstack/react-query';
 import { TriangleAlertIcon } from '../icons/TriangleAlertIcon';
@@ -17,38 +18,49 @@ import { Button } from '../ui/button';
 import { DrawerDescription, DrawerTitle } from '../ui/drawer';
 
 interface DepositDrawerProps {
-  setDepositDrawerState: Dispatch<SetStateAction<DepositDrawerState>>;
-  depositDrawerState: DepositDrawerState;
+  setDepositState: Dispatch<SetStateAction<DepositState>>;
+  setDrawerIsOpen: Dispatch<SetStateAction<boolean>>;
+  depositState: DepositState;
 }
 
 export const DrawerStepDepositTransaction = ({
-  setDepositDrawerState,
-  depositDrawerState
+  setDepositState,
+  setDrawerIsOpen,
+  depositState
 }: DepositDrawerProps) => {
   // A hack to prevent calling sendTransaction twice
   const hasDeclaritivelyCalledSendTransaction = useRef(false);
+
+  // useSendTransaction is not causing re-renders, so we are setting our own state using mutation callbacks
   const [txError, setTxError] = useState<BaseError | null>(null);
+  const [txHash, setTxHash] = useState<Address | null>(null);
+
   const isTxError = !!txError;
 
-  const { amountEthToDeposit, gliderPortfolioAddress } = depositDrawerState;
+  const { amountEthToDeposit, gliderPortfolioAddress } = depositState;
   const trpc = useTRPC();
 
-  const {
-    data: hash,
-    isPending: isTxPending,
-    sendTransaction
-  } = useSendTransaction({
+  const { sendTransaction } = useSendTransaction({
     mutation: {
       // note useSendTransaction's 'error' return is out of sync with the render, so we use this callback
       onError: (error: unknown) => {
-        setTxError(error as BaseError);
+        const baseError = error as BaseError;
+        // @todo sonner - style and add button
+        toast(`Error. ${baseError.shortMessage}`);
+        setTxError(baseError);
+      },
+      onSuccess: (hash: Address) => {
+        setTxHash(hash);
       }
     }
   });
 
   const { isLoading: isTxConfirming, isSuccess: isTxConfirmed } =
     useWaitForTransactionReceipt({
-      hash
+      hash: txHash!,
+      query: {
+        enabled: !!txHash
+      }
     });
 
   const { data: ethPriceUsd } = useQuery(
@@ -56,7 +68,7 @@ export const DrawerStepDepositTransaction = ({
   );
   const usdDisplayValue = formatUsd(amountEthToDeposit * (ethPriceUsd || 0));
 
-  console.log({ isTxPending, isTxConfirming, isTxConfirmed, isTxError });
+  console.log({ isTxConfirming, isTxConfirmed, isTxError });
 
   useEffect(() => {
     const handleDeposit = () => {
@@ -64,7 +76,6 @@ export const DrawerStepDepositTransaction = ({
       if (!gliderPortfolioAddress) {
         throw new Error(`GliderPortfolio is ${gliderPortfolioAddress}`);
       }
-
       // Create the transfer transaction
       sendTransaction({
         to: gliderPortfolioAddress,
@@ -117,6 +128,8 @@ export const DrawerStepDepositTransaction = ({
       return <span className={textStyles['title3']}>Deposit Complete</span>;
     }
 
+    <div className="p-" />;
+
     if (isTxConfirming) {
       return (
         <AnimatedEllipsisText className={textStyles['title3']}>
@@ -141,7 +154,7 @@ export const DrawerStepDepositTransaction = ({
 
     if (isTxConfirmed) {
       return (
-        <p className={textStyles['compact']}>
+        <p className={`${textStyles['compact']} text-center`}>
           You may now return to your business.
           <br />
           Good day!
@@ -171,7 +184,7 @@ export const DrawerStepDepositTransaction = ({
 
     return (
       <p className={textStyles['compact-emphasis']}>
-        {depositDrawerState.amountEthToDeposit} ETH (${usdDisplayValue})
+        {depositState.amountEthToDeposit} ETH (${usdDisplayValue})
       </p>
     );
   };
@@ -197,7 +210,13 @@ export const DrawerStepDepositTransaction = ({
     }
 
     if (isTxConfirmed) {
-      return <Button>Pleasure Doing Business</Button>;
+      return (
+        <div className="mt-4">
+          <Button variant="outline" onClick={() => setDrawerIsOpen(false)}>
+            Pleasure Doing Business
+          </Button>
+        </div>
+      );
     }
 
     return null;

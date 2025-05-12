@@ -1,4 +1,5 @@
 'use client';
+
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React from 'react';
 import { TRPCReactProvider } from '@/app/trpc-clients/trpc-react-client';

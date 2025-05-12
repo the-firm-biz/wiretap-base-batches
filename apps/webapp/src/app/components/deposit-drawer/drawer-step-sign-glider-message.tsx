@@ -1,6 +1,6 @@
 import { SetStateAction, Dispatch, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import { DepositDrawerState } from './deposit-drawer';
+import { DepositState } from './deposit-drawer';
 import Image from 'next/image';
 import { textStyles } from '@/app/styles/template-strings';
 import AnimatedEllipsisText from '../animated-ellipsis-text';
@@ -14,11 +14,11 @@ import { signMessage } from '@wagmi/core';
 import { DrawerDescription, DrawerTitle } from '../ui/drawer';
 
 interface SignGliderMessageStepProps {
-  setDepositDrawerState: Dispatch<SetStateAction<DepositDrawerState>>;
+  setDepositState: Dispatch<SetStateAction<DepositState>>;
 }
 
 export function DrawerStepSignGliderMessage({
-  setDepositDrawerState
+  setDepositState
 }: SignGliderMessageStepProps) {
   const { address } = useAccount();
   const trpcClient = useTRPCClient();
@@ -48,7 +48,7 @@ export function DrawerStepSignGliderMessage({
       trpcClientUtils.wireTapAccount.getGliderPortfolioForAuthedAccount.invalidate();
 
       // Progress to the next step
-      setDepositDrawerState((prev) => ({
+      setDepositState((prev) => ({
         ...prev,
         step: 'confirm-deposit-tx',
         gliderPortfolioAddress: createdPortfolio.address as Address
@@ -58,7 +58,7 @@ export function DrawerStepSignGliderMessage({
     if (address) {
       handleGliderPortfolioCreation();
     }
-  }, [address, setDepositDrawerState, trpcClient]);
+  }, [address, setDepositState, trpcClient]);
 
   return (
     <div className="flex flex-col items-center justify-center p-6 gap-6">
