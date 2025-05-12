@@ -1,0 +1,6 @@
+.lcd-grid-overlay {
+  @apply pointer-events-none fixed inset-0 z-[1000] w-screen h-screen bg-repeat opacity-40;
+  background-image: url('/patterns/lcd-grid-pattern.png');
+  background-size: 4px 4px;
+  image-rendering: pixelated;
+}

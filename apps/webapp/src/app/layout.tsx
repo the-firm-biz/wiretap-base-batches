@@ -33,6 +33,7 @@ export default async function RootLayout({
       <body
         className={`${ppMondwest.variable} ${loRes12.variable} ${departureMono.variable} antialiased`}
       >
+        <div className="lcd-grid-overlay" aria-hidden="true"></div>
         <Providers cookies={cookies}>
           <div className="flex flex-col min-h-screen">{children}</div>
         </Providers>
