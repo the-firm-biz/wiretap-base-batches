@@ -1,13 +1,13 @@
 'use client';
 
-import { SetStateAction, Dispatch, useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   useBalance,
   useSendTransaction,
   useWaitForTransactionReceipt
 } from 'wagmi';
 import { toast } from 'sonner';
-import { DEFAULT_STATE, DepositState } from './deposit-drawer';
+import { DepositState } from './deposit-drawer';
 import Image from 'next/image';
 import { textStyles } from '@/app/styles/template-strings';
 import AnimatedEllipsisText from '../animated-ellipsis-text';
@@ -22,14 +22,12 @@ import { Button } from '../ui/button';
 import { DrawerDescription, DrawerTitle } from '../ui/drawer';
 
 interface DepositDrawerProps {
-  setDrawerIsOpen: Dispatch<SetStateAction<boolean>>;
-  setDepositState: Dispatch<SetStateAction<DepositState>>;
+  handleOpenCloseDrawer: (isOpen: boolean) => void;
   depositState: DepositState;
 }
 
 export const DrawerStepDepositTransaction = ({
-  setDrawerIsOpen,
-  setDepositState,
+  handleOpenCloseDrawer,
   depositState
 }: DepositDrawerProps) => {
   const trpc = useTRPC();
@@ -78,8 +76,6 @@ export const DrawerStepDepositTransaction = ({
   );
   const usdDisplayValue = formatUsd(amountEthToDeposit * (ethPriceUsd || 0));
 
-  console.log({ isTxConfirming, isTxConfirmed, isTxError });
-
   // Declaritively call sendTransaction
   useEffect(() => {
     const handleDeposit = () => {
@@ -105,10 +101,8 @@ export const DrawerStepDepositTransaction = ({
   useEffect(() => {
     if (isTxConfirmed) {
       toast.success(`Deposit Complete. ${amountEthToDeposit} ETH`);
-
       // Invalidate authed user portfolio query
       trpcClientUtils.wireTapAccount.getGliderPortfolioForAuthedAccount.invalidate();
-
       // Refetch balance
       refetchPortfolioBalance();
     }
@@ -226,12 +220,9 @@ export const DrawerStepDepositTransaction = ({
           <Button
             variant="outline"
             onClick={() => {
-              setTimeout(() => {
-                setDepositState(DEFAULT_STATE);
-              }, 500);
               setTxError(null);
               setTxHash(null);
-              setDrawerIsOpen(false);
+              handleOpenCloseDrawer(false);
             }}
           >
             Pleasure Doing Business

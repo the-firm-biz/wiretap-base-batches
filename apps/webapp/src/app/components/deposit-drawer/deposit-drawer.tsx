@@ -22,7 +22,7 @@ export interface DepositState {
   gliderPortfolioAddress: Address | undefined;
 }
 
-export const DEFAULT_STATE: DepositState = {
+const DEFAULT_STATE: DepositState = {
   step: 'input-deposit-amount',
   amountEthToDeposit: 0,
   gliderPortfolioAddress: undefined
@@ -32,17 +32,16 @@ export const DepositDrawer = ({ trigger }: DepositDrawerProps) => {
   const [drawerIsOpen, setDrawerIsOpen] = useState(false);
   const [depositState, setDepositState] = useState<DepositState>(DEFAULT_STATE);
 
+  const handleOpenCloseDrawer = (isOpen: boolean) => {
+    setDrawerIsOpen(isOpen);
+    // Reset state after the drawer's closing animation is complete
+    setTimeout(() => {
+      setDepositState(DEFAULT_STATE);
+    }, 500);
+  };
+
   return (
-    <Drawer
-      open={drawerIsOpen}
-      onOpenChange={(open) => {
-        setDrawerIsOpen(open);
-        // Reset state after the drawer's closing animation is complete
-        setTimeout(() => {
-          setDepositState(DEFAULT_STATE);
-        }, 500);
-      }}
-    >
+    <Drawer open={drawerIsOpen} onOpenChange={handleOpenCloseDrawer}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
         {depositState?.step === 'input-deposit-amount' && (
@@ -53,8 +52,7 @@ export const DepositDrawer = ({ trigger }: DepositDrawerProps) => {
         )}
         {depositState?.step === 'confirm-deposit-tx' && (
           <DrawerStepDepositTransaction
-            setDrawerIsOpen={setDrawerIsOpen}
-            setDepositState={setDepositState}
+            handleOpenCloseDrawer={handleOpenCloseDrawer}
             depositState={depositState}
           />
         )}
