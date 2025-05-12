@@ -8,7 +8,7 @@ import { formatUnits as viemFormatUnits } from 'viem';
 export function formatUnits(
   value: bigint,
   decimals = 18,
-  roundingDecimals = 2
+  roundingDecimals: number | false = 2
 ): number {
   const formattedValue = viemFormatUnits(value, decimals);
   const formattedValueNumber = Number(formattedValue);
