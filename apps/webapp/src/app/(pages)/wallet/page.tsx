@@ -41,8 +41,10 @@ export default function WalletPage() {
           </div>
         </div>
       </div>
-      <div className="max-w-screen-md w-full mx-auto pt-[32px] px-4">
-        <WalletNotice />
+      <div className="px-4">
+        <div className="max-w-screen-md w-full mx-auto pt-[32px]">
+          <WalletNotice />
+        </div>
       </div>
     </div>
   );
