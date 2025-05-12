@@ -1,5 +1,6 @@
 import z from 'zod';
 import { useForm } from 'react-hook-form';
+import { Dispatch, SetStateAction } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { textStyles } from '@/app/styles/template-strings';
 import { Input } from '../ui/input';
@@ -14,22 +15,56 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { formatUsd } from '@/app/utils/format/format-usd';
+import { DepositDrawerState, DepositDrawerStep } from './deposit-drawer';
+import { Address } from 'viem';
+import { useBalance } from 'wagmi';
+import { formatUnits } from '@/app/utils/format/format-units';
 
 interface EthDepositFormProps {
   userBalance: number;
+  setDepositDrawerState: Dispatch<SetStateAction<DepositDrawerState>>;
 }
 
 const REQUIRED_FIELD_MESSAGE = 'Required';
-const TRANSFER_GAS_ESTIMATE_ETH = 0.0000005; // @todo: Can run an actual estimate to get this
+const TRANSFER_GAS_ESTIMATE_ETH = 0.0000005; // @todo: Could be improved by running an eth transfer gas estimate
+const MAX_ALPHA_TESTING_DEPOSIT_AMOUNT = 0.05;
 
-export function EthDepositForm({ userBalance }: EthDepositFormProps) {
+export function EthDepositForm({
+  userBalance,
+  setDepositDrawerState
+}: EthDepositFormProps) {
   const trpc = useTRPC();
+
+  const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery(
+    trpc.wireTapAccount.getGliderPortfolioForAuthedAccount.queryOptions()
+  );
+  const hasExistingPortfolio = !!portfolio;
+
+  const { data: portfolioBalance } = useBalance({
+    address: portfolio?.address as Address,
+    query: {
+      enabled: !!portfolio?.address
+    }
+  });
+  const portfolioBalanceEth = formatUnits(
+    portfolioBalance?.value || BigInt(0),
+    18,
+    false
+  );
+
+  const maxDepositAmount = Math.min(
+    userBalance,
+    MAX_ALPHA_TESTING_DEPOSIT_AMOUNT - portfolioBalanceEth
+  );
 
   const formSchema = z.object({
     ethToDeposit: z
       .number({ message: REQUIRED_FIELD_MESSAGE })
       .min(0.1e-17, { message: REQUIRED_FIELD_MESSAGE }) // 1 wei
       .max(userBalance, { message: 'Insufficient ETH in your wallet' })
+      .max(MAX_ALPHA_TESTING_DEPOSIT_AMOUNT, {
+        message: `Max ${MAX_ALPHA_TESTING_DEPOSIT_AMOUNT} ETH: Alpha testing phase`
+      })
   });
   type FormSchema = z.infer<typeof formSchema>;
 
@@ -50,12 +85,19 @@ export function EthDepositForm({ userBalance }: EthDepositFormProps) {
   const usdDisplayValue = formatUsd(ethToDepositFormValue * (ethPriceUsd || 0));
 
   function onSubmitForm(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    console.log(values);
+    const nextStep: DepositDrawerStep = hasExistingPortfolio
+      ? 'confirm-deposit-tx'
+      : 'sign-glider-message';
+
+    setDepositDrawerState(() => ({
+      amountEthToDeposit: values.ethToDeposit,
+      step: nextStep,
+      gliderPortfolioAddress: portfolio?.address as Address | undefined
+    }));
   }
 
-  function getPercentOfBalance(percent: number, roundingDecimals = 5) {
-    const value = (userBalance * percent) / 100;
+  function getPercentOfMaxDeposit(percent: number, roundingDecimals = 5) {
+    const value = (maxDepositAmount * percent) / 100;
     const roundingFactor = Math.pow(10, roundingDecimals);
     return Math.round(value * roundingFactor) / roundingFactor;
   }
@@ -108,31 +150,36 @@ export function EthDepositForm({ userBalance }: EthDepositFormProps) {
 
                 <div className="relative flex flex-row gap-1 w-full">
                   <Button
+                    type="button"
                     variant="outline"
                     className="flex-1"
-                    onClick={() => field.onChange(getPercentOfBalance(25))}
+                    onClick={() => field.onChange(getPercentOfMaxDeposit(25))}
                   >
                     25%
                   </Button>
                   <Button
+                    type="button"
                     variant="outline"
                     className="flex-1"
-                    onClick={() => field.onChange(getPercentOfBalance(50))}
+                    onClick={() => field.onChange(getPercentOfMaxDeposit(50))}
                   >
                     50%
                   </Button>
                   <Button
+                    type="button"
                     variant="outline"
                     className="flex-1"
-                    onClick={() => field.onChange(getPercentOfBalance(75))}
+                    onClick={() => field.onChange(getPercentOfMaxDeposit(75))}
                   >
                     75%
                   </Button>
                   <Button
+                    type="button"
                     variant="outline"
                     className="flex-1"
                     onClick={() => {
-                      const maxEth = userBalance - TRANSFER_GAS_ESTIMATE_ETH;
+                      const maxEth =
+                        maxDepositAmount - TRANSFER_GAS_ESTIMATE_ETH;
                       field.onChange(maxEth);
                     }}
                   >
@@ -145,7 +192,11 @@ export function EthDepositForm({ userBalance }: EthDepositFormProps) {
         </div>
 
         <div className="mt-8 flex w-full">
-          <Button className="flex-1" disabled={hasError} type="submit">
+          <Button
+            className="flex-1"
+            disabled={hasError || isLoadingPortfolio}
+            type="submit"
+          >
             Confirm Deposit
           </Button>
         </div>
