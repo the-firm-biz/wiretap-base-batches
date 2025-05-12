@@ -1,19 +1,7 @@
 'use client';
 
-import {
-  SetStateAction,
-  Dispatch,
-  useEffect,
-  useMemo,
-  useState,
-  memo,
-  useRef
-} from 'react';
-import {
-  useAccount,
-  useSendTransaction,
-  useWaitForTransactionReceipt
-} from 'wagmi';
+import { SetStateAction, Dispatch, useEffect, useState, useRef } from 'react';
+import { useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import { DepositDrawerState } from './deposit-drawer';
 import Image from 'next/image';
 import { textStyles } from '@/app/styles/template-strings';
@@ -37,20 +25,26 @@ export const DrawerStepDepositTransaction = ({
   setDepositDrawerState,
   depositDrawerState
 }: DepositDrawerProps) => {
+  // A hack to prevent calling sendTransaction twice
   const hasDeclaritivelyCalledSendTransaction = useRef(false);
+  const [txError, setTxError] = useState<BaseError | null>(null);
+  const isTxError = !!txError;
 
   const { amountEthToDeposit, gliderPortfolioAddress } = depositDrawerState;
-
-  const { address } = useAccount();
-
   const trpc = useTRPC();
+
   const {
     data: hash,
     isPending: isTxPending,
-    isError: isTxError,
-    error: txError,
     sendTransaction
-  } = useSendTransaction();
+  } = useSendTransaction({
+    mutation: {
+      // note useSendTransaction's 'error' return is out of sync with the render, so we use this callback
+      onError: (error: unknown) => {
+        setTxError(error as BaseError);
+      }
+    }
+  });
 
   const { isLoading: isTxConfirming, isSuccess: isTxConfirmed } =
     useWaitForTransactionReceipt({
@@ -62,28 +56,24 @@ export const DrawerStepDepositTransaction = ({
   );
   const usdDisplayValue = formatUsd(amountEthToDeposit * (ethPriceUsd || 0));
 
-  console.count('DrawerStep RENDER');
   console.log({ isTxPending, isTxConfirming, isTxConfirmed, isTxError });
 
   useEffect(() => {
     const handleDeposit = () => {
-      //Should not be possible to get here
+      // Condition should never be met
       if (!gliderPortfolioAddress) {
         throw new Error(`GliderPortfolio is ${gliderPortfolioAddress}`);
       }
+
       // Create the transfer transaction
       sendTransaction({
         to: gliderPortfolioAddress,
         value: parseEther(amountEthToDeposit.toString())
       });
-
       hasDeclaritivelyCalledSendTransaction.current = true;
-      console.log('SUCCESS');
     };
 
-    // A hack to prevent the useEffect firing twice when the parent re-renders
     if (!hasDeclaritivelyCalledSendTransaction.current) {
-      console.count('calling handleDeposit');
       handleDeposit();
     }
   }, [amountEthToDeposit, gliderPortfolioAddress, sendTransaction]);
@@ -192,12 +182,13 @@ export const DrawerStepDepositTransaction = ({
         <div className="mt-4">
           <Button
             variant="outline"
-            onClick={() =>
+            onClick={() => {
+              setTxError(null);
               sendTransaction({
                 to: gliderPortfolioAddress,
                 value: parseEther(amountEthToDeposit.toString())
-              })
-            }
+              });
+            }}
           >
             Try again
           </Button>

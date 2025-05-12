@@ -1,7 +1,7 @@
 'use client';
 
 import { DrawerContent, DrawerTrigger, Drawer } from '../ui/drawer';
-import { memo, ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Address } from 'viem';
 import { DrawerStepInputDepositAmount } from './drawer-step-input-deposit-amount';
 import { DrawerStepSignGliderMessage } from './drawer-step-sign-glider-message';
@@ -23,17 +23,17 @@ export interface DepositDrawerState {
 }
 
 // @todo reinstate
-// const DEFAULT_STATE: DepositDrawerState = {
-//   step: 'input-deposit-amount',
-//   amountEthToDeposit: 0,
-//   gliderPortfolioAddress: undefined
-// };
-
 const DEFAULT_STATE: DepositDrawerState = {
-  step: 'confirm-deposit-tx',
-  amountEthToDeposit: 0.01,
-  gliderPortfolioAddress: '0x0591eDeF86a68597336Fa37a356843b86fFC1a4e'
+  step: 'input-deposit-amount',
+  amountEthToDeposit: 0,
+  gliderPortfolioAddress: undefined
 };
+
+// const DEFAULT_STATE: DepositDrawerState = {
+//   step: 'confirm-deposit-tx',
+//   amountEthToDeposit: 0.01,
+//   gliderPortfolioAddress: '0x0591eDeF86a68597336Fa37a356843b86fFC1a4e'
+// };
 
 export const DepositDrawer = ({ trigger }: DepositDrawerProps) => {
   const [depositDrawerState, setDepositDrawerState] =
