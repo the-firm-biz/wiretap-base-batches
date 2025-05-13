@@ -25,6 +25,9 @@ createAppKit({
     analytics: true, // Optional - defaults to your Cloud configuration
     socials: ['farcaster'] // @TODO - may need to remove this as it conflicts with Farcaster connector
   },
+  // featuredWalletIds: [
+  //   "1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369",
+  // ], @tod Find Farcaster wallet ID and add it here idk wtf it is and it isn't in the WalletConnect docs but it exists
   siweConfig: siweConfig
 });
 
