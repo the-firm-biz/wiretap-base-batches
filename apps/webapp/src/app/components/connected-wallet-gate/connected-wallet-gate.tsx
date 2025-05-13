@@ -13,6 +13,8 @@ import { cn } from '@/app/utils/cn';
 import { TypewriterText } from './animated-typewriter-text';
 import React, { useState } from 'react';
 import { FlashingDot } from '../flashing-dot';
+import { useMiniKit } from '@coinbase/onchainkit/minikit';
+import { useEffect } from 'react';
 
 export function ConnectedWalletGate({
   children
@@ -22,6 +24,14 @@ export function ConnectedWalletGate({
   const { address } = useAccount();
   const { open } = useAppKit();
   const { open: isOpen } = useAppKitState();
+  const { setFrameReady, isFrameReady } = useMiniKit();
+
+  // Initialize frame when component mounts
+  useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+    }
+  }, [setFrameReady, isFrameReady]);
 
   const accountCookie = getDecodedSiweSessionCookie();
   const isPartiallyConnected = !!address && isOpen && !accountCookie;
