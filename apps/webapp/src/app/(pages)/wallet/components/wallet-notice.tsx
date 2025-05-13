@@ -74,7 +74,7 @@ export function WalletNotice() {
     if (hasZeroPortfolioBalance || hasNoTargets) {
       return (
         <p className={`${textStyles['compact']}`}>
-          WireTap uses your balance to auto-buy tokens at launch.
+          WireTap uses your Funding balance to auto-buy tokens at launch.
         </p>
       );
     }
@@ -93,9 +93,9 @@ export function WalletNotice() {
       return (
         <DepositDrawer
           trigger={
-            <Button variant="outline">
+            <Button>
               <DownloadIcon className="size-4" />
-              Deposit
+              Deposit Funds
             </Button>
           }
         />
