@@ -2,6 +2,7 @@ import { decodeEventLog } from 'viem';
 import { CLANKER_ABI } from '@wiretap/config';
 import type { TokenCreatedLog } from './types/token-created.js';
 import { onLog } from './on-logs.js';
+import { Span } from '@wiretap/utils/shared';
 
 const log_delegated = {
   address: '0x2a787b2362021cc3eea3c24c4748a6cd5b687382',
@@ -35,7 +36,10 @@ const decoded = decodeEventLog({
 decoded.transactionHash = log_delegated.transactionHash as `0x${string}`;
 decoded.address = log_delegated.address as `0x${string}`;
 decoded.blockNumber = BigInt(log_delegated.blockNumber);
-await onLog(decoded);
+const span = new Span(decoded.address);
+await onLog(decoded, { tracing: { parentSpan: span } });
+span.finish('ok');
+// console.log(JSON.stringify(span, null, 2));
 // console.log(parseEther('0.0001', 'wei'));
 // console.log(computeBaseAssetRation(20n, 1000n));
 // console.log(computeBaseAssetRation(1000n, 1000n));

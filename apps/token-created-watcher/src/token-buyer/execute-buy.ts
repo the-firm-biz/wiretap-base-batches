@@ -20,7 +20,10 @@ export async function executeBuy(buyTrigger: BuyTrigger): Promise<void> {
         address: portfolioAddress as Address,
         blockTag: 'latest'
       }),
-    `getBalance for portfolio ${portfolioAddress}`
+    undefined,
+    {
+      name: `getBalance for portfolio ${portfolioAddress}`,
+    }
   );
   const isBalanceSufficient = balance && balance >= BALANCE_TRADE_THRESHOLDS;
   if (!isBalanceSufficient) {
