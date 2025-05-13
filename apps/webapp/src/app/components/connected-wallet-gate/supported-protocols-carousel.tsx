@@ -6,7 +6,6 @@ import {
 } from '@/app/components/ui/carousel';
 import DitheredImage from '../dithered-image';
 import { Badge } from '@/app/components/ui/badge';
-import { cn } from '@/app/utils/cn';
 
 interface BannerProps {
   src: string;
