@@ -8,8 +8,6 @@ import { departureMono, ppMondwest, loRes12 } from './styles/font-family';
 import { headers } from 'next/headers';
 import { Toaster } from './components/ui/sonner';
 
-export const metadata: Metadata = {};
-
 export const generateMetadata = (): Metadata => {
   return {
     metadataBase: new URL('https://wiretap.thefirm.biz'),
