@@ -1,1 +1,1 @@
-export { handleNotifySlack } from './handle_notify_slack.js';
+export * from './handle_notify_slack.js';

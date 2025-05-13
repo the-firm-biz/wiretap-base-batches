@@ -8,6 +8,7 @@ import {
 import type { TokenScoreDetails } from '../token-score/get-token-score.js';
 import type { DeployTokenArgs } from '../get-transaction-context.js';
 import { bigIntReplacer, Span } from '@wiretap/utils/shared';
+import { postSnippet } from '@wiretap/utils/server';
 
 type SlackMessageDetails = {
   tokenAddress: string;
@@ -255,20 +256,6 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
     fullMessage.push(
       `:${indicatorEmoji}: Latency from block to db was ${tracing.latencyMs}`
     );
-
-    if (tracing.latencyMs > 3000 && tracing.span) {
-      const tracingText =
-        '```\n' +
-        JSON.stringify(
-          tracing,
-          (k, v) => {
-            return k === 'parent' ? undefined : v;
-          },
-          2
-        ) +
-        '\n```';
-      fullMessage.push(tracingText);
-    }
   }
 
   if (tokenScoreDetails) {
@@ -282,8 +269,35 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
     );
   }
 
-  await handleNotifySlack(fullMessage.join('\n'), {
-    slackToken: env.SLACK_ESPIONAGEBOT_TOKEN,
-    slackChannelId: env.WIRETAP_NOTIFICATIONS_CHANNEL_ID
-  });
+  const slackPostMessageResponse = await handleNotifySlack(
+    fullMessage.join('\n'),
+    {
+      slackToken: env.SLACK_ESPIONAGEBOT_TOKEN,
+      slackChannelId: env.WIRETAP_NOTIFICATIONS_CHANNEL_ID
+    }
+  );
+
+  if (slackPostMessageResponse.ok) {
+    if (tracing?.latencyMs && tracing.latencyMs > 3000 && tracing.span) {
+      const tracingText =
+        '```\n' +
+        JSON.stringify(
+          tracing,
+          (k, v) => {
+            return k === 'parent' ? undefined : v;
+          },
+          2
+        ) +
+        '\n```';
+
+      await postSnippet({
+        snippetContent: tracingText,
+        filename: 'tracing.json',
+        filetype: 'json'
+      }, {
+        slackToken: env.SLACK_ESPIONAGEBOT_TOKEN,
+        slackChannelId: env.WIRETAP_NOTIFICATIONS_CHANNEL_ID
+      }, slackPostMessageResponse.ts)
+    }
+  }
 };
