@@ -43,10 +43,10 @@ export function SupportedProtocolsCarousel() {
       }}
     >
       <CarouselContent className="-ml-2">
-        <CarouselItem className="flex items-center justify-center basis-[248px] pl-2">
+        <CarouselItem className="flex items-center justify-center basis-[240px]">
           <Banner src="/banner-clanker.png" alt="Clanker" />
         </CarouselItem>
-        <CarouselItem className="flex items-center justify-center basis-[248px] pl-2">
+        <CarouselItem className="flex items-center justify-center basis-[240px]">
           <Banner
             src="/banner-bankr.png"
             alt="Bankr"
@@ -54,7 +54,7 @@ export function SupportedProtocolsCarousel() {
             badgeText="COMING SOON"
           />
         </CarouselItem>
-        <CarouselItem className="flex items-center justify-center basis-[248px] pl-2">
+        <CarouselItem className="flex items-center justify-center basis-[240px]">
           <Banner
             src="/banner-tba.png"
             alt="tba"
