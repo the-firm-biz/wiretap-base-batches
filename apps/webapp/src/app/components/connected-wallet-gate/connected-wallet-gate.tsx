@@ -15,6 +15,7 @@ import React, { useState, useEffect } from 'react';
 import { FlashingDot } from '../flashing-dot';
 import { useAddFrame, useMiniKit } from '@coinbase/onchainkit/minikit';
 import { FarcasterIcon } from '../icons/FarcasterIcon';
+import { toast } from 'sonner';
 
 export function ConnectedWalletGate({
   children
@@ -70,7 +71,15 @@ export function ConnectedWalletGate({
             <div>
               {!!miniKitContext && (
                 <Button
-                  onClick={async () => await addFrame()}
+                  onClick={async () => {
+                    try {
+                      await addFrame();
+                    } catch (error) {
+                      console.error('Failed to add frame:', error);
+                      toast.error(JSON.stringify(error));
+                      // You might want to show a toast notification here
+                    }
+                  }}
                   variant="outline"
                 >
                   <FarcasterIcon className="w-4 h-4" /> Add Frame
