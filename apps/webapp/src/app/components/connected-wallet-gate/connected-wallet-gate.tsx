@@ -6,6 +6,7 @@ import PageContainer from '../page-container';
 import { Button } from '../ui/button';
 import { useAppKit, useAppKitState } from '@reown/appkit/react';
 import { textStyles } from '../../styles/template-strings';
+import DitheredAnimation from '../../components/dithered-animation';
 import { SupportedProtocolsCarousel } from './supported-protocols-carousel';
 import { getDecodedSiweSessionCookie } from '@/app/utils/siwe/siwe-cookies';
 
@@ -44,7 +45,19 @@ export function ConnectedWalletGate({
             </div>
             <div>{/* Where 'Menu' is on the design */}</div>
           </div>
+
+
+          
           <div className="p-4 border border-border rounded-md flex flex-col h-full flex-1 justify-between">
+          <div className="relative w-full min-h-[400px] rounded-lg border border-border overflow-hidden">
+          <DitheredAnimation
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 0,
+              pointerEvents: 'none'
+            }}
+          />
             <div className="w-[184px] flex flex-col gap-4">
               <p>
                 Automatically snap up tokens from social accounts you follow...
