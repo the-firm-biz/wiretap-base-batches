@@ -13,7 +13,7 @@ export const generateMetadata = (): Metadata => {
     metadataBase: new URL('https://wiretap.thefirm.biz'),
     title: 'WireTap',
     description:
-      "Automatically snap up tokens from social accounts you follow, before regular shmucks even know they've launched.",
+      'Automatically snap up new tokens from social accounts you follow—before regular schmucks even know they’ve launched.',
     robots: 'index, follow',
     other: {
       'fc:frame': JSON.stringify({
@@ -26,7 +26,7 @@ export const generateMetadata = (): Metadata => {
             name: 'WireTap',
             url: 'https://wiretap.thefirm.biz',
             splashImageUrl:
-              'https://wiretap.thefirm.biz/wiretap-social-pfp-200.png',
+              'https://wiretap.thefirm.biz/wiretap-meta-1200x630.png',
             splashBackgroundColor: `#7a8d7e`
           }
         }
