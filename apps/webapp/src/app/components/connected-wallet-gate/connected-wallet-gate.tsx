@@ -11,6 +11,7 @@ import { SupportedProtocolsCarousel } from './supported-protocols-carousel';
 import { getDecodedSiweSessionCookie } from '@/app/utils/siwe/siwe-cookies';
 import { cn } from '@/app/utils/cn';
 import Link from 'next/link';
+import { TypewriterText } from '../animated-typewriter-text';
 
 export function ConnectedWalletGate({
   children
@@ -60,22 +61,17 @@ export function ConnectedWalletGate({
             <div className="relative z-10 flex flex-col flex-1">
               <div className="w-[184px] flex flex-col gap-4">
                 <p>
-                  <span
-                    className={cn(textStyles['body'], 'inline bg-background')}
-                  >
-                    Automatically snap up tokens from social accounts you
-                    follow...
-                  </span>
-                </p>
-                <p>
-                  <span
-                    className={cn(
+                  <TypewriterText
+                    text={
+                      "Automatically snap up tokens from social accounts you follow...\n\n...before regular shmucks even know they've launched."
+                    }
+                    className={cn(textStyles['body'], 'bg-background')}
+                    emphasisClass={cn(
                       textStyles['body-emphasis'],
-                      'inline bg-background'
+                      'bg-background'
                     )}
-                  >
-                    ...before regular shmucks even know they&apos;ve launched.
-                  </span>
+                    emphasisStart={65}
+                  />
                 </p>
               </div>
               <div className="flex-1" />
