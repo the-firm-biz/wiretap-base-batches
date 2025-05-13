@@ -8,6 +8,8 @@ import { useAppKit, useAppKitState } from '@reown/appkit/react';
 import { textStyles } from '../../styles/template-strings';
 import { SupportedProtocolsCarousel } from './supported-protocols-carousel';
 import { getDecodedSiweSessionCookie } from '@/app/utils/siwe/siwe-cookies';
+import { useMiniKit } from '@coinbase/onchainkit/minikit';
+import { useEffect } from 'react';
 
 export function ConnectedWalletGate({
   children
@@ -17,6 +19,14 @@ export function ConnectedWalletGate({
   const { address } = useAccount();
   const { open } = useAppKit();
   const { open: isOpen } = useAppKitState();
+  const { setFrameReady, isFrameReady } = useMiniKit();
+
+  // Initialize frame when component mounts
+  useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+    }
+  }, [setFrameReady, isFrameReady]);
 
   const accountCookie = getDecodedSiweSessionCookie();
   const isPartiallyConnected = !!address && isOpen && !accountCookie;
