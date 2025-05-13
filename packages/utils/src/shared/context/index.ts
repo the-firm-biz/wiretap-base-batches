@@ -1,1 +1,1 @@
-export * from './context.jsx';
+export * from './context.js';
