@@ -13,7 +13,7 @@ export const generateMetadata = (): Metadata => {
     metadataBase: new URL('https://wiretap.thefirm.biz'),
     title: 'WireTap',
     description:
-      'Automatically snap up new tokens from social accounts you follow—before regular schmucks even know they’ve launched.',
+      'Automatically snap up new tokens from social accounts you follow — before regular schmucks even know they’ve launched.',
     robots: 'index, follow',
     other: {
       /** https://miniapps.farcaster.xyz/docs/specification#schema */

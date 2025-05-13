@@ -10,7 +10,7 @@ import { siweConfig } from '@/app/utils/siwe/siwe-config';
 const metadata = {
   name: 'WireTap',
   description:
-    'Automatically snap up new tokens from social accounts you follow—before regular schmucks even know they’ve launched.',
+    'Automatically snap up new tokens from social accounts you follow — before regular schmucks even know they’ve launched.',
   url: 'https://wiretap.thefirm.biz',
   icons: ['https://wiretap.thefirm.biz/wiretap-social-pfp-1024.png']
 };

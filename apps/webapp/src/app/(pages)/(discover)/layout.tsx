@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),
   title: 'Discover | WireTap',
   description:
-    'Automatically snap up new tokens from social accounts you follow—before regular schmucks even know they’ve launched.',
+    'Automatically snap up new tokens from social accounts you follow — before regular schmucks even know they’ve launched.',
   robots: 'index, follow',
   openGraph: {
     title: 'Discover | WireTap',
     description:
-      'Automatically snap up new tokens from social accounts you follow—before regular schmucks even know they’ve launched.',
+      'Automatically snap up new tokens from social accounts you follow — before regular schmucks even know they’ve launched.',
     images: [
       {
         url: '/wiretap-meta-1200x630.png',
