@@ -4,6 +4,7 @@ import { httpPublicClient } from '../rpc-clients.js';
 import { type Address, parseEther } from 'viem';
 import { updatePortfolio } from './glider-api/update-portfolio.js';
 import { rebalancePortfolio } from './glider-api/rebalance-portfolio.js';
+import { startAutomation, stopAutomation } from './glider-api/start-stop-automation.js';
 
 const BALANCE_TRADE_THRESHOLDS: bigint = parseEther('0.0001', 'wei');
 
@@ -25,15 +26,15 @@ export async function executeBuy(buyTrigger: BuyTrigger): Promise<void> {
       name: `getBalance for portfolio ${portfolioAddress}`,
     }
   );
-  const isBalanceSufficient = balance && balance >= BALANCE_TRADE_THRESHOLDS;
-  if (!isBalanceSufficient) {
-    console.log(`Insufficient portfolio balance ${portfolioAddress}`);
-    return;
-  }
+  // const isBalanceSufficient = balance && balance >= BALANCE_TRADE_THRESHOLDS;
+  // if (!isBalanceSufficient) {
+  //   console.log(`Insufficient portfolio balance ${portfolioAddress}`);
+  //   return;
+  // }
 
-  const tokenPercentage =
-    computeBaseAssetRation(buyTrigger.maxSpend, balance) * 100;
-  const isUpdatedSuccessful = updatePortfolio({
+  const tokenPercentage = 1;
+    // computeBaseAssetRation(buyTrigger.maxSpend, balance) * 100;
+  const isUpdatedSuccessful = await updatePortfolio({
     accountEntityAddress,
     portfolioId,
     tokenAddress: buyTrigger.tokenAddress as Address,
@@ -44,10 +45,12 @@ export async function executeBuy(buyTrigger: BuyTrigger): Promise<void> {
     return;
   }
 
+  await startAutomation(portfolioId);
   const isRebalanceSuccessful = await rebalancePortfolio(portfolioId);
   if (!isRebalanceSuccessful) {
     // TODO: reset back to 100% eth ?!
   }
+  await stopAutomation(portfolioId);
 }
 
 function computeBaseAssetRation(maxSpend: number, balance: bigint) {
