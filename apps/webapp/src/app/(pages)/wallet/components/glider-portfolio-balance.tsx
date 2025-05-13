@@ -29,7 +29,7 @@ export function GliderPortfolioBalance() {
 
   return (
     <div className="flex flex-col gap-2 text-accent-foreground">
-      <p className={`${textStyles.compact}`}>Total Funding Balance</p>
+      <p className={`${textStyles.compact}`}>Your WireTap Balance</p>
       <div className="flex flex-row items-center gap-2">
         <EthIcon className="size-8" />
         {isLoadingQueries ? (

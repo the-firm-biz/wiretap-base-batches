@@ -1,7 +1,7 @@
 'use client';
 
 import { DrawerContent, DrawerTrigger, Drawer } from '../ui/drawer';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, memo } from 'react';
 import { Address } from 'viem';
 import { DrawerStepInputDepositAmount } from './drawer-step-input-deposit-amount';
 import { DrawerStepSignGliderMessage } from './drawer-step-sign-glider-message';
@@ -28,7 +28,7 @@ const DEFAULT_STATE: DepositState = {
   gliderPortfolioAddress: undefined
 };
 
-export const DepositDrawer = ({ trigger }: DepositDrawerProps) => {
+const DepositDrawerComponent = ({ trigger }: DepositDrawerProps) => {
   const [drawerIsOpen, setDrawerIsOpen] = useState(false);
   const [depositState, setDepositState] = useState<DepositState>(DEFAULT_STATE);
 
@@ -60,3 +60,5 @@ export const DepositDrawer = ({ trigger }: DepositDrawerProps) => {
     </Drawer>
   );
 };
+
+export const DepositDrawer = memo(DepositDrawerComponent);
