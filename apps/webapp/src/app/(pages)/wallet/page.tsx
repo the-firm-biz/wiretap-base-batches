@@ -10,6 +10,7 @@ import { UploadIcon } from '@/app/components/icons/UploadIcon';
 import { DepositDrawer } from '@/app/components/deposit-drawer/deposit-drawer';
 import { useQuery } from '@tanstack/react-query';
 import { WalletNotice } from './components/wallet-notice';
+import { useAccount, useBalance } from 'wagmi';
 
 export default function WalletPage() {
   const trpc = useTRPC();
@@ -17,6 +18,18 @@ export default function WalletPage() {
   const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery(
     trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
+  const portfolioHasZeroBalance =
+    !portfolio?.balanceWei || BigInt(portfolio.balanceWei) === BigInt(0);
+
+  const { address } = useAccount();
+  const { data: eoaBalance } = useBalance({
+    address: address,
+    query: {
+      enabled: !!address
+    }
+  });
+  const userHasZeroBalance =
+    !eoaBalance?.value || eoaBalance.value === BigInt(0);
 
   return (
     <div>
@@ -26,14 +39,18 @@ export default function WalletPage() {
           <div className="flex gap-2">
             <DepositDrawer
               trigger={
-                <Button disabled={isLoadingPortfolio} variant="outline">
+                <Button
+                  disabled={isLoadingPortfolio || userHasZeroBalance}
+                  variant="outline"
+                >
                   <DownloadIcon className="size-4" /> Deposit
                 </Button>
               }
             />
             <Button
-              // @todo withdraw - check portfolio balance
-              disabled={isLoadingPortfolio || !portfolio}
+              disabled={
+                isLoadingPortfolio || !portfolio || portfolioHasZeroBalance
+              }
               variant="outline"
             >
               <UploadIcon className="size-4" /> Withdraw
