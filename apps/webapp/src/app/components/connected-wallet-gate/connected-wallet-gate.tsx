@@ -82,7 +82,7 @@ export function ConnectedWalletGate({
                 <p>
                   <TypewriterText
                     text={
-                      "Automatically snap up tokens from social accounts you follow...\n\n...before regular schmucks even know they've launched."
+                      "Automatically snap up new tokens from social accounts you follow...\n\n...before regular schmucks even know they've launched."
                     }
                     className={cn(textStyles['body'], 'bg-background')}
                     emphasisClass={cn(

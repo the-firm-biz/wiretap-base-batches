@@ -66,7 +66,8 @@ export default function BigeonsBasementPage() {
           />
           <div className="relative z-10 p-4 w-2/3">
             <p className={cn(textStyles['body'], 'inline bg-background')}>
-              Automatically snap up tokens from social accounts you follow...
+              Automatically snap up new tokens from social accounts you
+              follow...
             </p>
             <br />
             <br />
@@ -76,7 +77,7 @@ export default function BigeonsBasementPage() {
                 'inline bg-background'
               )}
             >
-              ...before regular shmucks even know they&apos;ve launched.
+              ...before regular schmucks even know they&apos;ve launched.
             </p>
           </div>
           <div className="flex p-4 w-full mt-4">

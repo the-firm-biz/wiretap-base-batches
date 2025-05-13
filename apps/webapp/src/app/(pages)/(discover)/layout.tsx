@@ -7,8 +7,25 @@ import { ConnectedWalletGate } from '@/app/components/connected-wallet-gate/conn
 export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),
   title: 'Discover | WireTap',
-  description: 'Blah blah blah',
-  robots: 'index, follow'
+  description:
+    "Follow accounts & addresses to auto-buy their tokens... before regular schmucks even know they've launched.",
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Discover | WireTap',
+    description:
+      "Follow accounts & addresses to auto-buy their tokens... before regular schmucks even know they've launched.",
+    images: [
+      {
+        url: '/wiretap-meta-1200x630.png',
+        width: 1200,
+        height: 630,
+        alt: 'WireTap'
+      }
+    ]
+  },
+  icons: {
+    icon: '/favicon.ico'
+  }
 };
 
 export default function DiscoverLayout({
