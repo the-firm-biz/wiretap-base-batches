@@ -10,8 +10,7 @@ import DitheredAnimation from '../../components/dithered-animation';
 import { SupportedProtocolsCarousel } from './supported-protocols-carousel';
 import { getDecodedSiweSessionCookie } from '@/app/utils/siwe/siwe-cookies';
 import { cn } from '@/app/utils/cn';
-import Link from 'next/link';
-import { TypewriterText } from '../animated-typewriter-text';
+import { TypewriterText } from './animated-typewriter-text';
 import React, { useState } from 'react';
 import { FlashingDot } from '../flashing-dot';
 
@@ -97,20 +96,10 @@ export function ConnectedWalletGate({
             </p>
             <SupportedProtocolsCarousel />
           </div>
-          <Button
-            asChild
-            size="lg"
-            onClick={() => open()}
-            variant="outline"
-            className="mb-8"
-          >
-            <Link
-              href="https://thefirm.biz"
-              target="blank"
-              rel="noopener noreferrer"
-            >
+          <Button asChild size="lg" variant="outline" className="mb-8">
+            <a href="https://thefirm.biz" target="blank">
               Get Our Next Release Early
-            </Link>
+            </a>
           </Button>
         </div>
       </PageContainer>
