@@ -9,6 +9,8 @@ import { textStyles } from '../../styles/template-strings';
 import DitheredAnimation from '../../components/dithered-animation';
 import { SupportedProtocolsCarousel } from './supported-protocols-carousel';
 import { getDecodedSiweSessionCookie } from '@/app/utils/siwe/siwe-cookies';
+import { cn } from '@/app/utils/cn';
+import Link from 'next/link';
 
 export function ConnectedWalletGate({
   children
@@ -46,34 +48,61 @@ export function ConnectedWalletGate({
             <div>{/* Where 'Menu' is on the design */}</div>
           </div>
 
-
-          
-          <div className="p-4 border border-border rounded-md flex flex-col h-full flex-1 justify-between">
-          <div className="relative w-full min-h-[400px] rounded-lg border border-border overflow-hidden">
-          <DitheredAnimation
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 0,
-              pointerEvents: 'none'
-            }}
-          />
-            <div className="w-[184px] flex flex-col gap-4">
-              <p>
-                Automatically snap up tokens from social accounts you follow...
-              </p>
-              <p className={textStyles['body-emphasis']}>
-                ...before regular shmucks even know they&apos;ve launched.
-              </p>
+          <div className="p-4 border border-border rounded-md flex flex-col flex-1 relative overflow-hidden">
+            <DitheredAnimation
+              style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 0,
+                pointerEvents: 'none'
+              }}
+            />
+            <div className="relative z-10 flex flex-col flex-1">
+              <div className="w-[184px] flex flex-col gap-4">
+                <p>
+                  <span
+                    className={cn(textStyles['body'], 'inline bg-background')}
+                  >
+                    Automatically snap up tokens from social accounts you
+                    follow...
+                  </span>
+                </p>
+                <p>
+                  <span
+                    className={cn(
+                      textStyles['body-emphasis'],
+                      'inline bg-background'
+                    )}
+                  >
+                    ...before regular shmucks even know they&apos;ve launched.
+                  </span>
+                </p>
+              </div>
+              <div className="flex-1" />
+              <Button size="lg" onClick={() => open()} variant="secondary">
+                Initiate Protocol
+              </Button>
             </div>
-            <Button size="lg" onClick={() => open()} variant="outline">
-              Initiate Protocol
-            </Button>
           </div>
           <div>
             <p className={`${textStyles['compact']} mb-2`}>Tracking</p>
             <SupportedProtocolsCarousel />
           </div>
+          <Button
+            asChild
+            size="lg"
+            onClick={() => open()}
+            variant="outline"
+            className="mb-8"
+          >
+            <Link
+              href="https://thefirm.biz"
+              target="blank"
+              rel="noopener noreferrer"
+            >
+              Get Our Next Release Early
+            </Link>
+          </Button>
         </div>
       </PageContainer>
     );
