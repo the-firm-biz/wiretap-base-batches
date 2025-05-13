@@ -45,12 +45,12 @@ export async function executeBuy(buyTrigger: BuyTrigger): Promise<void> {
     return;
   }
 
-  await startAutomation(portfolioId);
+  // await startAutomation(portfolioId);
   const isRebalanceSuccessful = await rebalancePortfolio(portfolioId);
   if (!isRebalanceSuccessful) {
     // TODO: reset back to 100% eth ?!
   }
-  await stopAutomation(portfolioId);
+  // await stopAutomation(portfolioId);
 }
 
 function computeBaseAssetRation(maxSpend: number, balance: bigint) {
