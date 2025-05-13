@@ -11,10 +11,9 @@ import { SupportedProtocolsCarousel } from './supported-protocols-carousel';
 import { getDecodedSiweSessionCookie } from '@/app/utils/siwe/siwe-cookies';
 import { cn } from '@/app/utils/cn';
 import { TypewriterText } from './animated-typewriter-text';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FlashingDot } from '../flashing-dot';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
-import { useEffect } from 'react';
 
 export function ConnectedWalletGate({
   children
