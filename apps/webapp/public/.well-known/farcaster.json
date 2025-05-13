@@ -1,7 +1,13 @@
 {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEwNTA2NTYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg5RTdjOEY2MEEwQTYxNUQ2NDJEZDg1M0FjOEQ5Nzg2NWY1ZDY5N2Q3In0",
+    "payload": "eyJkb21haW4iOiJ3aXJldGFwLnRoZWZpcm0uYml6In0",
+    "signature": "MHhlMzdmOTkxZGVlZDQ2NzQ2NTlkYThmNWYwNzQ5ZTNlOGQyMGUwY2QwZDdhMmExMzlmYzczM2VkZTBmMmIxZTk1MWE0M2FmMGU5ZDBiYjRlMjkzNTY1NTI2NDM3NDkxZmEwNTM2OWQ5ODQ0YjlmZmJlMzhiZjdiNzA4OWE2OGRjMDFj"
+  },
   "frame": {
     "version": "1",
     "name": "WireTap",
+    "description": "Automatically snap up tokens from social accounts you follow, before regular shmucks even know they've launched.",
     "iconUrl": "https://wiretap.thefirm.biz/wiretap-social-pfp-1024.png",
     "splashImageUrl": "https://wiretap.thefirm.biz/wiretap-social-pfp-200.png",
     "splashBackgroundColor": "#7a8d7e",
