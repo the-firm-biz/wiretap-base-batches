@@ -1,0 +1,10 @@
+{
+  "frame": {
+    "version": "1",
+    "name": "WireTap",
+    "iconUrl": "/wiretap-social-pfp-1024.png",
+    "splashImageUrl": "/wiretap-social-pfp-200.png",
+    "splashBackgroundColor": "#7a8d7e",
+    "homeUrl": "wiretap.thefirm.biz"
+  }
+}
