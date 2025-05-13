@@ -76,7 +76,7 @@ export async function postSnippet(
     return;
   }
 
-  // 2. Upload file
+  // 2.  upload file to given URL
   const uploadResponse = await fetch(successResponse.upload_url, {
     method: 'POST',
     headers: {
@@ -90,7 +90,7 @@ export async function postSnippet(
     return;
   }
 
-  // 3. upload file to given URL
+  // 3. Confirm upload complete
   const completeParams = new URLSearchParams();
   completeParams.append(
     'files',
