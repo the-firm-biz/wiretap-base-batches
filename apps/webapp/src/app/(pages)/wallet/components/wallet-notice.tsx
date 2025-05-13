@@ -74,7 +74,7 @@ export function WalletNotice() {
     if (hasZeroPortfolioBalance || hasNoTargets) {
       return (
         <p className={`${textStyles['compact']}`}>
-          WireTap uses your Funding balance to auto-buy tokens at launch.
+          Your WireTap Balance is used to autobuy tokens at launch
         </p>
       );
     }
