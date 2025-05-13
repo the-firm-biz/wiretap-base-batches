@@ -30,7 +30,6 @@ const Banner = ({ src, alt, variant = 'default', badgeText }: BannerProps) => {
 export function SupportedProtocolsCarousel() {
   return (
     <Carousel
-      className="mb-8"
       plugins={[
         Autoplay({
           delay: 3000
@@ -42,10 +41,10 @@ export function SupportedProtocolsCarousel() {
       }}
     >
       <CarouselContent className="-ml-2">
-        <CarouselItem className="flex items-center justify-center basis-[240px]">
+        <CarouselItem className="flex items-center justify-center basis-[248px] pl-2">
           <Banner src="/banner-clanker.png" alt="Clanker" />
         </CarouselItem>
-        <CarouselItem className="flex items-center justify-center basis-[240px]">
+        <CarouselItem className="flex items-center justify-center basis-[248px] pl-2">
           <Banner
             src="/banner-bankr.png"
             alt="Bankr"
@@ -53,7 +52,7 @@ export function SupportedProtocolsCarousel() {
             badgeText="COMING SOON"
           />
         </CarouselItem>
-        <CarouselItem className="flex items-center justify-center basis-[240px]">
+        <CarouselItem className="flex items-center justify-center basis-[248px] pl-2">
           <Banner
             src="/banner-tba.png"
             alt="tba"
