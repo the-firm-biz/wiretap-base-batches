@@ -73,7 +73,8 @@ export function ConnectedWalletGate({
                 <Button
                   onClick={async () => {
                     try {
-                      await addFrame();
+                      const result = await addFrame();
+                      toast(JSON.stringify(result));
                     } catch (error) {
                       console.error('Failed to add frame:', error);
                       toast.error(JSON.stringify(error));
