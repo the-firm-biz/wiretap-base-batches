@@ -293,7 +293,8 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
       await postSnippet({
         snippetContent: tracingText,
         filename: 'tracing.json',
-        filetype: 'json'
+        filetype: 'json',
+        message: 'Attaching tracing:'
       }, {
         slackToken: env.SLACK_ESPIONAGEBOT_TOKEN,
         slackChannelId: env.WIRETAP_NOTIFICATIONS_CHANNEL_ID
