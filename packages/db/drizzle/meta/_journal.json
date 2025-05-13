@@ -148,6 +148,13 @@
       "when": 1747081394177,
       "tag": "0020_dapper_quasimodo",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1747160996776,
+      "tag": "0021_prevent-self-tracking",
+      "breakpoints": true
     }
   ]
 }
