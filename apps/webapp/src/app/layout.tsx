@@ -8,11 +8,33 @@ import { departureMono, ppMondwest, loRes12 } from './styles/font-family';
 import { headers } from 'next/headers';
 import { Toaster } from './components/ui/sonner';
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://wiretap.thefirm.biz'),
-  title: 'WireTap',
-  description: "If you aren't first, you're last!",
-  robots: 'index, follow'
+export const metadata: Metadata = {};
+
+export const generateMetadata = (): Metadata => {
+  return {
+    metadataBase: new URL('https://wiretap.thefirm.biz'),
+    title: 'WireTap',
+    description:
+      "Automatically snap up tokens from social accounts you follow, before regular shmucks even know they've launched.",
+    robots: 'index, follow',
+    other: {
+      'fc:frame': JSON.stringify({
+        version: 1,
+        imageUrl: 'https://wiretap.thefirm.biz/wiretap-social-pfp-1024.png',
+        button: {
+          title: `Launch WireTap`,
+          action: {
+            type: 'launch_frame',
+            name: 'WireTap',
+            url: 'https://wiretap.thefirm.biz',
+            splashImageUrl:
+              'https://wiretap.thefirm.biz/wiretap-social-pfp-200.png',
+            splashBackgroundColor: `#7a8d7e`
+          }
+        }
+      })
+    }
+  };
 };
 
 export default async function RootLayout({
