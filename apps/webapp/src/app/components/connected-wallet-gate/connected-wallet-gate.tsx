@@ -13,6 +13,7 @@ import { cn } from '@/app/utils/cn';
 import Link from 'next/link';
 import { TypewriterText } from '../animated-typewriter-text';
 import React, { useState } from 'react';
+import { FlashingDot } from '../flashing-dot';
 
 export function ConnectedWalletGate({
   children
@@ -53,22 +54,7 @@ export function ConnectedWalletGate({
                   height={42}
                   onLoad={() => setLogoLoaded(true)}
                 />
-                <span
-                  className="absolute top-[9px] right-[1.5px] w-[3px] h-[3px] bg-red-500"
-                  style={{
-                    animation: 'flash-dot 1.5s infinite',
-                    boxShadow: '0 0 6px 2px #f00',
-                    position: 'absolute'
-                  }}
-                />
-                <style>
-                  {`
-                    @keyframes flash-dot {
-                      0%, 100% { opacity: 1; }
-                      50% { opacity: 0; }
-                    }
-                  `}
-                </style>
+                <FlashingDot className="w-0.75 h-0.75 absolute top-[9px] right-[1.5px]" />
               </div>
             </div>
             <div>{/* Where 'Menu' is on the design */}</div>
@@ -88,7 +74,7 @@ export function ConnectedWalletGate({
                 <p>
                   <TypewriterText
                     text={
-                      "Automatically snap up tokens from social accounts you follow...\n\n...before regular shmucks even know they've launched."
+                      "Automatically snap up tokens from social accounts you follow...\n\n...before regular schmucks even know they've launched."
                     }
                     className={cn(textStyles['body'], 'bg-background')}
                     emphasisClass={cn(
