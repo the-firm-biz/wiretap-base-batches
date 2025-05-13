@@ -12,6 +12,7 @@ import { getDecodedSiweSessionCookie } from '@/app/utils/siwe/siwe-cookies';
 import { cn } from '@/app/utils/cn';
 import Link from 'next/link';
 import { TypewriterText } from '../animated-typewriter-text';
+import React, { useState } from 'react';
 
 export function ConnectedWalletGate({
   children
@@ -25,26 +26,50 @@ export function ConnectedWalletGate({
   const accountCookie = getDecodedSiweSessionCookie();
   const isPartiallyConnected = !!address && isOpen && !accountCookie;
 
+  const [logoLoaded, setLogoLoaded] = useState(false);
+
   if (!address || isPartiallyConnected) {
     return (
       <PageContainer>
         <div className="flex flex-1 flex-col h-full gap-4">
           <div className="flex justify-between">
             <div>
-              <Image
-                className="block dark:hidden"
-                src="/logo-wiretap-onlight.svg"
-                alt="WireTap Logo"
-                width={128}
-                height={42}
-              />
-              <Image
-                className="hidden dark:block"
-                src="/logo-wiretap-ondark.svg"
-                alt="WireTap Logo"
-                width={128}
-                height={42}
-              />
+              <div
+                className={`relative inline-block transition-opacity duration-700 ${logoLoaded ? 'opacity-100' : 'opacity-0'}`}
+              >
+                <Image
+                  className="block dark:hidden"
+                  src="/logo-wiretap-onlight.svg"
+                  alt="WireTap Logo"
+                  width={128}
+                  height={42}
+                  onLoad={() => setLogoLoaded(true)}
+                />
+                <Image
+                  className="hidden dark:block"
+                  src="/logo-wiretap-ondark.svg"
+                  alt="WireTap Logo"
+                  width={128}
+                  height={42}
+                  onLoad={() => setLogoLoaded(true)}
+                />
+                <span
+                  className="absolute top-[9px] right-[1.5px] w-[3px] h-[3px] bg-red-500"
+                  style={{
+                    animation: 'flash-dot 1.5s infinite',
+                    boxShadow: '0 0 6px 2px #f00',
+                    position: 'absolute'
+                  }}
+                />
+                <style>
+                  {`
+                    @keyframes flash-dot {
+                      0%, 100% { opacity: 1; }
+                      50% { opacity: 0; }
+                    }
+                  `}
+                </style>
+              </div>
             </div>
             <div>{/* Where 'Menu' is on the design */}</div>
           </div>
