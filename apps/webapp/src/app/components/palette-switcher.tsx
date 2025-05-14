@@ -2,6 +2,7 @@
 
 import { useTheme } from 'next-themes';
 import { useIsMounted } from '@/app/hooks/use-is-mounted';
+import { Sun, Moon } from 'lucide-react';
 
 export function PaletteSwitcher() {
   const { theme, setTheme } = useTheme();
@@ -10,18 +11,20 @@ export function PaletteSwitcher() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-1 items-center">
       <button
-        className={theme === 'light' ? 'font-bold underline' : ''}
+        aria-label="Switch to light theme"
+        className={`p-1 rounded-md transition-colors ${theme === 'light' ? 'bg-accent text-accent-foreground' : 'hover:bg-muted text-muted-foreground'}`}
         onClick={() => setTheme('light')}
       >
-        Light
+        <Sun className="w-4 h-4" />
       </button>
       <button
-        className={theme === 'dark' ? 'font-bold underline' : ''}
+        aria-label="Switch to dark theme"
+        className={`p-1 rounded-md transition-colors ${theme === 'dark' ? 'bg-accent text-accent-foreground' : 'hover:bg-muted text-muted-foreground'}`}
         onClick={() => setTheme('dark')}
       >
-        Dark
+        <Moon className="w-4 h-4" />
       </button>
     </div>
   );
