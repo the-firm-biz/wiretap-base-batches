@@ -58,7 +58,7 @@ export default async function RootLayout({
         <div className="lcd-grid-overlay" aria-hidden="true"></div>
         <Toaster />
         <Providers cookies={cookies}>
-          <div className="flex flex-col min-h-screen">{children}</div>
+          <div className="flex flex-col min-h-dvh">{children}</div>
         </Providers>
       </body>
     </html>

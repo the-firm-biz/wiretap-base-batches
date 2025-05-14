@@ -1,10 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { useAccount } from 'wagmi';
+import { useAccount, useConnect } from 'wagmi';
 import PageContainer from '../page-container';
 import { Button } from '../ui/button';
-import { useAppKit, useAppKitState } from '@reown/appkit/react';
+import { useAppKitState } from '@reown/appkit/react';
 import { textStyles } from '../../styles/template-strings';
 import DitheredAnimation from '../../components/dithered-animation';
 import { SupportedProtocolsCarousel } from './supported-protocols-carousel';
@@ -14,6 +14,8 @@ import { TypewriterText } from './animated-typewriter-text';
 import React, { useState, useEffect } from 'react';
 import { FlashingDot } from '../flashing-dot';
 import { useAddFrame, useMiniKit } from '@coinbase/onchainkit/minikit';
+import { farcasterFrame } from '@farcaster/frame-wagmi-connector';
+
 import { FarcasterIcon } from '../icons/FarcasterIcon';
 
 export function ConnectedWalletGate({
@@ -22,7 +24,9 @@ export function ConnectedWalletGate({
   children: React.ReactNode;
 }) {
   const { address } = useAccount();
-  const { open } = useAppKit();
+
+  // const { open } = useAppKit();
+  const { connect } = useConnect();
   const { open: isOpen } = useAppKitState();
   const addFrame = useAddFrame();
   const { setFrameReady, isFrameReady, context: miniKitContext } = useMiniKit();
@@ -110,7 +114,7 @@ export function ConnectedWalletGate({
               <Button
                 size="lg"
                 className="h-[64px]"
-                onClick={() => open()}
+                onClick={() => connect({ connector: farcasterFrame() })}
                 variant="secondary"
               >
                 Initiate Protocol
