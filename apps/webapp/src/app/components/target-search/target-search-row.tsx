@@ -1,14 +1,20 @@
+import { toast } from 'sonner';
 import { Button } from '@/app/components/ui/button';
 import { textStyles } from '@/app/styles/template-strings';
 import { UsersIcon } from '@/app/components/icons/UsersIcon';
 import { ExternalImage } from '../external-image';
-import { isAddress } from 'viem';
-import { formatAddress } from '@/app/utils/format/format-address';
-import { Target } from '@/app/utils/target/types';
+import { UITarget } from '@/app/utils/target/types';
 import { Skeleton } from '../ui/skeleton';
+import { SpendAdjustDrawer } from '../spend-adjust-drawer';
+import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { trpcClientUtils, useTRPC } from '@/app/trpc-clients/trpc-react-client';
+import AnimatedEllipsisText from '../animated-ellipsis-text';
 
 type TargetSearchRowProps = {
-  target: Target;
+  target: UITarget;
+  isLoadingTrackedStatus: boolean;
+  isTracked: boolean;
 };
 
 export const TargetSearchRowSkeleton = () => {
@@ -24,17 +30,87 @@ export const TargetSearchRowSkeleton = () => {
   );
 };
 
-export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({ target }) => {
-  const hasFollowersInfo = Object.hasOwn(target, 'followerCount');
+export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
+  target,
+  isLoadingTrackedStatus,
+  isTracked
+}) => {
+  const trpc = useTRPC();
+  const [isConfirmingTrack, setIsConfirmingTrack] = useState(false);
+  const hasFollowersInfo =
+    Object.hasOwn(target, 'followerCount') &&
+    Number.isInteger(target.followerCount);
 
-  const label = isAddress(target.label)
-    ? formatAddress(target.label)
-    : target.label;
+  const { mutate: trackTarget } = useMutation(
+    trpc.wireTapAccount.trackTargetForAuthedAccount.mutationOptions({
+      onSuccess: () => {
+        setIsConfirmingTrack(false);
+        trpcClientUtils.wireTapAccount.getAuthedAccountTargets.invalidate();
+        toast(
+          <div className="flex w-full justify-between items-center">
+            <div className="flex flex-col gap-1">
+              <div className={textStyles['compact-emphasis']}>Now Tracking</div>
+              <div className={textStyles.label}>
+                {target.label} is closely monitored
+              </div>
+            </div>
+            <SpendAdjustDrawer
+              target={target}
+              trigger={<Button variant="outline">Adjust</Button>}
+            />
+          </div>
+        );
+      },
+      onError: () => {
+        setIsConfirmingTrack(false);
+        toast(
+          <div className="flex w-full justify-between items-center">
+            <div className="flex flex-col gap-1">
+              <div className={textStyles['compact-emphasis']}>
+                Failed to track {target.label}
+              </div>
+              <div className={textStyles.label}>Please try again</div>
+            </div>
+          </div>
+        );
+      }
+    })
+  );
 
-  const sublabel =
-    target.sublabel && isAddress(target.sublabel)
-      ? formatAddress(target.sublabel)
-      : target.sublabel;
+  const onTrackClick = () => {
+    setIsConfirmingTrack(true);
+    trackTarget({
+      targetEvmAddress: target.address,
+      targetNeynarUser: target.searchTarget.neynarUser
+    });
+  };
+
+  const actionButton = (() => {
+    if (isTracked) {
+      return (
+        <SpendAdjustDrawer
+          target={target}
+          trigger={<Button variant="outline">0.01 ETH</Button>}
+        />
+      );
+    }
+    if (isLoadingTrackedStatus) {
+      return (
+        <Button disabled variant="default">
+          <AnimatedEllipsisText></AnimatedEllipsisText>
+        </Button>
+      );
+    }
+    return (
+      <Button disabled={isConfirmingTrack} onClick={onTrackClick}>
+        {isConfirmingTrack ? (
+          <AnimatedEllipsisText>Track</AnimatedEllipsisText>
+        ) : (
+          'Track'
+        )}
+      </Button>
+    );
+  })();
 
   return (
     <div className="grid grid-cols-[40px_1fr_auto] items-center gap-3 p-2">
@@ -42,10 +118,10 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({ target }) => {
         src={target.image}
         fallbackSrc={'/user.png'}
         alt={`${target.label}'s profile picture`}
-        className="w-10 h-10 rounded-full border-1 border-sage-900 select-none"
+        className="w-10 h-10 rounded-full border-1 border-border select-none"
       />
       <div>
-        <p className={textStyles['compact-emphasis']}>{label}</p>
+        <p className={textStyles['compact-emphasis']}>{target.label}</p>
         <div className="flex flex-row items-center gap-1">
           {hasFollowersInfo && (
             <>
@@ -58,10 +134,10 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({ target }) => {
               </span>
             </>
           )}
-          <span className={textStyles.label}>{sublabel}</span>
+          <span className={textStyles.label}>{target.sublabel}</span>
         </div>
       </div>
-      <Button>Track</Button>
+      {actionButton}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { Address } from 'viem';
+import { formatAddress } from '../format/format-address';
 
 type SublabelOptions = {
   socialUsername?: string;
@@ -13,7 +14,7 @@ export const constructSublabel = ({
     return `@${socialUsername}`;
   }
   if (evmAddress) {
-    return evmAddress;
+    return formatAddress(evmAddress);
   }
   return undefined;
 };

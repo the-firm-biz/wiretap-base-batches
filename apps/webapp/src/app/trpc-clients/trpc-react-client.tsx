@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { env } from 'process';
+import superjson from 'superjson';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   createTRPCClient,
@@ -50,14 +51,12 @@ const trpcClient = createTRPCClient<TrpcRouter>({
     splitLink({
       condition: (op) => isBatchablePath(op.path),
       true: httpBatchLink({
-        // @todo trpc - superjson?
-        // transformer: superjson,
+        transformer: superjson,
         url: getBaseUrl() + '/api/trpc',
         headers: getRequestHeaders
       }),
       false: httpLink({
-        // @todo trpc - superjson?
-        // transformer: superjson,
+        transformer: superjson,
         url: getBaseUrl() + '/api/trpc',
         headers: getRequestHeaders
       })

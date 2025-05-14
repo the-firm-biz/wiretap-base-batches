@@ -26,18 +26,24 @@ describe('getFarcasterAccounts', () => {
     newFarcasterAccount1 = {
       username: 'farcaster-test-username',
       fid: 123,
+      displayName: 'Farcaster Test Display Name',
+      pfpUrl: 'https://example.com/pfp.png',
+      followerCount: 1000,
       accountEntityId: testAccountEntity!.id
     };
     newFarcasterAccount2 = {
       username: 'farcaster-test-username-2',
       fid: 456,
+      displayName: 'Farcaster Test Display Name 2',
+      pfpUrl: 'https://example.com/pfp2.png',
+      followerCount: 2000,
       accountEntityId: testAccountEntity!.id
     };
     await db.insert(farcasterAccounts).values(newFarcasterAccount1);
     await db.insert(farcasterAccounts).values(newFarcasterAccount2);
   });
 
-  it('returns array of Wallets if exists', async () => {
+  it('returns array of FarcasterAccounts if exists', async () => {
     const fidsToGet = [newFarcasterAccount1.fid, newFarcasterAccount2.fid];
     const response = await getFarcasterAccounts(db, fidsToGet);
     expect(response.length).toBe(2);
@@ -72,7 +78,7 @@ describe('getFarcasterAccounts', () => {
     );
   });
 
-  it('returns empty array if no wallets exist', async () => {
+  it('returns empty array if no farcaster accounts exist', async () => {
     const fidsToGet = [9999999];
     const response = await getFarcasterAccounts(db, fidsToGet);
     expect(response.length).toBe(0);
