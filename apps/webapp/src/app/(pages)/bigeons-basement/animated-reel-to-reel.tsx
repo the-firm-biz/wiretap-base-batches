@@ -100,19 +100,7 @@ const ReelToReelAnimation: React.FC = () => {
         />
       </svg>
       {/* Developer reference: Example start/stop button for animation control should be replaced with your own animation control logic */}
-      <button
-        type="button"
-        onClick={() => setIsRunning((r) => !r)}
-        style={{
-          marginTop: 12,
-          padding: '4px 16px',
-          borderRadius: 4,
-          border: '1px solid var(--color-foreground)',
-          background: 'none',
-          color: 'var(--color-foreground)',
-          cursor: 'pointer'
-        }}
-      >
+      <button onClick={() => setIsRunning((r) => !r)}>
         {isRunning ? 'Stop' : 'Start'}
       </button>
     </div>
