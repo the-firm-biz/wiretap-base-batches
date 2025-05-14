@@ -8,7 +8,7 @@ import { getBalance } from 'viem/actions';
 
 interface GliderPortfolioWithBalance extends GliderPortfolio {
   address: Address;
-  balanceWei: string;
+  balanceWei: bigint;
 }
 
 export const getAuthedAccountGliderPortfolio = privateProcedure.query(
@@ -31,7 +31,7 @@ export const getAuthedAccountGliderPortfolio = privateProcedure.query(
     return {
       ...gliderPortfolio,
       address: gliderPortfolio.address as Address,
-      balanceWei: balanceWei.toString()
+      balanceWei
     };
   }
 );

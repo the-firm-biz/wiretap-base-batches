@@ -11,6 +11,7 @@ import { DepositDrawer } from '@/app/components/deposit-drawer/deposit-drawer';
 import { useQuery } from '@tanstack/react-query';
 import { WalletNotice } from './components/wallet-notice';
 import { useAccount, useBalance } from 'wagmi';
+import { WithdrawDrawer } from '@/app/components/withdraw-drawer/withdraw-drawer';
 
 export default function WalletPage() {
   const trpc = useTRPC();
@@ -18,8 +19,14 @@ export default function WalletPage() {
   const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery(
     trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
+  const { data: portfolioBalance } = useBalance({
+    address: portfolio?.address,
+    query: {
+      enabled: !!portfolio?.address
+    }
+  });
   const portfolioHasZeroBalance =
-    !portfolio?.balanceWei || BigInt(portfolio.balanceWei) === BigInt(0);
+    !portfolioBalance?.value || portfolioBalance.value === BigInt(0);
 
   const { address } = useAccount();
   const { data: eoaBalance } = useBalance({
@@ -47,14 +54,18 @@ export default function WalletPage() {
                 </Button>
               }
             />
-            <Button
-              disabled={
-                isLoadingPortfolio || !portfolio || portfolioHasZeroBalance
+            <WithdrawDrawer
+              trigger={
+                <Button
+                  disabled={
+                    isLoadingPortfolio || !portfolio || portfolioHasZeroBalance
+                  }
+                  variant="outline"
+                >
+                  <UploadIcon className="size-4" /> Withdraw
+                </Button>
               }
-              variant="outline"
-            >
-              <UploadIcon className="size-4" /> Withdraw
-            </Button>
+            />
           </div>
         </div>
       </div>
