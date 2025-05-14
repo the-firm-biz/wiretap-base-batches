@@ -42,7 +42,7 @@ export function EthDepositForm({
   const hasExistingPortfolio = !!portfolio;
 
   const portfolioBalanceEth = formatUnits(
-    BigInt(portfolio?.balanceWei || 0),
+    portfolio?.balanceWei || BigInt(0),
     18,
     false
   );

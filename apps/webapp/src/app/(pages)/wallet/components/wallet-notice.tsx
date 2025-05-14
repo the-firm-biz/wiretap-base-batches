@@ -30,8 +30,7 @@ export function WalletNotice() {
     trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
   const hasZeroPortfolioBalance =
-    !gliderPortfolio?.balanceWei ||
-    BigInt(gliderPortfolio.balanceWei) === BigInt(0);
+    !gliderPortfolio?.balanceWei || gliderPortfolio.balanceWei === BigInt(0);
 
   const { data: targets, isLoading: isLoadingTargets } = useQuery(
     trpc.wireTapAccount.getAuthedAccountTargets.queryOptions()

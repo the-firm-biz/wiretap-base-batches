@@ -21,9 +21,9 @@ export function GliderPortfolioBalance() {
   const isLoadingQueries = isLoadingPortfolio || isLoadingTokenPrice;
 
   const ethDisplayValue = formatUnits(
-    BigInt(gliderPortfolio?.balanceWei || 0),
+    gliderPortfolio?.balanceWei || BigInt(0),
     18,
-    4
+    5
   );
   const usdDisplayValue = formatUsd(ethDisplayValue * (tokenPrice || 0));
 

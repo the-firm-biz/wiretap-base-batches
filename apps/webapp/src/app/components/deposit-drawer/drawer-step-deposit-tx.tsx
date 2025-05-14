@@ -7,7 +7,7 @@ import { DepositState } from './deposit-drawer';
 import Image from 'next/image';
 import { textStyles } from '@/app/styles/template-strings';
 import AnimatedEllipsisText from '../animated-ellipsis-text';
-import { trpcClientUtils, useTRPC } from '@/app/trpc-clients/trpc-react-client';
+import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { Address, parseEther } from 'viem';
 import { formatUsd } from '@/app/utils/format/format-usd';
 import { useQuery } from '@tanstack/react-query';
@@ -27,6 +27,7 @@ export const DrawerStepDepositTransaction = ({
   depositState
 }: DepositDrawerProps) => {
   const trpc = useTRPC();
+
   // A hack to prevent calling sendTransaction twice
   const hasDeclaritivelyCalledSendTransaction = useRef(false);
 
@@ -86,12 +87,19 @@ export const DrawerStepDepositTransaction = ({
     }
   }, [amountEthToDeposit, gliderPortfolioAddress, sendTransaction]);
 
-  // Success lifecycle event
+  // On tx confirmation - success lifecycle event
   useEffect(() => {
     if (isTxConfirmed) {
-      toast.success(`Deposit Complete. ${amountEthToDeposit} ETH`);
-      // Invalidate authed user portfolio query
-      trpcClientUtils.wireTapAccount.getAuthedAccountGliderPortfolio.invalidate();
+      toast(
+        <div className="flex w-full justify-between items-center">
+          <div className="flex flex-col gap-1">
+            <div className={textStyles['compact-emphasis']}>
+              Deposit Complete
+            </div>
+            <div className={textStyles.label}>${amountEthToDeposit} ETH</div>
+          </div>
+        </div>
+      );
     }
   }, [amountEthToDeposit, isTxConfirmed]);
 

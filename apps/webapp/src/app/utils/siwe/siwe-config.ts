@@ -15,6 +15,7 @@ import {
 } from './siwe-cookies';
 import { SIWE_VALIDITY_MS } from './constants';
 import { base, baseSepolia } from 'viem/chains';
+import { invalidateAuthedAccountQueries } from '@/server/api/trpc-routers/wiretap-account-router/helpers/invalidateAuthedAccountQueries';
 
 /**
  * https://docs.reown.com/appkit/javascript/core/siwe#sign-in-with-ethereum
@@ -72,9 +73,7 @@ export const siweConfig = createSIWEConfig({
       setSiweSessionCookie(authJwt);
 
       // invalidate various authed account-specific queries
-      trpcClientUtils.wireTapAccount.getAuthedAccountGliderPortfolio.invalidate();
-      trpcClientUtils.wireTapAccount.getAuthedAccountTargets.invalidate();
-      trpcClientUtils.glider.invalidate();
+      invalidateAuthedAccountQueries();
       return success;
     } catch (e) {
       console.error(e);
@@ -108,6 +107,8 @@ export const siweConfig = createSIWEConfig({
   /** Should destroy user session cookie */
   signOut: async () => {
     removeSiweSessionCookie();
+    // invalidate various authed account-specific queries
+    invalidateAuthedAccountQueries();
     return true;
   },
 
