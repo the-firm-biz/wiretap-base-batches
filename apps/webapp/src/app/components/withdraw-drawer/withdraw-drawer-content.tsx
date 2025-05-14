@@ -13,6 +13,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Button } from '../ui/button';
 import { DrawerDescription, DrawerTitle } from '../ui/drawer';
 import { formatAddress } from '@/app/utils/format/format-address';
+import AnimatedEllipsisText from '../animated-ellipsis-text';
 
 interface WithdrawDrawerProps {
   setDrawerIsOpen: (isOpen: boolean) => void;
@@ -71,7 +72,7 @@ export const WithdrawDrawerContent = ({
       return (
         <div className="mt-4 w-full">
           <Button variant="outline" className="w-full" disabled={isWithdrawing}>
-            Working On It
+            <AnimatedEllipsisText>Working On It</AnimatedEllipsisText>
           </Button>
         </div>
       );
@@ -106,10 +107,10 @@ export const WithdrawDrawerContent = ({
         height={128}
       />
       <div className="flex flex-col items-center justify-center gap-2">
-        <span className={textStyles['title3']}>
+        <span className={`${textStyles['title3']} text-center`}>
           Withdraw All ETH to Wallet?
         </span>
-        <p className={textStyles['compact']}>
+        <p className={`${textStyles['compact']} text-center`}>
           Withdrawing to connected wallet {!!address && formatAddress(address)}
         </p>
         {getCta()}
