@@ -1,0 +1,1 @@
+ALTER TABLE "pools" ALTER COLUMN "ath_mcap_usd" SET DATA TYPE double precision;
