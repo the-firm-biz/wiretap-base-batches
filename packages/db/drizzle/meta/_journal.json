@@ -162,6 +162,13 @@
       "when": 1747226828909,
       "tag": "0022_old_sebastian_shaw",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1747242129302,
+      "tag": "0023_eth-token-and-zero-account-entity",
+      "breakpoints": true
     }
   ]
 }
