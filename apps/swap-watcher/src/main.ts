@@ -1,6 +1,6 @@
-import { startTokenCreatedWatcher } from './start-watcher.js';
+import { startSwapWatcher } from './start-watcher.js';
 
-const unwatchEvents = await startTokenCreatedWatcher();
+const unwatchEvents = await startSwapWatcher();
 
 const cleanup = (): Promise<void> => {
   console.log('Shutting down event watcher...');

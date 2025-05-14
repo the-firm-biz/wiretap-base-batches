@@ -5,7 +5,7 @@ import { websocketPublicClient } from './rpc-clients.js';
 import { startPoolsWatcher } from './pools.js';
 import { initPriceFeeds } from '@wiretap/utils/server';
 
-export async function startTokenCreatedWatcher() {
+export async function startSwapWatcher() {
   let unwatch: (() => void) | null = null;
 
   const startWatcher = () => {
