@@ -86,6 +86,12 @@ export const targetSearch = publicProcedure
         const { users: neynarSearchedUsers, nextCursor } =
           await searchByUsername(neynarClient, searchString, cursor);
 
+        console.log('> > > >', {
+          searchString,
+          cursor,
+          nextCursor
+        });
+
         const searchResults: SearchTarget[] = neynarSearchedUsers.map(
           (user) => ({
             neynarUser: user

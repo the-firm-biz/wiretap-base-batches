@@ -13,8 +13,8 @@ import { getExistingAccountInfo } from '../helpers/getExistingAccountInfo';
 import { TRPCError } from '@trpc/server';
 
 const trackSchema = z.object({
-  evmAddress: z.string(), // TODO: can this be optional?
-  neynarUser: neynarUserSchema.optional()
+  targetEvmAddress: z.string(), // TODO: can this be optional?
+  targetNeynarUser: neynarUserSchema.optional()
 });
 
 // TODO: DO NOT USE NUMBER
@@ -30,24 +30,33 @@ export const trackTargetForAuthedAccount = privateProcedure
   .mutation(async ({ ctx, input }): Promise<AccountEntityTracker | null> => {
     const { db, wireTapAccountId } = ctx;
 
-    const { evmAddress, neynarUser } = input;
+    const { targetEvmAddress, targetNeynarUser } = input;
+
+    const pooledDb = new PooledDbConnection({
+      databaseUrl: serverEnv.DATABASE_URL
+    });
 
     try {
-      const { accountEntityId: existingAccountEntityId } =
-        await getExistingAccountInfo(db, evmAddress as Address, neynarUser);
+      const { accountEntityId: targetAccountEntityId } =
+        await getExistingAccountInfo(
+          db,
+          targetEvmAddress as Address,
+          targetNeynarUser
+        );
 
-      if (existingAccountEntityId) {
+      if (targetAccountEntityId) {
         const createdTracker = await createAccountEntityTracker(db, {
           trackerWireTapAccountId: wireTapAccountId,
-          trackedAccountEntityId: existingAccountEntityId,
+          trackedAccountEntityId: targetAccountEntityId,
           maxSpend: DEFAULT_MAX_SPEND_WEI
         });
         return createdTracker;
       }
 
       // User wants to track a target that is not in DB yet
+
       const neynarEthWallets =
-        neynarUser?.verified_addresses.eth_addresses ?? [];
+        targetNeynarUser?.verified_addresses.eth_addresses ?? [];
       const allWallets = neynarEthWallets.reduce<Address[]>(
         (acc, cur) => {
           if (!acc.some((w) => isAddressEqual(w, cur as Address))) {
@@ -55,19 +64,15 @@ export const trackTargetForAuthedAccount = privateProcedure
           }
           return acc;
         },
-        [evmAddress as Address]
+        [targetEvmAddress as Address]
       );
 
-      const neynarXAccounts = neynarUser
-        ? neynarUser.verified_accounts
+      const neynarXAccounts = targetNeynarUser
+        ? targetNeynarUser.verified_accounts
             .filter(({ platform }) => platform === 'x')
             .map(({ username }) => username)
             .filter((username) => username !== undefined && username !== null) // to satisfy typescript
         : [];
-
-      const pooledDb = new PooledDbConnection({
-        databaseUrl: serverEnv.DATABASE_URL
-      });
 
       const createdTracker = await pooledDb.db.transaction(async (tx) => {
         const { accountEntity } = await createAccountEntity(tx, {
@@ -78,13 +83,13 @@ export const trackTargetForAuthedAccount = privateProcedure
             xid: `xid-for-${username}`, // TODO: actually get xid
             username
           })),
-          newFarcasterAccount: neynarUser
+          newFarcasterAccount: targetNeynarUser
             ? {
-                fid: neynarUser.fid,
-                username: neynarUser.username,
-                displayName: neynarUser.display_name,
-                pfpUrl: neynarUser.pfp_url,
-                followerCount: neynarUser.follower_count
+                fid: targetNeynarUser.fid,
+                username: targetNeynarUser.username,
+                displayName: targetNeynarUser.display_name,
+                pfpUrl: targetNeynarUser.pfp_url,
+                followerCount: targetNeynarUser.follower_count
               }
             : undefined
         });
@@ -111,5 +116,7 @@ export const trackTargetForAuthedAccount = privateProcedure
         code: e.code || 'INTERNAL_SERVER_ERROR',
         message: 'INTERNAL_SERVER_ERROR'
       });
+    } finally {
+      pooledDb.endPoolConnection();
     }
   });

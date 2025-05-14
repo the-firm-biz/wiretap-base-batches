@@ -12,17 +12,14 @@ import {
 export async function getAccountEntityTrackersForWireTapAccount(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   wireTapAccountId: number
-): Promise<AccountEntityTracker[] | undefined> {
+): Promise<AccountEntityTracker[]> {
   const existingAccountEntityTrackers = await db
     .select()
     .from(accountEntityTrackers)
     .where(eq(accountEntityTrackers.trackerWireTapAccountId, wireTapAccountId));
 
-  if (
-    !existingAccountEntityTrackers ||
-    existingAccountEntityTrackers.length === 0
-  ) {
-    return undefined; // TODO: return empty array?
+  if (!existingAccountEntityTrackers) {
+    return [];
   }
 
   return existingAccountEntityTrackers;

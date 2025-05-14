@@ -7,8 +7,8 @@ import { getExistingAccountInfo } from '../helpers/getExistingAccountInfo';
 import { TRPCError } from '@trpc/server';
 
 const trackSchema = z.object({
-  evmAddress: z.string(), // TODO: can this be optional?
-  neynarUser: neynarUserSchema.optional()
+  targetEvmAddress: z.string(), // TODO: can this be optional?
+  targetNeynarUser: neynarUserSchema.optional()
 });
 
 export const untrackTargetForAuthedAccount = privateProcedure
@@ -16,31 +16,26 @@ export const untrackTargetForAuthedAccount = privateProcedure
   .mutation(async ({ ctx, input }): Promise<boolean> => {
     const { db, wireTapAccountId } = ctx;
 
-    const { evmAddress, neynarUser } = input;
+    const { targetEvmAddress, targetNeynarUser } = input;
 
     try {
-      const { accountEntityId: existingAccountEntityId } =
-        await getExistingAccountInfo(db, evmAddress as Address, neynarUser);
+      const { accountEntityId: targetAccountEntityId } =
+        await getExistingAccountInfo(
+          db,
+          targetEvmAddress as Address,
+          targetNeynarUser
+        );
 
-      if (existingAccountEntityId) {
+      if (targetAccountEntityId) {
         await deleteAccountEntityTrackers(db, {
           wireTapAccountId,
-          accountEntityId: existingAccountEntityId
+          accountEntityId: targetAccountEntityId
         });
         return true;
       }
       return false;
     } catch (e: any) {
-      console.error('trackTargetForAuthedAccount', e);
-      const alreadyTracking = e.message?.includes(
-        'account_entity_trackers_tracker_wire_tap_account_id_tracked_acc'
-      );
-      if (alreadyTracking) {
-        throw new TRPCError({
-          code: e.code || 'INTERNAL_SERVER_ERROR',
-          message: 'Already tracking'
-        });
-      }
+      console.error('untrackTargetForAuthedAccount', e);
       throw new TRPCError({
         code: e.code || 'INTERNAL_SERVER_ERROR',
         message: 'INTERNAL_SERVER_ERROR'

@@ -80,8 +80,8 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
   const onTrackClick = () => {
     setIsConfirmingTrack(true);
     trackTarget({
-      evmAddress: target.address,
-      neynarUser: target.searchTarget.neynarUser
+      targetEvmAddress: target.address,
+      targetNeynarUser: target.searchTarget.neynarUser
     });
   };
 

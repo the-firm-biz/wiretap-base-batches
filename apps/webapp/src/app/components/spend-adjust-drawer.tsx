@@ -57,8 +57,8 @@ export const SpendAdjustDrawer = ({
   );
   const onTrashClick = () => {
     untrackTarget({
-      evmAddress: target.address,
-      neynarUser: target.searchTarget.neynarUser
+      targetEvmAddress: target.address,
+      targetNeynarUser: target.searchTarget.neynarUser
     });
   };
   return (
@@ -104,7 +104,7 @@ export const SpendAdjustDrawer = ({
             <Button variant="outline">0.1</Button>
             <Button variant="outline">0.2</Button>
           </div>
-          <div className={`${textStyles.label} py-6`}>
+          <div className={`${textStyles.label} py-6 text-center`}>
             This is the amount that’ll be spent on automated token purchases. If
             your balance falls below this amount, your remaining balance will be
             used instead.

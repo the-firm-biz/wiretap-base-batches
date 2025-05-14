@@ -14,12 +14,10 @@ export const getAuthedAccountTargets = privateProcedure.query(
   async ({ ctx }): Promise<AuthedAccountTarget[]> => {
     const { db, wireTapAccountId } = ctx;
 
+    // TODO: replace getAccountEntityTrackersForWireTapAccount + the batched getAccountEntity with a single SQL query
+
     const authedAccountTargets =
       await getAccountEntityTrackersForWireTapAccount(db, wireTapAccountId);
-
-    if (!authedAccountTargets) {
-      return [];
-    }
 
     const fullTargets: AuthedAccountTarget[] = (
       await Promise.all(

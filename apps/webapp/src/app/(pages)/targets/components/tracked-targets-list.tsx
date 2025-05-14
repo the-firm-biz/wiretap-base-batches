@@ -6,6 +6,11 @@ import {
   TargetSearchRow,
   TargetSearchRowSkeleton
 } from '@/app/components/target-search/target-search-row';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/app/components/ui/popover';
 import { Skeleton } from '@/app/components/ui/skeleton';
 import { textStyles } from '@/app/styles/template-strings';
 import { UITarget } from '@/app/utils/target/types';
@@ -42,10 +47,10 @@ export const TrackedTargetsList = ({
           <LocateIcon />
         </div>
         <div className="flex flex-col items-center gap-2">
-          <p className={`${textStyles['title3']}`}>
+          <p className={`${textStyles['title3']} text-center`}>
             You&apos;re not tracking anyone
           </p>
-          <p className={`${textStyles['compact']}`}>
+          <p className={`${textStyles['compact']} text-center`}>
             Start tracking profiles for token launches to auto-buy
           </p>
         </div>
@@ -53,10 +58,9 @@ export const TrackedTargetsList = ({
     );
   }
 
-  // TODO: Tooltip for max spend
   return (
-    <div>
-      <div className="grid grid-cols-2 gap-2 mb-2">
+    <>
+      <div className="grid grid-cols-2 gap-2 mb-2 px-2">
         <div className={`${textStyles.label}`}>
           {trackedTargets.length} Targets
         </div>
@@ -64,10 +68,21 @@ export const TrackedTargetsList = ({
           className={`${textStyles.label} justify-self-end flex items-center gap-2`}
         >
           <span>Max Spend</span>
-          <HelpIcon className="w-4 h-4" />
+          <Popover>
+            <PopoverTrigger>
+              <HelpIcon className="w-4 h-4" />
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className={textStyles.label}>
+                This is the amount that’ll be spent on automated token
+                purchases. If your balance falls below this amount, your
+                remaining balance will be used instead.
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
-      <div>
+      <div className="max-h-[calc(100dvh-375px)] overflow-y-auto pb-4">
         {trackedTargets.map((target) => (
           <TargetSearchRow
             key={target.address}
@@ -77,6 +92,6 @@ export const TrackedTargetsList = ({
           />
         ))}
       </div>
-    </div>
+    </>
   );
 };
