@@ -1,6 +1,10 @@
 import type { TokenBuyerPortfolio } from '@wiretap/db';
 import type { SuccessAware } from './types.js';
 import { env } from '../../env.js';
+import {updateGladerPortfolio} from "./update-glader-portfolio.js";
+import type {Address} from "viem";
+import {triggerGliderPortfolioRebalance} from "./trigger-glider-portfolio-rebalance.js";
+import {triggerTokenWithdrawalFromGliderPortfolio} from "./trigger-token-withdrawal-from-glider-portfolio.js";
 
 export async function processBuyWithGlider(
   tokenPercentage: number,
@@ -17,7 +21,7 @@ export async function processBuyWithGlider(
     return;
   }
   // // 1. update portfolio
-  // // todo: insert rebalance and set CREATED
+  // todo: insert rebalance and set CREATED
   // const updateRawResponse = await updateGladerPortfolio({
   //   accountEntityAddress: account.accountEntityAddress,
   //   portfolioId: portfolio!.portfolioId,
@@ -28,7 +32,7 @@ export async function processBuyWithGlider(
   //   // todo: FAILED with updateRawResponse
   //   return;
   // }
-  // // todo: UPDATED
+  // todo: UPDATED
 
   try {
     // 2. trigger rebalance
@@ -68,7 +72,7 @@ export async function processBuyWithGlider(
     //
     // 4. withdraw
     // const requestWithdrawResponse = await triggerTokenWithdrawalFromGliderPortfolio(
-    //   portfolio.portfolioId
+    //   portfolio.portfolioId, portfolio.address as Address, token.address as Address
     // );
     // if (!isSuccess(requestWithdrawResponse)) {
     //   // todo: FAILED_WITHDRAW_REQUEST with updateRawResponse

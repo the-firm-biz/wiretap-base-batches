@@ -1,10 +1,19 @@
+import { type Address, erc20Abi } from 'viem';
 import { env } from '../../env.js';
+import { httpPublicClient } from '../../rpc-clients.js';
 
 export async function triggerTokenWithdrawalFromGliderPortfolio(
   portfolioId: string,
-  tokenAddress: string,
-  amount: number
+  portfolioAddress: Address,
+  tokenAddress: Address
 ): Promise<string> {
+  const tokenBalance = await httpPublicClient.readContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [portfolioAddress]
+  });
+
   const result = await fetch(
     `https://api.glider.fi/v1/portfolio/${portfolioId}/withdraw`,
     {
@@ -15,12 +24,12 @@ export async function triggerTokenWithdrawalFromGliderPortfolio(
       },
       body: JSON.stringify({
         strategyInstanceId: portfolioId,
-        asserts: [
+        assets: [
           {
             assetId: `${tokenAddress}:8453`,
-            amount: amount.toString(),
-            decimals: 18, // todo
-          },
+            amount: tokenBalance.toString(),
+            decimals: 18
+          }
         ]
       })
     }
