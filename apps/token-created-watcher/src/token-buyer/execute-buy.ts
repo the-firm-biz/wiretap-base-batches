@@ -3,14 +3,17 @@ import { callWithBackOff } from '@wiretap/utils/server';
 import { httpPublicClient } from '../rpc-clients.js';
 import { type Address, parseEther } from 'viem';
 import { processBuyWithGlider } from './glider-api/process-buy-with-glider.js';
+import { bigIntReplacer } from '@wiretap/utils/shared';
 
 const BALANCE_TRADE_THRESHOLD: bigint = parseEther('0.0001', 'wei');
 const TOKEN_PERCENTAGE_THRESHOLD: number = 0;
 
-export async function executeBuy(buyTrigger: TokenBuyerPortfolio): Promise<void> {
-  const { portfolio } = buyTrigger;
+export async function executeBuy(
+  tokenBuyerPortfolio: TokenBuyerPortfolio
+): Promise<void> {
+  const { portfolio } = tokenBuyerPortfolio;
   if (!portfolio) {
-    console.error(`No portfolio for ${JSON.stringify(buyTrigger)}`);
+    console.error(`No portfolio for ${JSON.stringify(tokenBuyerPortfolio)}`);
     return;
   }
 
@@ -32,7 +35,7 @@ export async function executeBuy(buyTrigger: TokenBuyerPortfolio): Promise<void>
   }
 
   const tokenPercentage = computeBaseAssetPercentage(
-    buyTrigger.maxSpend,
+    tokenBuyerPortfolio.maxSpend,
     balance
   );
   const isRebalanceReasonable = tokenPercentage > TOKEN_PERCENTAGE_THRESHOLD;
@@ -42,14 +45,15 @@ export async function executeBuy(buyTrigger: TokenBuyerPortfolio): Promise<void>
         {
           portfolio: portfolio.address,
           balance: balance,
-          maxSpend: buyTrigger.maxSpend
-        }
+          maxSpend: tokenBuyerPortfolio.maxSpend
+        },
+        bigIntReplacer
       )}`
     );
     return;
   }
 
-  await processBuyWithGlider(tokenPercentage, balance, buyTrigger);
+  await processBuyWithGlider(tokenPercentage, balance, tokenBuyerPortfolio);
 }
 
 function roundUpToTwoDecimals(num: number): number {
