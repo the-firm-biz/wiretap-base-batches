@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@coinbase/onchainkit": "^0.38.13",
+    "@farcaster/frame-wagmi-connector": "^0.0.30",
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-aspect-ratio": "^1.1.4",
     "@radix-ui/react-dialog": "^1.1.11",
