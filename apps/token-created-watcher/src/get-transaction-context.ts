@@ -3,6 +3,7 @@ import { CLANKER_ABI, type ClankerAbi } from '@wiretap/config';
 import { httpPublicClient } from './rpc-clients.js';
 import type { ContractFunctionArgs } from 'viem';
 import { callWithBackOff } from '@wiretap/utils/server';
+import {  type Context } from '@wiretap/utils/shared';
 
 export type DeployTokenArgs = ContractFunctionArgs<
   ClankerAbi,
@@ -16,16 +17,25 @@ export type TransactionContext = Awaited<
 
 export const getTransactionContext = async (
   blockNumber: bigint,
-  transactionHash: `0x${string}`
+  transactionHash: `0x${string}`,
+  { tracing: { parentSpan } = {} }: Context
 ) => {
   const [block, transaction] = await Promise.all([
     callWithBackOff(
       () => httpPublicClient.getBlock({ blockNumber }),
-      'getBlock'
+      undefined,
+      {
+        name: 'getBlock',
+        tracing: { parentSpan }
+      }
     ),
     callWithBackOff(
       () => httpPublicClient.getTransaction({ hash: transactionHash }),
-      'getTransactionReceipt'
+      undefined,
+      {
+        name: 'getTransaction',
+        tracing: { parentSpan }
+      }
     )
   ]);
 

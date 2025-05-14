@@ -7,8 +7,9 @@ export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
     storage: cookieStorage
   }),
+  ssr: true,
   projectId: clientEnv.NEXT_PUBLIC_REOWN_PROJECT_ID,
-  networks: [base, baseSepolia, mainnet] // mainnet used for ENS resolution
+  networks: [base, baseSepolia, mainnet] // mainnet used for ENS resolution,
 });
 
 export const wagmiConfig = wagmiAdapter.wagmiConfig;

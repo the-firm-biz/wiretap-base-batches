@@ -63,12 +63,18 @@ export const siweConfig = createSIWEConfig({
         throw new Error('verifyMessage:: Signature verification failed');
       }
 
-      const authJwt = await trpcClientUtils.app.verifySiweMessage.fetch({
-        signature,
-        message
-      });
+      const authJwt =
+        await trpcClientUtils.wireTapAccount.verifySiweMessage.fetch({
+          signature,
+          message
+        });
 
       setSiweSessionCookie(authJwt);
+
+      // invalidate various authed account-specific queries
+      trpcClientUtils.wireTapAccount.getAuthedAccountGliderPortfolio.invalidate();
+      trpcClientUtils.wireTapAccount.getAuthedAccountTargets.invalidate();
+      trpcClientUtils.glider.invalidate();
       return success;
     } catch (e) {
       console.error(e);

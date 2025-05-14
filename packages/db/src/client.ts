@@ -31,7 +31,7 @@ export interface DbClientOptions {
  * Used in traditional server environments where a long-lived connection is possible.
  */
 let _db: NeonHttpDatabase;
-export function singletonDb(opts: DbClientOptions) {
+export function singletonDb(opts: DbClientOptions): HttpDb {
   if (!_db) {
     _db = getDb(opts);
   }

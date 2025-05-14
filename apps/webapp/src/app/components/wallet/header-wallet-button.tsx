@@ -65,7 +65,7 @@ export function HeaderWalletButton() {
 
     // Condition shouldn't be met - component won't be rendered for disconnected users
     if (!address) {
-      return 'Connect';
+      return null;
     }
 
     const avatarSrc = baseAvatar ?? ensAvatar;

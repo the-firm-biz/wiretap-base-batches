@@ -18,7 +18,7 @@ export interface PoolContext {
 
 export async function getPoolContext(
   tokenAddress: Address,
-  args: DeployTokenArgs
+  args: DeployTokenArgs,
 ): Promise<PoolContext> {
   const newToken = new Token(ChainId.BASE, tokenAddress, 18);
   const pairedToken = new Token(ChainId.BASE, args.poolConfig.pairedToken, 18);

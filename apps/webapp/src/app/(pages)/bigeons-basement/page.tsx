@@ -6,6 +6,7 @@ import { Input } from '../../components/ui/input';
 import { cn } from '@/app/utils/cn';
 import DitheredImage from '../../components/dithered-image';
 import DitheredAnimation from '../../components/dithered-animation';
+import { PaletteSwitcher } from '@/app/components/palette-switcher';
 
 export default function BigeonsBasementPage() {
   return (
@@ -16,6 +17,7 @@ export default function BigeonsBasementPage() {
       )}
     >
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+        <PaletteSwitcher />
         {/* Logo test area */}
         <div className="flex items-center gap-2 p-4">
           <p>Logo used on main background</p>
@@ -64,7 +66,8 @@ export default function BigeonsBasementPage() {
           />
           <div className="relative z-10 p-4 w-2/3">
             <p className={cn(textStyles['body'], 'inline bg-background')}>
-              Automatically snap up tokens from social accounts you follow...
+              Automatically snap up new tokens from social accounts you
+              follow...
             </p>
             <br />
             <br />
@@ -74,7 +77,7 @@ export default function BigeonsBasementPage() {
                 'inline bg-background'
               )}
             >
-              ...before regular shmucks even know they&apos;ve launched.
+              ...before regular schmucks even know they&apos;ve launched.
             </p>
           </div>
           <div className="flex p-4 w-full mt-4">

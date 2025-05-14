@@ -4,7 +4,7 @@ import {
   getAccountEntityTrackersForWireTapAccount
 } from '@wiretap/db';
 
-export const getTargetsForAuthedAccount = privateProcedure.query(
+export const getAuthedAccountTargets = privateProcedure.query(
   // @todo we will ultimately return a 'Target' type which also includes target metadata for the UI
   async ({ ctx }): Promise<AccountEntityTracker[] | null> => {
     const { db, wireTapAccountId } = ctx;

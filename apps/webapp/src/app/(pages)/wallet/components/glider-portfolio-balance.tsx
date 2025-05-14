@@ -7,33 +7,29 @@ import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { formatUnits } from '@/app/utils/format/format-units';
 import { formatUsd } from '@/app/utils/format/format-usd';
 import { useQuery } from '@tanstack/react-query';
-import { useBalance } from 'wagmi';
 
 export function GliderPortfolioBalance() {
   const trpc = useTRPC();
 
-  const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery(
-    trpc.wireTapAccount.getGliderPortfolioForAuthedAccount.queryOptions()
+  const { data: gliderPortfolio, isLoading: isLoadingPortfolio } = useQuery(
+    trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
   const { data: tokenPrice, isLoading: isLoadingTokenPrice } = useQuery(
     trpc.app.getEthPriceUsd.queryOptions()
   );
-  const { data: balance, isLoading: isLoadingBalance } = useBalance({
-    address: portfolio?.address as `0x${string}`,
-    query: {
-      enabled: !!portfolio?.address
-    }
-  });
 
-  const isLoadingQueries =
-    isLoadingPortfolio || isLoadingBalance || isLoadingTokenPrice;
+  const isLoadingQueries = isLoadingPortfolio || isLoadingTokenPrice;
 
-  const ethDisplayValue = formatUnits(balance?.value || BigInt(0), 18, 4);
+  const ethDisplayValue = formatUnits(
+    BigInt(gliderPortfolio?.balanceWei || 0),
+    18,
+    4
+  );
   const usdDisplayValue = formatUsd(ethDisplayValue * (tokenPrice || 0));
 
   return (
     <div className="flex flex-col gap-2 text-accent-foreground">
-      <p className={`${textStyles.compact}`}>Total Funding Balance</p>
+      <p className={`${textStyles.compact}`}>Your WireTap Balance</p>
       <div className="flex flex-row items-center gap-2">
         <EthIcon className="size-8" />
         {isLoadingQueries ? (

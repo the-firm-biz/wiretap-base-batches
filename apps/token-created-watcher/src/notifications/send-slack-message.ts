@@ -6,8 +6,8 @@ import {
   DELEGATED_CLANKER_DEPLOYER_ADDRESSES
 } from '@wiretap/config';
 import type { TokenScoreDetails } from '../token-score/get-token-score.js';
-import { bigIntReplacer } from '@wiretap/utils/shared';
 import type { DeployTokenArgs } from '../get-transaction-context.js';
+import { bigIntReplacer, Span } from '@wiretap/utils/shared';
 
 type SlackMessageDetails = {
   tokenAddress: string;
@@ -22,7 +22,10 @@ type SlackMessageDetails = {
     castIsValid: boolean;
     neynarUserExists: boolean;
   };
-  latencyMs?: number;
+  tracing?: {
+    latencyMs?: number;
+    span?: Span;
+  };
   tokenScoreDetails: TokenScoreDetails | null;
   transactionArgs: DeployTokenArgs;
 };
@@ -109,7 +112,7 @@ const _sendSlackMessage = async ({
   deployerContractAddress,
   neynarUser,
   source,
-  latencyMs,
+  tracing,
   castValidation,
   tokenScoreDetails,
   transactionArgs
@@ -242,16 +245,30 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
     }
   }
 
-  if (latencyMs) {
+  if (tracing?.latencyMs) {
     const indicatorEmoji =
-      latencyMs <= 500
+      tracing.latencyMs <= 500
         ? 'large_green_circle'
-        : latencyMs <= 1000
+        : tracing.latencyMs <= 1000
           ? 'large_orange_circle'
           : 'red_circle';
     fullMessage.push(
-      `:${indicatorEmoji}: Latency from block to db was ${latencyMs}`
+      `:${indicatorEmoji}: Latency from block to db was ${tracing.latencyMs}`
     );
+
+    if (tracing.latencyMs > 3000 && tracing.span) {
+      const tracingText =
+        '```\n' +
+        JSON.stringify(
+          tracing,
+          (k, v) => {
+            return k === 'parent' ? undefined : v;
+          },
+          2
+        ) +
+        '\n```';
+      fullMessage.push(tracingText);
+    }
   }
 
   if (tokenScoreDetails) {

@@ -6,9 +6,9 @@ import {
 import { type Address, type Block, type Log } from 'viem';
 import type { ExtractAbiEvent } from 'abitype';
 import type { MinimalBlock } from './block.js';
-import { bigIntReplacer } from '@wiretap/utils/shared';
 import type { DeployTokenArgs } from '../get-transaction-context.js';
 import { getPoolContext, type PoolContext } from '../get-pool-context.js';
+import { bigIntReplacer } from '@wiretap/utils/shared';
 
 export type TokenCreatedOnChainParams = {
   transactionHash: `0x${string}`;
@@ -33,7 +33,7 @@ export type TokenCreatedLog = Log<
 export async function deconstructLog(
   log: TokenCreatedLog,
   args: DeployTokenArgs,
-  block?: Block
+  block?: Block,
 ): Promise<TokenCreatedOnChainParams | undefined> {
   const {
     args: { tokenAddress, name: tokenName, symbol, msgSender },

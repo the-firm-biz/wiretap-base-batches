@@ -6,12 +6,34 @@ import Providers from '@/app/components/providers';
 import './styles/globals.css';
 import { departureMono, ppMondwest, loRes12 } from './styles/font-family';
 import { headers } from 'next/headers';
+import { Toaster } from './components/ui/sonner';
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://wiretap.thefirm.biz'),
-  title: 'WireTap',
-  description: "If you aren't first, you're last!",
-  robots: 'index, follow'
+export const generateMetadata = (): Metadata => {
+  return {
+    metadataBase: new URL('https://wiretap.thefirm.biz'),
+    title: 'WireTap',
+    description:
+      'Automatically snap up new tokens from social accounts you follow — before regular schmucks even know they’ve launched.',
+    robots: 'index, follow',
+    other: {
+      /** https://miniapps.farcaster.xyz/docs/specification#schema */
+      'fc:frame': JSON.stringify({
+        version: 'next',
+        imageUrl: 'https://wiretap.thefirm.biz/wiretap-meta-1200x630.png',
+        button: {
+          title: 'Launch WireTap',
+          action: {
+            type: 'launch_frame',
+            name: 'WireTap',
+            url: 'https://wiretap.thefirm.biz',
+            splashImageUrl:
+              'https://wiretap.thefirm.biz/wiretap-social-pfp-200.png',
+            splashBackgroundColor: '#7a8d7e'
+          }
+        }
+      })
+    }
+  };
 };
 
 export default async function RootLayout({
@@ -33,6 +55,8 @@ export default async function RootLayout({
       <body
         className={`${ppMondwest.variable} ${loRes12.variable} ${departureMono.variable} antialiased`}
       >
+        <div className="lcd-grid-overlay" aria-hidden="true"></div>
+        <Toaster />
         <Providers cookies={cookies}>
           <div className="flex flex-col min-h-screen">{children}</div>
         </Providers>

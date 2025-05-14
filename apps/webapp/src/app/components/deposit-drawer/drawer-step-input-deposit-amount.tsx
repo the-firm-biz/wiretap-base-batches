@@ -1,18 +1,18 @@
 import { SetStateAction, Dispatch } from 'react';
-import { DrawerTitle } from '../ui/drawer';
+import { DrawerDescription, DrawerTitle } from '../ui/drawer';
 import { DepositDrawerFundsSummary } from './funds-summary';
 import { EthDepositForm } from './eth-deposit-form';
 import { useAccount, useBalance } from 'wagmi';
 import { formatUnits } from '@/app/utils/format/format-units';
-import { DepositDrawerState } from './deposit-drawer';
+import { DepositState } from './deposit-drawer';
 
-interface DepositDrawerProps {
-  setDepositDrawerState: Dispatch<SetStateAction<DepositDrawerState>>;
+interface InputDepositAmountStepProps {
+  setDepositState: Dispatch<SetStateAction<DepositState>>;
 }
 
 export function DrawerStepInputDepositAmount({
-  setDepositDrawerState
-}: DepositDrawerProps) {
+  setDepositState
+}: InputDepositAmountStepProps) {
   const { address } = useAccount();
 
   const { data: balance } = useBalance({
@@ -27,12 +27,17 @@ export function DrawerStepInputDepositAmount({
   return (
     <div className="flex flex-col">
       <DrawerTitle>Deposit Funds</DrawerTitle>
+      {/* Start visually hidden description */}
+      <DrawerDescription className="sr-only">
+        Input amonut to deposit into your Glider Portfolio
+      </DrawerDescription>
+      {/* End visually hidden description */}
       <div className="mt-6" />
       <DepositDrawerFundsSummary />
       <div className="mt-8" />
       <EthDepositForm
         userBalance={balanceAsEth}
-        setDepositDrawerState={setDepositDrawerState}
+        setDepositState={setDepositState}
       />
     </div>
   );

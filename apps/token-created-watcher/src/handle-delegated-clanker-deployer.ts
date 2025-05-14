@@ -2,12 +2,13 @@ import { getTokenDeploymentSource } from './get-token-deployment-source.js';
 import { handleClankerFarcaster } from './handle-clanker-farcaster.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { getTokenContext } from './get-token-context.js';
-import { bigIntReplacer } from '@wiretap/utils/shared';
+import { bigIntReplacer, type Context, trace } from '@wiretap/utils/shared';
 import type { DeployTokenArgs } from './get-transaction-context.js';
 
 export async function handleDelegatedClankerDeployer(
   tokenCreatedData: TokenCreatedOnChainParams,
-  transactionArgs: DeployTokenArgs
+  transactionArgs: DeployTokenArgs,
+  { tracing: { parentSpan } = {} }: Context
 ) {
   const tokenContext = getTokenContext(transactionArgs);
   const deploymentSource = getTokenDeploymentSource({
@@ -16,13 +17,21 @@ export async function handleDelegatedClankerDeployer(
   });
 
   if (deploymentSource === 'clanker_farcaster') {
-    await handleClankerFarcaster(
-      tokenCreatedData,
+    await trace(
+      (contextSpan) =>
+        handleClankerFarcaster(
+          tokenCreatedData,
+          {
+            fid: Number(tokenContext.id),
+            messageId: tokenContext.messageId
+          },
+          transactionArgs,
+          { tracing: { parentSpan: contextSpan } },
+        ),
       {
-        fid: Number(tokenContext.id),
-        messageId: tokenContext.messageId
-      },
-      transactionArgs
+        name: 'handleClankerFarcaster',
+        parentSpan
+      }
     );
     return;
   }
