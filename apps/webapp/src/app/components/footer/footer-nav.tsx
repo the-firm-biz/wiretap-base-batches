@@ -3,7 +3,7 @@ import { TargetsIcon } from '../icons/TargetsIcon';
 import { DiscoverIcon } from '../icons/DiscoverIcon';
 import { FooterNavButton } from './footer-nav-button';
 
-export type PagePath = 'wallet' | 'targets' | 'discover';
+export type PagePath = 'wallet' | 'targets' | '/';
 
 interface FooterNavProps {
   currentPagePath: PagePath;
@@ -20,9 +20,9 @@ export function FooterNav({ currentPagePath }: FooterNavProps) {
       />
       <FooterNavButton
         label="Discover"
-        pagePath="discover"
+        pagePath="/"
         icon={<DiscoverIcon className="size-4" />}
-        isActive={currentPagePath === 'discover'}
+        isActive={currentPagePath === '/'}
       />
       <FooterNavButton
         label="Wallet"

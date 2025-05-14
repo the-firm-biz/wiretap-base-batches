@@ -10,9 +10,21 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { DownloadIcon } from '@/app/components/icons/DownloadIcon';
 import { DepositDrawer } from '@/app/components/deposit-drawer/deposit-drawer';
+import { useAccount } from 'wagmi';
+import { useBalance } from 'wagmi';
 
 export function WalletNotice() {
   const trpc = useTRPC();
+
+  const { address } = useAccount();
+  const { data: eoaBalance } = useBalance({
+    address: address,
+    query: {
+      enabled: !!address
+    }
+  });
+  const userHasZeroBalance =
+    !eoaBalance?.value || eoaBalance.value === BigInt(0);
 
   const { data: gliderPortfolio, isLoading: isLoadingPortfolio } = useQuery(
     trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
@@ -52,11 +64,19 @@ export function WalletNotice() {
     }
 
     if (hasZeroPortfolioBalance) {
-      return <p className={`${textStyles['title3']}`}>Fund Your Wallet</p>;
+      return (
+        <p className={`${textStyles['title3']} text-center`}>
+          Fund Your Wallet
+        </p>
+      );
     }
 
     if (hasNoTargets) {
-      return <p className={`${textStyles['title3']}`}>Choose Your Targets</p>;
+      return (
+        <p className={`${textStyles['title3']} text-center`}>
+          Choose Your Targets
+        </p>
+      );
     }
 
     return (
@@ -73,14 +93,16 @@ export function WalletNotice() {
 
     if (hasZeroPortfolioBalance || hasNoTargets) {
       return (
-        <p className={`${textStyles['compact']}`}>
+        <p className={`${textStyles['compact']} text-center`}>
           Your WireTap Balance is used to autobuy tokens at launch
         </p>
       );
     }
 
     return (
-      <p className={`${textStyles['compact']}`}>No auto-buys complete yet.</p>
+      <p className={`${textStyles['compact']} text-center`}>
+        No auto-buys complete yet.
+      </p>
     );
   };
 
@@ -93,7 +115,7 @@ export function WalletNotice() {
       return (
         <DepositDrawer
           trigger={
-            <Button>
+            <Button disabled={isLoadingPortfolio || userHasZeroBalance}>
               <DownloadIcon className="size-4" />
               Deposit Funds
             </Button>

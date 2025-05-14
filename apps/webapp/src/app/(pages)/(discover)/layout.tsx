@@ -37,7 +37,7 @@ export default function DiscoverLayout({
     <ConnectedWalletGate>
       <Header pageTitle="Discover" />
       <PageContainer>{children}</PageContainer>
-      <Footer currentPagePath="discover" />
+      <Footer currentPagePath="/" />
     </ConnectedWalletGate>
   );
 }
