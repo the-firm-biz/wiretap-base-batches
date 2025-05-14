@@ -14,20 +14,19 @@ export async function updatePortfolio({
   tokenAddress,
   tokenPercentage
 }: UpdatePortfolioParams): Promise<string> {
-
   const assets = [
     {
       blockType: 'asset',
       assetId: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-    },
+    }
   ];
-  const weightings = [100]
+  const weightings = [100];
 
   if (tokenPercentage && tokenPercentage > 0) {
     assets.push({
       blockType: 'asset',
       assetId: tokenAddress!
-    })
+    });
     weightings[0] = 100 - tokenPercentage;
     weightings.push(tokenPercentage);
   }

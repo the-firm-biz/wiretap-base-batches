@@ -14,7 +14,6 @@ export async function rebalanceStatus(portfolioId: string, rebalanceId: string):
       })
     }
   );
-  return await result.text();
-  // rebalanceDetails.data.status
   // status will be one of: "running", "completed", "failed", "canceled", or "terminated"
+  return await result.text();
 }

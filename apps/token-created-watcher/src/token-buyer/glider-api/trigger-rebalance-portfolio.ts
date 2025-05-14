@@ -1,6 +1,8 @@
 import { env } from '../../env.js';
 
-export async function triggerRebalancePortfolio(portfolioId: string): Promise<string> {
+export async function triggerRebalancePortfolio(
+  portfolioId: string
+): Promise<string> {
   const result = await fetch(
     `https://api.glider.fi/v1/portfolio/${portfolioId}/rebalance/schedule/trigger`,
     {

@@ -13,6 +13,7 @@ const envSchema = z.object({
   ALCHEMY_API_KEY: z.string(),
   DATABASE_URL: z.string(),
   GLIDER_API_KEY: z.string(),
+  IS_GLIDER_ENABLED: stringBool,
   IS_SLACK_NOTIFICATION_ENABLED: stringBool
 });
 
