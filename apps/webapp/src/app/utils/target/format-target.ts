@@ -31,6 +31,11 @@ export const searchToUiTarget = ({
   }),
   followerCount: neynarUser?.follower_count,
   image: image ?? neynarUser?.pfp_url,
+  trackingStatus: {
+    isTracking: false,
+    isLoading: false,
+    maxSpend: BigInt(0)
+  },
   searchTarget: {
     neynarUser,
     basename,
@@ -42,27 +47,35 @@ export const searchToUiTarget = ({
 export const authedAccountTargetToUiTarget = (
   authedAccountTarget: AuthedAccountTarget
 ): UITarget => {
-  const address = authedAccountTarget.wallets[0]?.address ?? 'TODO';
+  const address: Address | undefined =
+    (authedAccountTarget.wallets[0]?.address as Address) ?? undefined;
   const farcasterAccount: FarcasterAccount | undefined =
     authedAccountTarget.farcasterAccounts[0];
 
   return {
     fid: farcasterAccount?.fid,
-    address: address as Address,
+    address: address,
     label: constructLabel({
       socialName: farcasterAccount?.displayName ?? undefined,
       socialUsername: farcasterAccount?.username,
-      evmAddress: address as Address
+      evmAddress: address
     }),
     sublabel: constructSublabel({
       socialUsername: farcasterAccount?.username,
-      evmAddress: address as Address
+      evmAddress: address
     }),
     image: farcasterAccount?.pfpUrl ?? undefined,
-    // TODO: remove
+    // TODO: Search target is not really used in the case of target coming from the DB,
+    // but it is here to simply satisfy typescript. Ideally rethink how to optimize types to pass less data around
     searchTarget: {
-      evmAddress: address as Address
+      evmAddress: address
     },
-    followerCount: farcasterAccount?.followerCount ?? undefined
+    followerCount: farcasterAccount?.followerCount ?? undefined,
+    trackingStatus: {
+      isTracking: true,
+      isLoading: false,
+      maxSpend: authedAccountTarget.tracker.maxSpend,
+      targetAccountEntityId: authedAccountTarget.tracker.trackedAccountEntityId
+    }
   };
 };

@@ -1,13 +1,14 @@
 'use client';
 import React from 'react';
 
-const ReelToReelAnimation: React.FC = () => {
+const ReelToReelAnimation: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   const [angle, setAngle] = React.useState(0);
 
   React.useEffect(() => {
+    if (!isActive) return;
     const id = setInterval(() => setAngle((a) => (a + 2) % 360), 16);
     return () => clearInterval(id);
-  }, []);
+  }, [isActive]);
 
   return (
     <svg viewBox="0 0 208 104" fill="none" xmlns="http://www.w3.org/2000/svg">

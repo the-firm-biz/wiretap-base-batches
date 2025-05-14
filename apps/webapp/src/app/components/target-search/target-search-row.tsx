@@ -3,18 +3,18 @@ import { Button } from '@/app/components/ui/button';
 import { textStyles } from '@/app/styles/template-strings';
 import { UsersIcon } from '@/app/components/icons/UsersIcon';
 import { ExternalImage } from '../external-image';
-import { UITarget } from '@/app/utils/target/types';
+import { TargetTrackingStatus, UITarget } from '@/app/utils/target/types';
 import { Skeleton } from '../ui/skeleton';
-import { SpendAdjustDrawer } from '../spend-adjust-drawer';
-import { useState } from 'react';
+import { SpendAdjustDrawer } from '../spend-adjust-drawer/spend-adjust-drawer';
+import { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { trpcClientUtils, useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import AnimatedEllipsisText from '../animated-ellipsis-text';
+import { formatUnits } from '@/app/utils/format/format-units';
 
 type TargetSearchRowProps = {
   target: UITarget;
-  isLoadingTrackedStatus: boolean;
-  isTracked: boolean;
+  trackingStatus: TargetTrackingStatus;
 };
 
 export const TargetSearchRowSkeleton = () => {
@@ -32,11 +32,12 @@ export const TargetSearchRowSkeleton = () => {
 
 export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
   target,
-  isLoadingTrackedStatus,
-  isTracked
+  trackingStatus
 }) => {
   const trpc = useTRPC();
   const [isConfirmingTrack, setIsConfirmingTrack] = useState(false);
+  const [isOpenSpendAdjustDrawer, setIsOpenSpendAdjustDrawer] = useState(false);
+
   const hasFollowersInfo =
     Object.hasOwn(target, 'followerCount') &&
     Number.isInteger(target.followerCount);
@@ -44,7 +45,6 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
   const { mutate: trackTarget } = useMutation(
     trpc.wireTapAccount.trackTargetForAuthedAccount.mutationOptions({
       onSuccess: () => {
-        setIsConfirmingTrack(false);
         trpcClientUtils.wireTapAccount.getAuthedAccountTargets.invalidate();
         toast(
           <div className="flex w-full justify-between items-center">
@@ -54,10 +54,12 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
                 {target.label} is closely monitored
               </div>
             </div>
-            <SpendAdjustDrawer
-              target={target}
-              trigger={<Button variant="outline">Adjust</Button>}
-            />
+            <Button
+              variant="outline"
+              onClick={() => setIsOpenSpendAdjustDrawer(true)}
+            >
+              Adjust
+            </Button>
           </div>
         );
       },
@@ -77,6 +79,12 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
     })
   );
 
+  useEffect(() => {
+    if (isConfirmingTrack && trackingStatus.isTracking) {
+      setIsConfirmingTrack(false);
+    }
+  }, [isConfirmingTrack, setIsConfirmingTrack, trackingStatus]);
+
   const onTrackClick = () => {
     setIsConfirmingTrack(true);
     trackTarget({
@@ -85,16 +93,20 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
     });
   };
 
-  const actionButton = (() => {
-    if (isTracked) {
+  const actionButton = () => {
+    if (trackingStatus.isTracking) {
+      const ethDisplayValue = formatUnits(trackingStatus.maxSpend, 18, 4);
       return (
         <SpendAdjustDrawer
           target={target}
-          trigger={<Button variant="outline">0.01 ETH</Button>}
+          trigger={<Button variant="outline">{ethDisplayValue} ETH</Button>}
+          trackingStatus={trackingStatus}
+          isControlledOpen={isOpenSpendAdjustDrawer}
+          onOpenChange={setIsOpenSpendAdjustDrawer}
         />
       );
     }
-    if (isLoadingTrackedStatus) {
+    if (trackingStatus.isLoading) {
       return (
         <Button disabled variant="default">
           <AnimatedEllipsisText></AnimatedEllipsisText>
@@ -110,7 +122,7 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
         )}
       </Button>
     );
-  })();
+  };
 
   return (
     <div className="grid grid-cols-[40px_1fr_auto] items-center gap-3 p-2">
@@ -137,7 +149,7 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
           <span className={textStyles.label}>{target.sublabel}</span>
         </div>
       </div>
-      {actionButton}
+      {actionButton()}
     </div>
   );
 };

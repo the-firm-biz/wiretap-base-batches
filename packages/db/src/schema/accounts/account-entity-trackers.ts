@@ -20,7 +20,7 @@ export const accountEntityTrackers = pgTable(
       .notNull()
       .references(() => accountEntities.id),
     /** Maximum amount of ETH that should be allocated if the trackedAccountEntityId deploys a token, in wei */
-    maxSpend: bigint('max_spend', { mode: 'number' }).notNull(),
+    maxSpend: bigint('max_spend', { mode: 'bigint' }).notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
   },
