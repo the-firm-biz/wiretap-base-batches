@@ -1,6 +1,6 @@
 import { env } from '../../env.js';
 
-export async function triggerWithdraw(
+export async function triggerTokenWithdrawalFromGliderPortfolio(
   portfolioId: string,
   tokenAddress: string,
   amount: number

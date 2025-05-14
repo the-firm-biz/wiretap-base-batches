@@ -8,7 +8,7 @@ export type UpdatePortfolioParams = {
   tokenPercentage?: number;
 };
 
-export async function updatePortfolio({
+export async function updateGladerPortfolio({
   accountEntityAddress,
   portfolioId,
   tokenAddress,

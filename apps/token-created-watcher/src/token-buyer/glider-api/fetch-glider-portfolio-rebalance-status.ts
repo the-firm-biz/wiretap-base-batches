@@ -1,6 +1,6 @@
 import { env } from '../../env.js';
 
-export async function rebalanceStatus(portfolioId: string, rebalanceId: string): Promise<string> {
+export async function fetchGliderPortfolioRebalanceStatus(portfolioId: string, rebalanceId: string): Promise<string> {
   const result = await fetch(
     `https://api.glider.fi/v1/portfolio/${portfolioId}/rebalance/status/${rebalanceId}`,
     {

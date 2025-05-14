@@ -1,6 +1,6 @@
 import { env } from '../../env.js';
 
-export async function triggerRebalancePortfolio(
+export async function triggerGliderPortfolioRebalance(
   portfolioId: string
 ): Promise<string> {
   const result = await fetch(
