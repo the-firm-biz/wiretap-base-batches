@@ -13,7 +13,8 @@ import { cn } from '@/app/utils/cn';
 import { TypewriterText } from './animated-typewriter-text';
 import React, { useState, useEffect } from 'react';
 import { FlashingDot } from '../flashing-dot';
-import { useMiniKit } from '@coinbase/onchainkit/minikit';
+import { useAddFrame, useMiniKit } from '@coinbase/onchainkit/minikit';
+import { FarcasterIcon } from '../icons/FarcasterIcon';
 
 export function ConnectedWalletGate({
   children
@@ -23,7 +24,10 @@ export function ConnectedWalletGate({
   const { address } = useAccount();
   const { open } = useAppKit();
   const { open: isOpen } = useAppKitState();
-  const { setFrameReady, isFrameReady } = useMiniKit();
+  const addFrame = useAddFrame();
+  const { setFrameReady, isFrameReady, context: miniKitContext } = useMiniKit();
+  const hasMinikitContext = !!miniKitContext;
+  const hasAddedFrame = miniKitContext?.client.added;
 
   // Initialize frame when component mounts
   useEffect(() => {
@@ -41,7 +45,7 @@ export function ConnectedWalletGate({
     return (
       <PageContainer>
         <div className="flex flex-1 flex-col h-full gap-4">
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <div>
               <div
                 className={`relative inline-block transition-opacity duration-700 ${logoLoaded ? 'opacity-100' : 'opacity-0'}`}
@@ -65,7 +69,16 @@ export function ConnectedWalletGate({
                 <FlashingDot className="w-0.75 h-0.75 absolute top-[9px] right-[1.5px]" />
               </div>
             </div>
-            <div>{/* Where 'Menu' is on the design */}</div>
+            <div>
+              {hasMinikitContext && !hasAddedFrame && (
+                <Button
+                  onClick={async () => await addFrame()}
+                  variant="outline"
+                >
+                  <FarcasterIcon className="w-4 h-4" /> Add Frame
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="p-4 border border-border rounded-md flex flex-col flex-1 relative overflow-hidden">
@@ -82,7 +95,7 @@ export function ConnectedWalletGate({
                 <p>
                   <TypewriterText
                     text={
-                      "Automatically snap up tokens from social accounts you follow...\n\n...before regular schmucks even know they've launched."
+                      "Automatically snap up new tokens from social accounts you follow...\n\n...before regular schmucks even know they've launched."
                     }
                     className={cn(textStyles['body'], 'bg-background')}
                     emphasisClass={cn(
@@ -94,7 +107,12 @@ export function ConnectedWalletGate({
                 </p>
               </div>
               <div className="flex-1" />
-              <Button size="lg" onClick={() => open()} variant="secondary">
+              <Button
+                size="lg"
+                className="h-[64px]"
+                onClick={() => open()}
+                variant="secondary"
+              >
                 Initiate Protocol
               </Button>
             </div>
@@ -105,7 +123,7 @@ export function ConnectedWalletGate({
             </p>
             <SupportedProtocolsCarousel />
           </div>
-          <Button asChild size="lg" variant="outline" className="mb-8">
+          <Button asChild variant="outline" className="mb-8">
             <a href="https://thefirm.biz" target="blank">
               Get Our Next Release Early
             </a>

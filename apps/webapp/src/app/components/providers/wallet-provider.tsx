@@ -6,11 +6,13 @@ import { clientEnv } from '@/clientEnv';
 import { createAppKit } from '@reown/appkit/react';
 import { base, baseSepolia } from '@reown/appkit/networks';
 import { siweConfig } from '@/app/utils/siwe/siwe-config';
+
 const metadata = {
   name: 'WireTap',
-  description: 'WireTap', // @TODO: Add a description
-  url: 'https://wiretap.thefirm.biz', // origin must match your domain & subdomain
-  icons: ['https://avatars.githubusercontent.com/u/179229932'] // TODO: Add a logo
+  description:
+    'Automatically snap up new tokens from social accounts you follow — before regular schmucks even know they’ve launched.',
+  url: 'https://wiretap.thefirm.biz',
+  icons: ['https://wiretap.thefirm.biz/wiretap-social-pfp-1024.png']
 };
 
 createAppKit({
@@ -21,8 +23,11 @@ createAppKit({
   metadata: metadata,
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration
-    socials: ['farcaster']
+    socials: ['farcaster'] // @TODO - may need to remove this as it conflicts with Farcaster connector
   },
+  // featuredWalletIds: [
+  //   "1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369",
+  // ], @tod Find Farcaster wallet ID and add it here idk wtf it is and it isn't in the WalletConnect docs but it exists
   siweConfig: siweConfig
 });
 

@@ -6,8 +6,25 @@ import { ConnectedWalletGate } from '@/app/components/connected-wallet-gate/conn
 export const metadata: Metadata = {
   metadataBase: new URL('https://wiretap.thefirm.biz'),
   title: 'Wallet | WireTap',
-  description: 'Blah blah blah',
-  robots: 'index, follow'
+  description:
+    'Your WireTap balance is used to auto-buy tokens when they launch. Wallet material: finest Italian leather.',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Wallet | WireTap',
+    description:
+      'Your WireTap balance is used to auto-buy tokens when they launch. Wallet material: finest Italian leather.',
+    images: [
+      {
+        url: '/wiretap-meta-1200x630.png',
+        width: 1200,
+        height: 630,
+        alt: 'WireTap'
+      }
+    ]
+  },
+  icons: {
+    icon: '/favicon.ico'
+  }
 };
 
 export default function WalletPageLayout({
