@@ -1,12 +1,11 @@
 import type { Address } from 'viem';
 import { env } from '../../env.js';
-import type { SuccessAware } from './types.js';
 
 export type UpdatePortfolioParams = {
   accountEntityAddress: string;
   portfolioId: string;
-  tokenAddress: Address;
-  tokenPercentage: number;
+  tokenAddress?: Address;
+  tokenPercentage?: number;
 };
 
 export async function updatePortfolio({
@@ -14,10 +13,23 @@ export async function updatePortfolio({
   portfolioId,
   tokenAddress,
   tokenPercentage
-}: UpdatePortfolioParams): Promise<boolean> {
-  if (tokenPercentage === 0) {
-    console.log('Token percentage is 0');
-    return false;
+}: UpdatePortfolioParams): Promise<string> {
+
+  const assets = [
+    {
+      blockType: 'asset',
+      assetId: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+    },
+  ];
+  const weightings = [100]
+
+  if (tokenPercentage && tokenPercentage > 0) {
+    assets.push({
+      blockType: 'asset',
+      assetId: tokenAddress!
+    })
+    weightings[0] = 100 - tokenPercentage;
+    weightings.push(tokenPercentage);
   }
 
   const response = await fetch(
@@ -34,33 +46,12 @@ export async function updatePortfolio({
           entry: {
             blockType: 'weight',
             weightType: 'specified-percentage',
-            weightings: [
-              (100 - tokenPercentage).toString(),
-              tokenPercentage.toString()
-            ],
-            children: [
-              {
-                blockType: 'asset',
-                assetId: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-              },
-              {
-                blockType: 'asset',
-                assetId: tokenAddress
-              }
-            ]
+            weightings: weightings.map((w) => w.toString()),
+            children: assets
           }
         }
       })
     }
   );
-
-  const updatedPortfolioResponse = await response.json();
-  if (!(updatedPortfolioResponse as SuccessAware).success) {
-    console.warn(
-      `Update portfolio failed ${JSON.stringify(updatedPortfolioResponse)}`
-    );
-    return false;
-  }
-  console.debug(`Updated portfolio ${JSON.stringify(updatedPortfolioResponse)}`)
-  return true;
+  return await response.text();
 }

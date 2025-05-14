@@ -14,12 +14,20 @@ import {
 import { lowerEq } from '../../utils/pg-helpers.js';
 
 export type BuyTrigger = {
-  wireTapId: number;
-  accountEntityId: number;
-  accountEntityAddress: string;
-  portfolioId: string | null;
-  portfolioAddress: string | null;
-  tokenAddress: string;
+  account: {
+    wireTapId: number;
+    accountEntityId: number;
+    accountEntityAddress: string;
+  },
+  portfolio: {
+    wireTapId: number;
+    portfolioId: string;
+    address: string;
+  } | null,
+  token: {
+    id: number,
+    address: string;
+  },
   maxSpend: number;
 };
 
@@ -29,13 +37,21 @@ export async function getTargetsByTokenAddress(
 ): Promise<BuyTrigger[]> {
   const targets = await db
     .select({
+      account: {
+        wireTapId: wireTapAccounts.id,
+        accountEntityId: wireTapAccounts.accountEntityId,
+        accountEntityAddress: wallets.address
+      },
+      portfolio: {
+        wireTapId: gliderPortfolios.id,
+        portfolioId: gliderPortfolios.portfolioId,
+        address: gliderPortfolios.address,
+      },
+      token: {
+        id: tokens.id,
+        address: tokens.address
+      },
       maxSpend: accountEntityTrackers.maxSpend,
-      wireTapId: wireTapAccounts.id,
-      accountEntityAddress: wallets.address,
-      accountEntityId: wireTapAccounts.accountEntityId,
-      portfolioId: gliderPortfolios.portfolioId,
-      portfolioAddress: gliderPortfolios.address,
-      tokenAddress: tokens.address
     })
     .from(tokens)
     .innerJoin(
