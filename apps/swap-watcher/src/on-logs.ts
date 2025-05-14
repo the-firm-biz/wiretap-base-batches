@@ -47,8 +47,8 @@ export async function onLog(log: SwapLog) {
   const tokenPool = await updatePoolAthMcap(db, log.address, tokenMcapUsd);
 
   if (tokenPool) {
-    console.log('New token pool ATH MCAP set', tokenPool.athMcapUsd);
+    console.log(`ATH MCAP set to ${tokenPool.athMcapUsd} for ${log.address}`);
   } else {
-    console.debug('ATH mcap not updated for pool', log.address);
+    console.log(`ATH mcap not updated for pool ${log.address}`);
   }
 }
