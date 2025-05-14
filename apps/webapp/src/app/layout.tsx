@@ -19,7 +19,7 @@ export const generateMetadata = (): Metadata => {
       /** https://miniapps.farcaster.xyz/docs/specification#schema */
       'fc:frame': JSON.stringify({
         version: 'next',
-        imageUrl: 'https://wiretap.thefirm.biz/wiretap-meta-1200x630.png',
+        imageUrl: 'https://wiretap.thefirm.biz/wiretap-meta-1200x800.png',
         button: {
           title: 'Launch WireTap',
           action: {
