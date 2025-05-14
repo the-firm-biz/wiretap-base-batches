@@ -9,14 +9,15 @@ import { blocks } from '../schema/blocks.js';
 
 const newToken: NewToken = {
   block: 0,
-  address: '0x60C2c576310892d741ac6faFB74D82D3dd49F4B6',
+  address: '0x0000000000000000000000000000000000000000',
   deploymentTransactionHash:
-    '0xc523028627ebdc8de1a37107ebafb45694f397929c978939f0d64c35b922a3b0',
+    '0x0000000000000000000000000000000000000000000000000000000000000000',
   name: 'Test Token',
   symbol: 'TEST',
   deploymentContractId: 1,
   accountEntityId: 1,
-  score: 0.999
+  score: 0.999,
+  totalSupply: 100_000_000_000
 };
 
 describe('getOrCreateToken', () => {
@@ -29,7 +30,7 @@ describe('getOrCreateToken', () => {
     const [contract] = await db
       .insert(contracts)
       .values({
-        address: '0xd9aCd656A5f1B519C9E76a2A6092265A74186e58'
+        address: '0x0000000000000000000000000000000000000000'
       })
       .returning();
     const [accountEntity] = await db

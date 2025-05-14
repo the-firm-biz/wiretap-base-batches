@@ -15,6 +15,7 @@ import {
 import type { Address } from 'viem';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
 import { getTokenScore } from './token-score/get-token-score.js';
+import type { DeployTokenArgs } from './get-transaction-context.js';
 import { TokenIndexerError } from './errors.js';
 import { type Context, trace } from '@wiretap/utils/shared';
 
@@ -26,6 +27,7 @@ export interface HandleClankerFarcasterArgs {
 export async function handleClankerFarcaster(
   tokenCreatedData: TokenCreatedOnChainParams,
   clankerFarcasterArgs: HandleClankerFarcasterArgs,
+  transactionArgs: DeployTokenArgs,
   { tracing: { parentSpan } = {} }: Context
 ) {
   const neynarClient = getSingletonNeynarClient({
@@ -107,7 +109,8 @@ export async function handleClankerFarcaster(
       castIsValid: isValidCast,
       neynarUserExists: !!neynarUser
     },
-    tokenScoreDetails
+    tokenScoreDetails,
+    transactionArgs
   });
 }
 

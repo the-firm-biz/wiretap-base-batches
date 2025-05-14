@@ -5,7 +5,7 @@ sendSlackSystemMessage({
   type: 'startup'
 });
 
-const unwatchEvents = startTokenCreatedWatcher();
+const unwatchEvents = await startTokenCreatedWatcher();
 
 const cleanup = async (signal: string): Promise<void> => {
   console.log('Shutting down event watcher...');

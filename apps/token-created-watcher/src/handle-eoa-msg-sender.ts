@@ -8,9 +8,11 @@ import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
 import { getTokenScore } from './token-score/get-token-score.js';
+import type { DeployTokenArgs } from './get-transaction-context.js';
 
 export async function handleEOAMsgSender(
-  tokenCreatedData: TokenCreatedOnChainParams
+  tokenCreatedData: TokenCreatedOnChainParams,
+  transactionArgs: DeployTokenArgs
 ) {
   // [1 concurrent]
   // TODO: find msgSender in wallets table
@@ -56,6 +58,7 @@ export async function handleEOAMsgSender(
         : undefined
     },
     source: 'handle-eoa-msg-sender',
-    tokenScoreDetails: null
+    tokenScoreDetails: null,
+    transactionArgs
   });
 }

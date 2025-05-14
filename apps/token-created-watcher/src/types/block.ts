@@ -1,4 +1,4 @@
-export type Block = {
+export type MinimalBlock = {
   number: number;
   timestamp?: Date;
 };

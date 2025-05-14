@@ -1,5 +1,5 @@
 {
-  "id": "bce9b644-6c04-4899-b95b-df45cb497f28",
+  "id": "7e74ba5f-21e3-4e21-a834-c61c0abc8c99",
   "prevId": "3bdb65f6-a163-4dd0-8293-ea12d78357cf",
   "version": "7",
   "dialect": "postgresql",
@@ -614,6 +614,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "total_supply": {
+          "name": "total_supply",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
         "block": {
           "name": "block",
           "type": "bigint",
@@ -629,11 +635,11 @@
         }
       },
       "indexes": {
-        "tokens_account_entity_id_idx": {
-          "name": "tokens_account_entity_id_idx",
+        "tokens_block_idx": {
+          "name": "tokens_block_idx",
           "columns": [
             {
-              "expression": "account_entity_id",
+              "expression": "name",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -841,6 +847,183 @@
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pools": {
+      "name": "pools",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "token_id": {
+          "name": "token_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency_id": {
+          "name": "currency_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pool_address": {
+          "name": "pool_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_primary": {
+          "name": "is_primary",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fee_bps": {
+          "name": "fee_bps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ath_mcap_usd": {
+          "name": "ath_mcap_usd",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "pools_address_lower_unique": {
+          "name": "pools_address_lower_unique",
+          "columns": [
+            {
+              "expression": "lower(\"pool_address\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "pools_token_id_tokens_id_fk": {
+          "name": "pools_token_id_tokens_id_fk",
+          "tableFrom": "pools",
+          "tableTo": "tokens",
+          "columnsFrom": [
+            "token_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "pools_currency_id_currencies_id_fk": {
+          "name": "pools_currency_id_currencies_id_fk",
+          "tableFrom": "pools",
+          "tableTo": "currencies",
+          "columnsFrom": [
+            "currency_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.currencies": {
+      "name": "currencies",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "symbol": {
+          "name": "symbol",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "decimals": {
+          "name": "decimals",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "currencies_address_lower_unique": {
+          "name": "currencies_address_lower_unique",
+          "columns": [
+            {
+              "expression": "lower(\"address\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
