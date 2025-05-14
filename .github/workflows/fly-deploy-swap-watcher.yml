@@ -1,0 +1,38 @@
+# See https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
+
+name: Fly - Deploy swap-watcher
+on:
+  push:
+    branches: ['main', 'develop']
+
+jobs:
+  deploy-swap-watcher:
+    environment: |-
+      ${{
+          github.ref_name == 'main'    && 'production'
+      ||  github.ref_name == 'develop' && 'staging'
+      }}
+    name: "Deploy ${{ github.ref_name == 'main' && 'production' || 'staging' }} swap-watcher app"
+    runs-on: ubuntu-latest
+    concurrency: deploy-group # optional: ensure only one action runs at a time
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy -a swap-watcher-${{ github.ref_name == 'main' && 'production' || 'staging' }} --remote-only --config apps/swap-watcher/fly-${{ github.ref_name == 'main' && 'production' || 'staging' }}.toml
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_TOKEN_CREATED_WATCHER_API_TOKEN }}
+
+  notify-slack:
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - deploy-swap-watcher
+    steps:
+      - uses: actions/checkout@v2
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_TITLE: Deploy ${{ github.ref_name == 'main' && 'production' || 'staging' }} swap-watcher app ${{ needs.deploy-swap-watcher.result }}
+          SLACK_COLOR: ${{ needs.deploy-swap-watcher.result }}
+          MSG_MINIMAL: commit,actions url
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}

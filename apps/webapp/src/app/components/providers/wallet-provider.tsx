@@ -1,11 +1,25 @@
 'use client';
 
 import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi';
-import { wagmiAdapter } from '@/app/utils/wagmi';
 import { clientEnv } from '@/clientEnv';
 import { createAppKit } from '@reown/appkit/react';
-import { base, baseSepolia } from '@reown/appkit/networks';
 import { siweConfig } from '@/app/utils/siwe/siwe-config';
+import { cookieStorage, createStorage } from '@wagmi/core';
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
+import { base, baseSepolia, mainnet } from '@reown/appkit/networks';
+// import { farcasterFrame as miniAppConnector } from '@farcaster/frame-wagmi-connector';
+
+export const wagmiAdapter = new WagmiAdapter({
+  storage: createStorage({
+    storage: cookieStorage
+  }),
+  ssr: true,
+  projectId: clientEnv.NEXT_PUBLIC_REOWN_PROJECT_ID,
+  networks: [base, baseSepolia, mainnet] // mainnet used for ENS resolution,
+  // connectors: [miniAppConnector()]
+});
+
+export const wagmiConfig = wagmiAdapter.wagmiConfig;
 
 const metadata = {
   name: 'WireTap',
@@ -23,7 +37,8 @@ createAppKit({
   metadata: metadata,
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration
-    socials: ['farcaster'] // @TODO - may need to remove this as it conflicts with Farcaster connector
+    socials: false,
+    email: false
   },
   // featuredWalletIds: [
   //   "1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369",
