@@ -1,14 +1,14 @@
 import { updateGladerPortfolio } from './update-glader-portfolio.js';
 import type { Address } from 'viem';
 import { triggerGliderPortfolioRebalance } from './trigger-glider-portfolio-rebalance.js';
-import type { BuyTrigger } from '@wiretap/db';
+import type { TokenBuyerPortfolio } from '@wiretap/db';
 import type { SuccessAware } from './types.js';
 import { env } from '../../env.js';
 
 export async function processBuyWithGlider(
   tokenPercentage: number,
   balance: bigint,
-  buyTrigger: BuyTrigger
+  buyTrigger: TokenBuyerPortfolio
 ) {
   if (env.IS_GLIDER_ENABLED) {
     console.log('Glider is disabled');

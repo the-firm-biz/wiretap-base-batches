@@ -1,4 +1,4 @@
-import type { BuyTrigger } from '@wiretap/db';
+import type { TokenBuyerPortfolio } from '@wiretap/db';
 import { callWithBackOff } from '@wiretap/utils/server';
 import { httpPublicClient } from '../rpc-clients.js';
 import { type Address, parseEther } from 'viem';
@@ -7,7 +7,7 @@ import { processBuyWithGlider } from './glider-api/process-buy-with-glider.js';
 const BALANCE_TRADE_THRESHOLD: bigint = parseEther('0.0001', 'wei');
 const TOKEN_PERCENTAGE_THRESHOLD: number = 0;
 
-export async function executeBuy(buyTrigger: BuyTrigger): Promise<void> {
+export async function executeBuy(buyTrigger: TokenBuyerPortfolio): Promise<void> {
   const { portfolio } = buyTrigger;
   if (!portfolio) {
     console.error(`No portfolio for ${JSON.stringify(buyTrigger)}`);

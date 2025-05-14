@@ -1,1 +1,1 @@
-export * from './buy-trigger.js';
+export * from './buy-token.js';

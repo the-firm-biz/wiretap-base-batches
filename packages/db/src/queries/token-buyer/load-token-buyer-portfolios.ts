@@ -13,7 +13,7 @@ import {
 } from '../../schema/index.js';
 import { lowerEq } from '../../utils/pg-helpers.js';
 
-export type BuyTrigger = {
+export type TokenBuyerPortfolio = {
   account: {
     wireTapId: number;
     accountEntityId: number;
@@ -31,11 +31,11 @@ export type BuyTrigger = {
   maxSpend: number;
 };
 
-export async function getTargetsByTokenAddress(
+export function loadTokenBuyerPortfolios(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   tokenAddress: string
-): Promise<BuyTrigger[]> {
-  const targets = await db
+): Promise<TokenBuyerPortfolio[]> {
+  return db
     .select({
       account: {
         wireTapId: wireTapAccounts.id,
@@ -71,5 +71,4 @@ export async function getTargetsByTokenAddress(
       eq(gliderPortfolios.wireTapAccountId, wireTapAccounts.id)
     )
     .where(lowerEq(tokens.address, tokenAddress));
-  return targets;
 }

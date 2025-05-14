@@ -1,1 +1,1 @@
-export * from './get-targets-by-token-address.js';
+export * from './load-token-buyer-portfolios.js';
