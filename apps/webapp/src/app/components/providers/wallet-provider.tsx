@@ -7,7 +7,7 @@ import { siweConfig } from '@/app/utils/siwe/siwe-config';
 import { cookieStorage, createStorage } from '@wagmi/core';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { base, baseSepolia, mainnet } from '@reown/appkit/networks';
-// import { farcasterFrame as miniAppConnector } from '@farcaster/frame-wagmi-connector';
+import { farcasterFrame as miniAppConnector } from '@farcaster/frame-wagmi-connector';
 
 export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
@@ -15,8 +15,8 @@ export const wagmiAdapter = new WagmiAdapter({
   }),
   ssr: true,
   projectId: clientEnv.NEXT_PUBLIC_REOWN_PROJECT_ID,
-  networks: [base, baseSepolia, mainnet] // mainnet used for ENS resolution,
-  // connectors: [miniAppConnector()]
+  networks: [base, baseSepolia, mainnet], // mainnet used for ENS resolution,
+  connectors: [miniAppConnector()]
 });
 
 export const wagmiConfig = wagmiAdapter.wagmiConfig;
@@ -40,6 +40,9 @@ createAppKit({
     socials: false,
     email: false
   },
+  featuredWalletIds: [
+    'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa' // Will Always suggest Coinbase Wallet
+  ],
   // featuredWalletIds: [
   //   "1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369",
   // ], @tod Find Farcaster wallet ID and add it here idk wtf it is and it isn't in the WalletConnect docs but it exists
