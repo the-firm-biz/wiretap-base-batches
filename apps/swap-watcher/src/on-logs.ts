@@ -37,12 +37,7 @@ export async function onLog(log: SwapLog) {
   const newToken = new Token(ChainId.BASE, pool.tokens.address, 18);
   const pairedToken = new Token(ChainId.BASE, pool.currencies.address, 18);
 
-  const token0IsNewToken = newToken.address < pairedToken.address;
-  const uniswapPrice = tickToPrice(
-    newToken,
-    pairedToken,
-    token0IsNewToken ? log.args.tick : -log.args.tick
-  );
+  const uniswapPrice = tickToPrice(newToken, pairedToken, log.args.tick);
 
   const tokenPriceEth = parseFloat(uniswapPrice.toSignificant(18));
   const ethUsdPrice = await fetchLatest('eth_usd');
