@@ -1,10 +1,14 @@
 'use client';
 
-import { useAccount } from 'wagmi';
+import { useAccount, useBalance } from 'wagmi';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { textStyles } from '@/app/styles/template-strings';
-import { trpcClientUtils, useTRPC } from '@/app/trpc-clients/trpc-react-client';
+import {
+  getTanstackQueryClient,
+  trpcClientUtils,
+  useTRPC
+} from '@/app/trpc-clients/trpc-react-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Button } from '../ui/button';
 import { DrawerDescription, DrawerTitle } from '../ui/drawer';
@@ -18,6 +22,8 @@ export const WithdrawDrawerContent = ({
   setDrawerIsOpen
 }: WithdrawDrawerProps) => {
   const { address } = useAccount();
+  const { queryKey: useBalanceQueryKey } = useBalance();
+  const tanstackQueryClient = getTanstackQueryClient();
   const trpc = useTRPC();
 
   const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery(
@@ -27,8 +33,6 @@ export const WithdrawDrawerContent = ({
   const { mutate: withdrawAllEth, isPending: isWithdrawing } = useMutation(
     trpc.glider.withdrawAllEthFromGliderPortfolio.mutationOptions({
       onSuccess: () => {
-        setDrawerIsOpen(false);
-        trpcClientUtils.glider.invalidate();
         toast(
           <div className="flex w-full justify-between items-center">
             <div className="flex flex-col gap-1">
@@ -41,6 +45,11 @@ export const WithdrawDrawerContent = ({
             </div>
           </div>
         );
+        tanstackQueryClient.invalidateQueries({
+          queryKey: useBalanceQueryKey
+        });
+        trpcClientUtils.glider.invalidate();
+        setDrawerIsOpen(false);
       },
       onError: () => {
         toast(
@@ -71,9 +80,9 @@ export const WithdrawDrawerContent = ({
       <div className="mt-4 w-full">
         <Button
           className="w-full"
-          disabled={isLoadingPortfolio || !portfolio?.id}
+          disabled={isLoadingPortfolio || !portfolio?.portfolioId}
           onClick={() => {
-            withdrawAllEth({ portfolioId: portfolio!.id });
+            withdrawAllEth({ portfolioId: portfolio!.portfolioId });
           }}
         >
           Yes Please

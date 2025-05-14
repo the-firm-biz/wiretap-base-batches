@@ -19,8 +19,14 @@ export default function WalletPage() {
   const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery(
     trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
+  const { data: portfolioBalance } = useBalance({
+    address: portfolio?.address,
+    query: {
+      enabled: !!portfolio?.address
+    }
+  });
   const portfolioHasZeroBalance =
-    !portfolio?.balanceWei || portfolio.balanceWei === BigInt(0);
+    !portfolioBalance?.value || portfolioBalance.value === BigInt(0);
 
   const { address } = useAccount();
   const { data: eoaBalance } = useBalance({

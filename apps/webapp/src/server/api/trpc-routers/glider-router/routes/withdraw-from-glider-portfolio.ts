@@ -1,64 +1,45 @@
 import { privateProcedure } from '@/server/api/trpc';
 import { serverEnv } from '@/serverEnv';
-import { base } from 'viem/chains';
-import { z, ZodError } from 'zod';
-import {
-  getGliderPortfolioForWireTapAccount,
-  createGliderPortfolio as createDbGliderPortfolio,
-  GliderPortfolio,
-  NewGliderPortfolio
-} from '@wiretap/db';
+import { z } from 'zod';
+import { getGliderPortfolioForWireTapAccount } from '@wiretap/db';
 import { TRPCError } from '@trpc/server';
-import { getBalance } from 'viem/actions';
-import { wagmiConfig } from '@/app/components/providers/wallet-provider';
 import { Address } from 'viem';
 
-interface GliderCreatePortfolioResponse {
-  data: GliderCreatePortfolioData;
-}
-
-interface GliderCreatePortfolioData {
-  portfolioId: string;
-  userAddress: string;
-  portfolio: {
-    strategyInstanceId: string;
-    strategyBlueprintId: string;
-    chainIds: number[];
-    sessionKeys: {
-      [chainId: string]: {
-        userAddress: string;
-        accountIndex: string;
-        portfolioAddress: string;
-        chainId: number;
-        agentAddress: string;
-        sessionKey: string;
-      };
-    };
-    vaults: {
-      [chainId: string]: string;
-    };
+interface SuccessWithdrawResponse {
+  success: true;
+  data: {
+    withdrawId: string;
+    workflowId: string;
+    runId: string;
+    message: string; // i.e. 'Withdraw request submitted successfully'
+    status: string; // i.e. 'submitted'
   };
 }
 
-interface ErrorResponse {
-  result: {
-    result: {
-      data: {
-        error: ZodError;
-        sucess: boolean;
-      };
-    };
+interface ErrorWithdrawResponse {
+  success: false;
+  error: {
+    message: string;
+    code: string;
+    correlationId: string;
+    requestId: string;
+    timestamp: string;
   };
 }
+
+type WithdrawResponse = SuccessWithdrawResponse | ErrorWithdrawResponse;
 
 export const withdrawAllEthFromGliderPortfolio = privateProcedure
   .input(
     z.object({
-      portfolioId: z.number()
+      portfolioId: z.string()
     })
   )
   .mutation(
-    async ({ ctx, input: { portfolioId } }): Promise<GliderPortfolio> => {
+    async ({
+      ctx,
+      input: { portfolioId }
+    }): Promise<SuccessWithdrawResponse> => {
       const { wireTapAccountId, db, viemClient } = ctx;
 
       if (!serverEnv.GLIDER_API_KEY) {
@@ -119,8 +100,14 @@ export const withdrawAllEthFromGliderPortfolio = privateProcedure
         }
       );
 
-      const withdrawResult = await withdrawResponse.json();
-      console.log(withdrawResult);
+      const withdrawResult: WithdrawResponse = await withdrawResponse.json();
+
+      if (!withdrawResult.success) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to withdraw ETH from Glider Portfolio: ${withdrawResult.error.message} | code: ${withdrawResult.error.code}`
+        });
+      }
 
       return withdrawResult;
     }
