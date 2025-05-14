@@ -14,6 +14,7 @@ import { handleEOAMsgSender } from './handle-eoa-msg-sender.js';
 import { deconstructLog, type TokenCreatedLog } from './types/token-created.js';
 import { resetReconnectReties } from './on-error.js';
 import { sendSlackIndexerError } from './notifications/send-slack-indexer-error.js';
+import { getTransactionContext } from './get-transaction-context.js';
 
 export function onLogs(
   logs: WatchContractEventOnLogsParameter<ClankerAbi, 'TokenCreated', true>
@@ -34,16 +35,23 @@ export function onLogs(
 
 export async function onLog(log: TokenCreatedLog, ctx: Context) {
   const { tracing: { parentSpan } = {} } = ctx;
-  const onChainToken = await trace(
+
+  const { block, args: transactionArgs } = await trace(
     (contextSpan) =>
-      deconstructLog(log, {
-        tracing: { parentSpan: contextSpan }
-      }),
+      getTransactionContext(
+        log.blockNumber,
+        log.transactionHash,
+        {
+          tracing: { parentSpan: contextSpan }
+        }
+      ),
     {
-      name: 'deconstructLog',
-      parentSpan: parentSpan
+      name: 'getTransactionContext',
+      parentSpan
     }
   );
+
+  const onChainToken = await deconstructLog(log, transactionArgs, block);
 
   if (!onChainToken) {
     return;
@@ -57,7 +65,7 @@ export async function onLog(log: TokenCreatedLog, ctx: Context) {
   if (isDelegatedDeployer) {
     await trace(
       (contextSpan) =>
-        handleDelegatedClankerDeployer(onChainToken, {
+        handleDelegatedClankerDeployer(onChainToken, transactionArgs, {
           tracing: { parentSpan: contextSpan }
         }),
       {
@@ -68,5 +76,5 @@ export async function onLog(log: TokenCreatedLog, ctx: Context) {
     return;
   }
 
-  await handleEOAMsgSender(onChainToken);
+  await handleEOAMsgSender(onChainToken, transactionArgs);
 }

@@ -5,3 +5,5 @@ export * from './glider-portfolio.js';
 export * from './tokens.js';
 export * from './verification-sources.js';
 export * from './wire-tap-session-keys.js';
+export * from './pools.js';
+export * from './currencies.js';

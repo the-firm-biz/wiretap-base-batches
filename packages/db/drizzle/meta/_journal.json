@@ -141,6 +141,20 @@
       "when": 1746793937201,
       "tag": "0019_exotic_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1747048910897,
+      "tag": "0020_fearless_black_bird",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1747048964787,
+      "tag": "0021_seed-currencies-1",
+      "breakpoints": true
     }
   ]
 }
