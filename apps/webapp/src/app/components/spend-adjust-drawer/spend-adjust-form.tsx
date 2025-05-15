@@ -66,7 +66,7 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
     })
   );
 
-  const { data: gliderPortfolio, isLoading: isLoadingPortfolio } = useQuery(
+  const { data: gliderPortfolio } = useQuery(
     trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
 
