@@ -34,8 +34,6 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
 }) => {
   const trpc = useTRPC();
 
-  console.log('FORM', trackingStatus);
-
   const { mutate: updateTargetMaxSpend } = useMutation(
     trpc.wireTapAccount.updateTargetMaxSpend.mutationOptions({
       onSuccess: (response) => {

@@ -45,7 +45,7 @@ export const setSiweSessionCookie = (authJwt: string): void => {
 
     Cookies.set(SIWE_SESSION_KEY, authJwt, {
       expires: expiresDate,
-      sameSite: 'strict',
+      sameSite: 'none',
       secure: true
     });
   } catch (error) {

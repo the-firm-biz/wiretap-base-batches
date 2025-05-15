@@ -14,6 +14,8 @@ import {
 import { Skeleton } from '@/app/components/ui/skeleton';
 import { textStyles } from '@/app/styles/template-strings';
 import { UITarget } from '@/app/utils/target/types';
+import useBannerStore from '@/app/zustand/banners';
+import { useShallow } from 'zustand/react/shallow';
 
 type TrackedTargetsListProps = {
   isPendingAuthedAccountTargets: boolean;
@@ -24,6 +26,10 @@ export const TrackedTargetsList = ({
   isPendingAuthedAccountTargets,
   trackedTargets
 }: TrackedTargetsListProps) => {
+  const lowBalanceBannerPresent = useBannerStore(
+    useShallow((state) => state.lowBalanceBannerPresent)
+  );
+
   if (isPendingAuthedAccountTargets) {
     return (
       <div>
@@ -31,7 +37,13 @@ export const TrackedTargetsList = ({
           <Skeleton className="h-4 w-12" />
           <Skeleton className="h-4 w-12 justify-self-end" />
         </div>
-        <div className="max-h-[calc(100dvh-375px)] overflow-y-auto pb-4">
+        <div
+          className={`overflow-y-auto pb-4 ${
+            lowBalanceBannerPresent
+              ? 'max-h-[calc(100dvh-431px)]'
+              : 'max-h-[calc(100dvh-391px)]'
+          }`}
+        >
           <TargetSearchRowSkeleton />
           <TargetSearchRowSkeleton />
           <TargetSearchRowSkeleton />
@@ -82,7 +94,13 @@ export const TrackedTargetsList = ({
           </Popover>
         </div>
       </div>
-      <div className="max-h-[calc(100dvh-391px)] overflow-y-auto pb-4">
+      <div
+        className={`overflow-y-auto pb-4 ${
+          lowBalanceBannerPresent
+            ? 'max-h-[calc(100dvh-431px)]'
+            : 'max-h-[calc(100dvh-391px)]'
+        }`}
+      >
         {trackedTargets.map((target) => (
           <TargetSearchRow
             key={`${target.fid}-${target.address}-${target.label}`}

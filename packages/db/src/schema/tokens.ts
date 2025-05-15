@@ -21,6 +21,7 @@ export const tokens = pgTable(
     name: text('name').notNull(),
     symbol: text('symbol').notNull(),
     address: text('address').notNull(),
+    imageUrl: text('image_url'),
     score: real('score'),
     deploymentTransactionHash: text('deployment_transaction_hash').notNull(),
     /** Which token contract was used to deploy */

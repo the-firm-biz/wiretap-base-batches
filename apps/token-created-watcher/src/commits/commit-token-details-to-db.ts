@@ -30,6 +30,7 @@ export type CommitTokenDetailsToDbParams = {
   tokenCreatorAddress: Address;
   tokenScore: number | null;
   neynarUser?: NeynarUser;
+  imageUrl?: string;
 };
 
 export type CommitTokenDetailsToDbResult = {
@@ -58,7 +59,8 @@ export const commitTokenDetailsToDb = async ({
   },
   tokenCreatorAddress,
   neynarUser,
-  tokenScore
+  tokenScore,
+  imageUrl
 }: CommitTokenDetailsToDbParams): Promise<CommitTokenDetailsToDbResult> => {
   const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
   const redis = getRedis({ redisUrl: env.REDIS_URL });
@@ -89,7 +91,8 @@ export const commitTokenDetailsToDb = async ({
         symbol,
         name: tokenName,
         block: block.number,
-        totalSupply: CLANKER_3_1_TOTAL_SUPPLY
+        totalSupply: CLANKER_3_1_TOTAL_SUPPLY,
+        imageUrl
       });
 
       const currency = await getCurrency(tx, poolContext.pairedAddress);
@@ -104,7 +107,8 @@ export const commitTokenDetailsToDb = async ({
         currencyId: currency.id,
         isPrimary: true,
         feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
-        athMcapUsd: poolContext.priceUsd * CLANKER_3_1_TOTAL_SUPPLY
+        athMcapUsd: poolContext.priceUsd * CLANKER_3_1_TOTAL_SUPPLY,
+        startingMcapUsd: poolContext.priceUsd * CLANKER_3_1_TOTAL_SUPPLY
       });
 
       await redis.publish(INDEXING_POOLS_PUBSUB_CHANNEL, poolContext.address);
