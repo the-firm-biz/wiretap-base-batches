@@ -12,10 +12,5 @@ const NON_BATCHABLE_PATHS: AllTrpcRouterKeys[] = [
  * as batched requests have unpredictable cache behavior.
  */
 export const isBatchablePath = (path: string) => {
-  console.log(
-    'isBatchable? ',
-    path.split('.')[1],
-    !NON_BATCHABLE_PATHS.includes(path.split('.')[1] as AllTrpcRouterKeys)
-  );
   return !NON_BATCHABLE_PATHS.includes(path.split('.')[1] as AllTrpcRouterKeys);
 };

@@ -42,7 +42,7 @@ export default function TargetsLayout({
       <div className="border-b-1 border-border p-4">
         <StatusBox />
       </div>
-      <PageContainer className="pb-0">{children}</PageContainer>
+      <PageContainer mainClassName="pb-0">{children}</PageContainer>
       <div className="flex justify-center py-2 border-t-1 border-border">
         <TargetSearchDrawer trigger={<Button>+ Add Targets</Button>} />
       </div>

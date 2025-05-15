@@ -13,12 +13,11 @@ import { getExistingAccountInfo } from '../helpers/getExistingAccountInfo';
 import { TRPCError } from '@trpc/server';
 
 const trackSchema = z.object({
-  targetEvmAddress: z.string(), // TODO: can this be optional?
-  targetNeynarUser: neynarUserSchema.optional()
+  targetEvmAddress: z.string().nullish(),
+  targetNeynarUser: neynarUserSchema.nullish()
 });
 
-// TODO: DO NOT USE NUMBER
-const DEFAULT_MAX_SPEND_WEI = 10000000000000000; // 0.01 ETH
+const DEFAULT_MAX_SPEND_WEI = BigInt('10000000000000000'); // 0.01 ETH
 
 /**
  * TODO: This file contains some copy-pasta from @wiretap/token-created-watcher's commit-account-info-to-db.ts
@@ -64,7 +63,7 @@ export const trackTargetForAuthedAccount = privateProcedure
           }
           return acc;
         },
-        [targetEvmAddress as Address]
+        targetEvmAddress ? [targetEvmAddress as Address] : []
       );
 
       const neynarXAccounts = targetNeynarUser

@@ -18,7 +18,7 @@ import { Address, isAddressEqual } from 'viem';
 export const getExistingAccountInfo = async (
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   evmAddress?: Address,
-  neynarUser?: z.infer<typeof neynarUserSchema>
+  neynarUser?: z.infer<typeof neynarUserSchema> | null
 ): Promise<{
   existingWallets: Wallet[];
   existingXAccounts: XAccount[];
@@ -35,6 +35,8 @@ export const getExistingAccountInfo = async (
     },
     evmAddress ? [evmAddress as Address] : []
   );
+
+  console.log('ALL WALLETS', allWallets);
   const existingWallets = await getWallets(db, allWallets);
 
   const existingFarcasterAccount = neynarUser

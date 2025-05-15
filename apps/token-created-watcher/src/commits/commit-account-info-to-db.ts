@@ -151,7 +151,10 @@ const updateExistingAccountInfo = async (
     const createdFarcasterAccount = await createFarcasterAccount(poolDb, {
       fid: neynarUser.fid,
       username: neynarUser.username,
-      accountEntityId
+      accountEntityId,
+      displayName: neynarUser.display_name,
+      pfpUrl: neynarUser.pfp_url,
+      followerCount: neynarUser.follower_count
     });
     result.farcasterAccounts.push(createdFarcasterAccount);
   }
@@ -234,7 +237,13 @@ export const commitAccountInfoToDb = async (
           username
         })),
         newFarcasterAccount: neynarUser
-          ? { fid: neynarUser.fid, username: neynarUser.username }
+          ? {
+              fid: neynarUser.fid,
+              username: neynarUser.username,
+              displayName: neynarUser.display_name,
+              pfpUrl: neynarUser.pfp_url,
+              followerCount: neynarUser.follower_count
+            }
           : undefined
       });
     return {

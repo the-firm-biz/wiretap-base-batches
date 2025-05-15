@@ -24,15 +24,3 @@ export default function PageContainer({
     </main>
   );
 }
-
-{
-  /*
-    <main className="p-4 relative flex-1 h-full flex flex-col">
-      <div
-        className={cn(
-          'max-w-screen-md w-full mx-auto flex-1 h-full flex flex-col',
-          className
-        )}
-      >
- */
-}
