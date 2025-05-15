@@ -101,32 +101,30 @@ export const SpendAdjustDrawer = ({
           for this target
         </DrawerDescription>
         {/* End visually hidden title & description */}
-        <div className="px-4">
-          <div className="grid grid-cols-[40px_1fr_40px] h-10 items-center gap-3 mb-10">
-            <div className="relative flex items-center justify-center">
-              <TargetCrosshair className="absolute w-10 h-10" />
-              <ExternalImage
-                src={target.image}
-                fallbackSrc={'/user.png'}
-                alt={`${target.label}'s profile picture`}
-                className="absolute w-6 h-6 rounded-full border-1 border-border select-none"
-              />
-            </div>
-            <div className={textStyles.title4}>{target.label}</div>
-            <div className="flex items-center justify-center">
-              <button
-                className="w-10 h-10 flex items-center justify-center cursor-pointer"
-                onClick={stopTrackingTarget}
-              >
-                <TrashIcon className="size-4" />
-              </button>
-            </div>
+        <div className="grid grid-cols-[40px_1fr_40px] h-10 items-center gap-3 mb-10">
+          <div className="relative flex items-center justify-center">
+            <TargetCrosshair className="absolute w-10 h-10" />
+            <ExternalImage
+              src={target.image}
+              fallbackSrc={'/user.png'}
+              alt={`${target.label}'s profile picture`}
+              className="absolute w-6 h-6 rounded-full border-1 border-border select-none"
+            />
           </div>
-          <SpendAdjustForm
-            isDisabledForm={isUntracking}
-            trackingStatus={trackingStatus}
-          />
+          <div className={textStyles.title4}>{target.label}</div>
+          <div className="flex items-center justify-center">
+            <button
+              className="w-10 h-10 flex items-center justify-center cursor-pointer"
+              onClick={stopTrackingTarget}
+            >
+              <TrashIcon className="size-4" />
+            </button>
+          </div>
         </div>
+        <SpendAdjustForm
+          isDisabledForm={isUntracking}
+          trackingStatus={trackingStatus}
+        />
       </DrawerContent>
     </Drawer>
   );

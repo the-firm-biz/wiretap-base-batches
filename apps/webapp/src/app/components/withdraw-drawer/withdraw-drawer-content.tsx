@@ -46,10 +46,14 @@ export const WithdrawDrawerContent = ({
             </div>
           </div>
         );
-        tanstackQueryClient.invalidateQueries({
-          queryKey: useBalanceQueryKey
-        });
-        trpcClientUtils.glider.invalidate();
+        // Withdraw success means Glider's API gave a success response,
+        // It hasn't actually updated on-chain, hence delaying query invalidation for 7s
+        setTimeout(() => {
+          tanstackQueryClient.invalidateQueries({
+            queryKey: useBalanceQueryKey
+          });
+          trpcClientUtils.wireTapAccount.invalidate();
+        }, 7000);
         setDrawerIsOpen(false);
       },
       onError: () => {

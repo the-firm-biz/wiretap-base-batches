@@ -22,7 +22,8 @@ export default function WalletPage() {
   const { data: portfolioBalance } = useBalance({
     address: portfolio?.address,
     query: {
-      enabled: !!portfolio?.address
+      enabled: !!portfolio?.address,
+      refetchInterval: 10000
     }
   });
   const portfolioHasZeroBalance =
@@ -32,7 +33,8 @@ export default function WalletPage() {
   const { data: eoaBalance } = useBalance({
     address: address,
     query: {
-      enabled: !!address
+      enabled: !!address,
+      refetchInterval: 10000
     }
   });
   const userHasZeroBalance =

@@ -11,6 +11,7 @@ import { Button } from '../ui/button';
 import { base, mainnet } from 'viem/chains';
 import { Skeleton } from '../ui/skeleton';
 import { useIsMounted } from '@/app/hooks/use-is-mounted';
+import { ExternalImage } from '../external-image';
 
 export function HeaderWalletButton() {
   const { open } = useAppKit();
@@ -86,12 +87,11 @@ export function HeaderWalletButton() {
 
     return (
       <div className="rounded-full bg-background border border-border overflow-hidden">
-        <Image
+        <ExternalImage
           src={avatarSrc}
           alt={baseName || ensName || address}
           width={32}
           height={32}
-          priority
         />
       </div>
     );
@@ -99,7 +99,7 @@ export function HeaderWalletButton() {
 
   return (
     <div className="flex items-center gap-2">
-      <Button size="icon" onClick={() => open()}>
+      <Button variant="link" size="icon" onClick={() => open()}>
         {avatarComponent}
       </Button>
     </div>

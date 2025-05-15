@@ -16,7 +16,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { formatUsd } from '../../utils/format/format-usd';
-import { useAccount, useBalance } from 'wagmi';
+import { useBalance } from 'wagmi';
 import { formatUnits } from '../../utils/format/format-units';
 
 const REQUIRED_FIELD_MESSAGE = 'Required';
@@ -66,16 +66,22 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
     })
   );
 
-  const { address } = useAccount();
+  const { data: gliderPortfolio } = useQuery(
+    trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
+  );
 
-  const { data: balance } = useBalance({
-    address: address,
+  const { data: portfolioBalance } = useBalance({
+    address: gliderPortfolio?.address,
     query: {
-      enabled: !!address
+      enabled: !!gliderPortfolio?.address
     }
   });
 
-  const userBalanceEth = formatUnits(balance?.value || BigInt(0), 18, 4);
+  const portfolioBalanceEth = formatUnits(
+    portfolioBalance?.value || BigInt(0),
+    18,
+    5
+  );
 
   const formSchema = z.object({
     newMaxSpendEth: z
@@ -84,7 +90,9 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
       .min(MAX_SPEND_LOW_LIMIT_ETH, {
         message: `Min deposit ${MAX_SPEND_LOW_LIMIT_ETH} ETH`
       })
-      .max(userBalanceEth, { message: 'Insufficient ETH in your wallet' })
+      .max(portfolioBalanceEth, {
+        message: 'Insufficient ETH in your WireTap Balance'
+      })
       .max(MAX_SPEND_HIGH_LIMIT_ETH, {
         message: `Max ${MAX_SPEND_HIGH_LIMIT_ETH} ETH: Alpha testing phase`
       })
@@ -140,7 +148,9 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
           <div className={textStyles['compact-mid']}>
             Spend how much per token buy?
           </div>
-          <div className={textStyles.compact}>Balance: {userBalanceEth}</div>
+          <div className={textStyles.compact}>
+            Balance: {portfolioBalanceEth}
+          </div>
         </div>
 
         <FormField
