@@ -83,6 +83,7 @@ export const commitTokenDetailsToDb = async ({
         timestamp: block.timestamp
       });
 
+      // @todo - handle potential race condition here
       const creatorTokenIndex = await countTokensByCreator(tx, accountEntityId);
 
       const createdToken = await getOrCreateToken(tx, {
