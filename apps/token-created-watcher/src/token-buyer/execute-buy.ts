@@ -6,6 +6,7 @@ import { bigIntReplacer } from '@wiretap/utils/shared';
 import { processBuyWithGlider } from './buy-flow/process-buy-with-glider.js';
 
 const BPS_MULTIPLIER: number = 10_000;
+const ROUNDING_DUST = parseEther('0.000001', 'wei');
 
 const BALANCE_TRADE_THRESHOLD: bigint = parseEther('0.0002', 'wei');
 const TOKEN_SWAP_ETH_AMOUNT_THRESHOLD: bigint = parseEther('0.0002', 'wei'); // TODO: make USD based
@@ -43,14 +44,14 @@ export async function executeBuy(
   const tradeAmountWei =
     (BigInt(tokenPercentageBps) * balance) / BigInt(BPS_MULTIPLIER);
   const isRebalanceReasonable =
-    tradeAmountWei > TOKEN_SWAP_ETH_AMOUNT_THRESHOLD;
+    (tradeAmountWei + ROUNDING_DUST) > TOKEN_SWAP_ETH_AMOUNT_THRESHOLD;
   if (!isRebalanceReasonable) {
     console.error(
       `Rebalance is not reasonable for ${formatEther(tradeAmountWei)} (${tokenPercentageBps}BPS of balance) trade; Threshold is ${formatEther(TOKEN_SWAP_ETH_AMOUNT_THRESHOLD)}; ${JSON.stringify(
         {
           portfolio: portfolio.address,
           balance: balance,
-          maxSpend: tokenBuyerPortfolio.maxSpend
+          maxSpend: formatEther(BigInt(tokenBuyerPortfolio.maxSpend))
         },
         bigIntReplacer
       )}`
