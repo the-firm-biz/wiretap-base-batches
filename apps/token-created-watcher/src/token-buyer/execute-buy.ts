@@ -62,7 +62,7 @@ export async function executeBuy(
   await processBuyWithGlider(tokenPercentageBps, balance, tokenBuyerPortfolio);
 }
 
-function computeTokenPercentageBps(maxSpend: number, balance: bigint): number {
-  const percentageBps = Number(BigInt(maxSpend * BPS_MULTIPLIER) / balance);
-  return Math.min(percentageBps, 100 * BPS_MULTIPLIER);
+function computeTokenPercentageBps(maxSpend: bigint, balance: bigint): number {
+  const percentageBps = maxSpend * BigInt(BPS_MULTIPLIER) / balance;
+  return Math.min(Number(percentageBps), 100 * BPS_MULTIPLIER);
 }

@@ -27,11 +27,11 @@ export const TrackedTargetsList = ({
   if (isPendingAuthedAccountTargets) {
     return (
       <div>
-        <div className="grid grid-cols-2 gap-2 mb-2">
-          <Skeleton className="h-3 w-12" />
-          <Skeleton className="h-3 w-12 justify-self-end" />
+        <div className="grid grid-cols-2 gap-2 mb-2 px-2">
+          <Skeleton className="h-4 w-12" />
+          <Skeleton className="h-4 w-12 justify-self-end" />
         </div>
-        <div className="max-h-[65dvh] overflow-y-auto py-2">
+        <div className="max-h-[calc(100dvh-375px)] overflow-y-auto pb-4">
           <TargetSearchRowSkeleton />
           <TargetSearchRowSkeleton />
           <TargetSearchRowSkeleton />
@@ -82,13 +82,12 @@ export const TrackedTargetsList = ({
           </Popover>
         </div>
       </div>
-      <div className="max-h-[calc(100dvh-375px)] overflow-y-auto pb-4">
+      <div className="max-h-[calc(100dvh-391px)] overflow-y-auto pb-4">
         {trackedTargets.map((target) => (
           <TargetSearchRow
-            key={target.address}
+            key={`${target.fid}-${target.address}-${target.label}`}
             target={target}
-            isLoadingTrackedStatus={false}
-            isTracked={true}
+            trackingStatus={target.trackingStatus}
           />
         ))}
       </div>

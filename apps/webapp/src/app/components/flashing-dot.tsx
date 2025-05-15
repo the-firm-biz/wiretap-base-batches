@@ -22,7 +22,6 @@ export const FlashingDot: React.FC<FlashingDotProps> = ({
         background: color,
         animation: `flash-dot ${duration}s infinite`,
         boxShadow: boxShadow ?? `0 0 4px 1px ${color}`,
-        position: 'absolute',
         ...style
       }}
     />
@@ -30,7 +29,7 @@ export const FlashingDot: React.FC<FlashingDotProps> = ({
       {`
         @keyframes flash-dot {
           0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
+          50% { opacity: 0.3; }
         }
       `}
     </style>

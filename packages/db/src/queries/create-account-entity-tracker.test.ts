@@ -41,14 +41,14 @@ describe('createAccountEntityTracker ', () => {
     differentAccountsAccountEntityTracker = {
       trackerWireTapAccountId: testWireTapAccountForEntity1!.id,
       trackedAccountEntityId: testAccountEntity2!.id,
-      maxSpend: 1000000000000000000,
+      maxSpend: BigInt('1000000000000000000'),
       updatedAt: null
     };
     // same tracker & tracked accounts
     sameAccountEntityTracker = {
       trackerWireTapAccountId: testWireTapAccountForEntity1!.id,
       trackedAccountEntityId: testAccountEntity1!.id,
-      maxSpend: 1000000000000000000,
+      maxSpend: BigInt('1000000000000000000'),
       updatedAt: null
     };
   });

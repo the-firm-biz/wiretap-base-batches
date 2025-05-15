@@ -16,7 +16,7 @@ import { Button } from '../ui/button';
 import { SearchInput } from '../ui/search-input';
 import { searchToUiTarget } from '@/app/utils/target/format-target';
 import { DrawerTitle } from '../ui/drawer';
-import { isAuthedAccountTrackingTarget } from '@/app/utils/target/is-authed-account-tracking-target';
+import { getAuthedAccountTrackingTarget } from '@/app/utils/target/get-authed-account-tracking-target';
 
 interface TargetSearchDrawerProps {
   trigger: ReactNode;
@@ -121,14 +121,26 @@ export default function TargetSearchDrawer({
               ? skeletonLoader
               : rowsToShow?.map((row) => (
                   <TargetSearchRow
-                    key={`${row.address}-${row.fid}`}
+                    key={`${row.fid}-${row.address}-${row.label}`}
                     target={row}
-                    isTracked={isAuthedAccountTrackingTarget({
-                      targetEvmAddress: row.searchTarget.evmAddress,
-                      targetNeynarUser: row.searchTarget.neynarUser,
-                      authedAccountTargets
-                    })}
-                    isLoadingTrackedStatus={isPendingAuthedAccountTargets}
+                    trackingStatus={{
+                      isTracking: getAuthedAccountTrackingTarget({
+                        targetEvmAddress: row.searchTarget.evmAddress,
+                        targetNeynarUser: row.searchTarget.neynarUser,
+                        authedAccountTargets
+                      }).isTracking,
+                      isLoading: isPendingAuthedAccountTargets,
+                      maxSpend: getAuthedAccountTrackingTarget({
+                        targetEvmAddress: row.searchTarget.evmAddress,
+                        targetNeynarUser: row.searchTarget.neynarUser,
+                        authedAccountTargets
+                      }).maxSpend,
+                      targetAccountEntityId: getAuthedAccountTrackingTarget({
+                        targetEvmAddress: row.searchTarget.evmAddress,
+                        targetNeynarUser: row.searchTarget.neynarUser,
+                        authedAccountTargets
+                      }).targetAccountEntityId
+                    }}
                   />
                 ))}
             {hasMorePages && (

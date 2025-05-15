@@ -28,7 +28,7 @@ export type TokenBuyerPortfolio = {
     id: number,
     address: string;
   },
-  maxSpend: number;
+  maxSpend: bigint;
 };
 
 export function loadTokenBuyerPortfolios(

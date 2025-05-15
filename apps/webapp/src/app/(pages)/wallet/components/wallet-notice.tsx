@@ -93,14 +93,14 @@ export function WalletNotice() {
     if (hasZeroPortfolioBalance || hasNoTargets) {
       return (
         <p className={`${textStyles['compact']} text-center`}>
-          Your WireTap Balance is used to autobuy tokens at launch
+          Your WireTap Balance is used to auto-buy tokens at launch
         </p>
       );
     }
 
     return (
       <p className={`${textStyles['compact']} text-center`}>
-        No auto-buys complete yet.
+        No auto-buys completed yet.
       </p>
     );
   };

@@ -41,13 +41,13 @@ describe('getAccountEntityTrackersForWireTapAccount', () => {
     accountEntityTracker1 = {
       trackerWireTapAccountId: testWireTapAccountForEntity1!.id,
       trackedAccountEntityId: testAccountEntity2!.id,
-      maxSpend: 1000000000000000000,
+      maxSpend: BigInt('1000000000000000000'),
       updatedAt: null
     };
     accountEntityTracker2 = {
       trackerWireTapAccountId: testWireTapAccountForEntity1!.id,
       trackedAccountEntityId: testAccountEntity1!.id,
-      maxSpend: 1000000000000000000,
+      maxSpend: BigInt('1000000000000000000'),
       updatedAt: null
     };
     await db.insert(accountEntityTrackers).values(accountEntityTracker1);

@@ -19,22 +19,33 @@ interface Args {
   authedAccountTargets?: AuthedAccountTarget[];
 }
 
-export const isAuthedAccountTrackingTarget = ({
+/** Using the search result target - gets the tracking status info from the
+ *  authed account tracking targets retrieved from the DB
+ */
+export const getAuthedAccountTrackingTarget = ({
   targetEvmAddress,
   targetNeynarUser,
   authedAccountTargets
-}: Args) => {
+}: Args): {
+  isTracking: boolean;
+  maxSpend: bigint;
+  targetAccountEntityId?: number;
+} => {
   if (!authedAccountTargets || authedAccountTargets.length === 0) {
-    return false;
+    return { isTracking: false, maxSpend: BigInt(0) };
   }
 
   const targetFid = targetNeynarUser?.fid;
   if (targetFid) {
-    const isTrackingFid = authedAccountTargets.some((target) =>
+    const trackedTargetByFid = authedAccountTargets.find((target) =>
       target.farcasterAccounts.find((f) => f.fid === targetFid)
     );
-    if (isTrackingFid) {
-      return true;
+    if (trackedTargetByFid) {
+      return {
+        isTracking: true,
+        maxSpend: trackedTargetByFid.tracker.maxSpend,
+        targetAccountEntityId: trackedTargetByFid.tracker.trackedAccountEntityId
+      };
     }
   }
 
@@ -50,10 +61,19 @@ export const isAuthedAccountTrackingTarget = ({
     targetEvmAddress ? [targetEvmAddress] : []
   );
 
-  const isTrackingAddress = authedAccountTargets.some((account) => {
+  const trackedTargetByAddress = authedAccountTargets.find((account) => {
     const accountWallets = account.wallets.map((w) => w.address) as Address[];
     return walletArraysIntersect(accountWallets, targetAddresses);
   });
 
-  return isTrackingAddress;
+  if (trackedTargetByAddress) {
+    return {
+      isTracking: true,
+      maxSpend: trackedTargetByAddress.tracker.maxSpend,
+      targetAccountEntityId:
+        trackedTargetByAddress.tracker.trackedAccountEntityId
+    };
+  }
+
+  return { isTracking: false, maxSpend: BigInt(0) };
 };
