@@ -43,10 +43,6 @@ const main = async () => {
       continue;
     }
 
-    console.log({ imageUrl });
-
-    process.exit(0);
-
     await db
       .update(tokens)
       .set({ imageUrl: imageUrl })
