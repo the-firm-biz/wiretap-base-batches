@@ -6,7 +6,7 @@ import {
 } from '@wiretap/db';
 import { updateGliderPortfolio } from '../glider-api/update-glider-portfolio.js';
 import type { Address } from 'viem';
-import { callWithBackOff } from '@wiretap/utils/server';
+import { callWithBackOff, RebalancesLogLabel } from '@wiretap/utils/server';
 
 type UpdatePortfolioAssetsRatioParams = {
   rebalanceId: number;
@@ -45,14 +45,14 @@ export async function updatePortfolioAssetsRatio(
   if (!success) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
-      label: 'UPDATE_FAILED',
+      label: RebalancesLogLabel.UPDATE_FAILED,
       response: updateRawResponse
     });
-    throw new Error('UPDATE_FAILED');
+    throw new Error(RebalancesLogLabel.UPDATE_FAILED.toString());
   }
   await insertGliderPortfolioRebalanceLog(db, {
     gliderPortfolioRebalancesId: rebalanceId,
-    label: 'UPDATED',
+    label: RebalancesLogLabel.UPDATED,
     response: updateRawResponse
   });
 }

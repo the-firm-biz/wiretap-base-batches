@@ -5,7 +5,7 @@ import {
   type ServerlessDb,
   type ServerlessDbTransaction
 } from '@wiretap/db';
-import { callWithBackOff } from '@wiretap/utils/server';
+import {callWithBackOff, RebalancesLogLabel} from '@wiretap/utils/server';
 
 export async function triggerPortfolioRebalance(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
@@ -24,15 +24,15 @@ export async function triggerPortfolioRebalance(
   if (!success) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
-      label: 'TRIGGER_FAILED',
+      label: RebalancesLogLabel.TRIGGER_FAILED,
       response: triggerRebalanceRawResponse
     });
-    throw new Error('TRIGGER_FAILED');
+    throw new Error(RebalancesLogLabel.TRIGGER_FAILED.toString());
   }
   const gliderRebalanceId = triggerRebalanceRawResponse.data.rebalanceId;
   await insertGliderPortfolioRebalanceLog(db, {
     gliderPortfolioRebalancesId: rebalanceId,
-    label: 'TRIGGERED',
+    label: RebalancesLogLabel.TRIGGERED,
     response: triggerRebalanceRawResponse,
     gliderRebalanceId
   });

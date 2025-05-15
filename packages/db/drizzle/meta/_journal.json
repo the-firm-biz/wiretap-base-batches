@@ -173,15 +173,15 @@
     {
       "idx": 24,
       "version": "7",
-      "when": 1747319542680,
-      "tag": "0024_lying_sasquatch",
+      "when": 1747328737690,
+      "tag": "0024_far_northstar",
       "breakpoints": true
     },
     {
       "idx": 25,
       "version": "7",
-      "when": 1747319557899,
-      "tag": "0025_eth-token-and-zero-account-entity",
+      "when": 1747328746167,
+      "tag": "0025_rebalances-log-label-seed",
       "breakpoints": true
     }
   ]

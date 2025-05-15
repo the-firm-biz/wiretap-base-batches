@@ -5,6 +5,7 @@ import {
   type ServerlessDb,
   type ServerlessDbTransaction
 } from '@wiretap/db';
+import { RebalancesLogLabel } from '@wiretap/utils/server';
 
 type CreatePortfolioRebalanceParams = {
   balance: bigint;
@@ -30,7 +31,7 @@ export async function createPortfolioRebalance(
   });
   await insertGliderPortfolioRebalanceLog(db, {
     gliderPortfolioRebalancesId: rebalanceId,
-    label: 'CREATED'
+    label: RebalancesLogLabel.CREATED
   });
   return rebalanceId;
 }

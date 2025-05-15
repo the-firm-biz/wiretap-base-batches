@@ -6,6 +6,7 @@ import {
 } from '@wiretap/db';
 import { triggerTokenWithdrawalFromGliderPortfolio } from '../glider-api/trigger-token-withdrawal-from-glider-portfolio.js';
 import type { Address } from 'viem';
+import { RebalancesLogLabel } from '@wiretap/utils/server';
 
 type WithdrawTokenFromPortfolio = {
   rebalanceId: number;
@@ -33,15 +34,15 @@ export async function withdrawTokenFromPortfolio(
   if (!withdrawRequestResponse.success) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
-      label: 'WITHDRAW_REQUEST_FAILED',
+      label: RebalancesLogLabel.WITHDRAW_REQUEST_FAILED,
       response: withdrawRequestResponse
     });
-    throw new Error('WITHDRAW_REQUEST_FAILED');
+    throw new Error(RebalancesLogLabel.WITHDRAW_REQUEST_FAILED.toString());
   }
 
   await insertGliderPortfolioRebalanceLog(db, {
     gliderPortfolioRebalancesId: rebalanceId,
-    label: 'WITHDRAW_REQUESTED',
+    label: RebalancesLogLabel.WITHDRAW_REQUESTED,
     response: withdrawRequestResponse
   });
   // TODO: is there a way to see get tx by workflowId from response

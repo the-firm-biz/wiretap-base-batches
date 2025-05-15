@@ -10,6 +10,7 @@ import { triggerPortfolioRebalance } from './trigger-portfolio-rebalance.js';
 import { monitorRebalance } from './monitor-rebalance.js';
 import { withdrawTokenFromPortfolio } from './withdraw-token-from-portfolio.js';
 import type { Address } from 'viem';
+import { RebalancesLogLabel } from '@wiretap/utils/server';
 
 export async function processBuyWithGlider(
   tokenPercentageBps: number,
@@ -65,7 +66,7 @@ export async function processBuyWithGlider(
     console.log(`Error during buy with glider flow ${JSON.stringify(error)}`);
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
-      label: 'ERROR'
+      label: RebalancesLogLabel.ERROR
     });
   } finally {
     try {
@@ -78,13 +79,13 @@ export async function processBuyWithGlider(
       });
       await insertGliderPortfolioRebalanceLog(db, {
         gliderPortfolioRebalancesId: rebalanceId,
-        label: 'SET_FULL_ETH'
+        label: RebalancesLogLabel.SET_FULL_ETH
       });
     } catch (error) {
       console.log(`ERROR_SET_FULL_ETH ${error}`);
       await insertGliderPortfolioRebalanceLog(db, {
         gliderPortfolioRebalancesId: rebalanceId,
-        label: 'ERROR_SET_FULL_ETH'
+        label: RebalancesLogLabel.ERROR_SET_FULL_ETH
       });
     }
   }

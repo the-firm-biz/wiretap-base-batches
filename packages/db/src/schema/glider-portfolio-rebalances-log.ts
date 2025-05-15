@@ -1,5 +1,6 @@
-import { integer, jsonb, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { integer, jsonb, pgTable, serial, smallint, text, timestamp } from 'drizzle-orm/pg-core';
 import { gliderPortfolioRebalances } from './glider-portfolio-rebalances.js';
+import { gliderPortfolioRebalancesLogLabels } from './glider-portfolio-rebalances-log-labels.js';
 
 export const gliderPortfolioRebalancesLog = pgTable(
   'glider_portfolio_rebalances_log',
@@ -8,7 +9,9 @@ export const gliderPortfolioRebalancesLog = pgTable(
     gliderPortfolioRebalancesId: integer('glider_portfolio_rebalances_id')
       .notNull()
       .references(() => gliderPortfolioRebalances.id),
-    label: text().notNull(),
+    label: smallint('log_label')
+      .references(() => gliderPortfolioRebalancesLogLabels.id)
+      .notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     gliderRebalanceId: text('glider_rebalance_id'),
     response: jsonb()

@@ -1,6 +1,6 @@
 {
-  "id": "1c7894c7-f2af-402e-bf6d-e3285c38d70e",
-  "prevId": "6e6d5d22-7cc9-4d01-9dea-dad549da306b",
+  "id": "07823082-fbec-42b7-8a2c-1711f7051ecc",
+  "prevId": "511b8c73-4250-4690-a4eb-f6dfefb73ab9",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1139,9 +1139,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "label": {
-          "name": "label",
-          "type": "text",
+        "log_label": {
+          "name": "log_label",
+          "type": "smallint",
           "primaryKey": false,
           "notNull": true
         },
@@ -1179,8 +1179,46 @@
           ],
           "onUpdate": "no action",
           "onDelete": "no action"
+        },
+        "glider_portfolio_rebalances_log_log_label_glider_portfolio_rebalances_log_labels_id_fk": {
+          "name": "glider_portfolio_rebalances_log_log_label_glider_portfolio_rebalances_log_labels_id_fk",
+          "tableFrom": "glider_portfolio_rebalances_log",
+          "columnsFrom": [
+            "log_label"
+          ],
+          "tableTo": "glider_portfolio_rebalances_log_labels",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.glider_portfolio_rebalances_log_labels": {
+      "name": "glider_portfolio_rebalances_log_labels",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "smallint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

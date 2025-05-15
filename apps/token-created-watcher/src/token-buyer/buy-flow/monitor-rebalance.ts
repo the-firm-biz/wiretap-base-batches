@@ -4,14 +4,15 @@ import {
   type ServerlessDb,
   type ServerlessDbTransaction
 } from '@wiretap/db';
-import { callWithBackOff } from '@wiretap/utils/server';
+import { callWithBackOff, RebalancesLogLabel } from '@wiretap/utils/server';
 import { fetchGliderPortfolioRebalanceStatus } from '../glider-api/fetch-glider-portfolio-rebalance-status.js';
 
 type BackoffRebalanceStatus =
-  | 'REBALANCE_FAILED'
-  | 'REBALANCE_EXECUTION_FAILURE'
-  | 'REBALANCE_COMPLETED'
-  | 'REBALANCE_NOT_COMPLETED';
+  | RebalancesLogLabel.REBALANCE_FAILED
+  | RebalancesLogLabel.REBALANCE_RUNNING
+  | RebalancesLogLabel.REBALANCE_NOT_COMPLETED
+  | RebalancesLogLabel.REBALANCE_EXECUTION_FAILURE
+  | RebalancesLogLabel.REBALANCE_COMPLETED;
 
 export interface BackoffRebalanceResult {
   status: BackoffRebalanceStatus;
@@ -37,32 +38,32 @@ export async function monitorRebalance(
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
-            label: 'REBALANCE_FAILED',
+            label: RebalancesLogLabel.REBALANCE_FAILED,
             response: rebalanceStatusResponse
           });
           return {
-            status: 'REBALANCE_FAILED'
+            status: RebalancesLogLabel.REBALANCE_FAILED
           };
         }
         if (rebalanceStatusResponse.data.status === 'running') {
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
-            label: 'REBALANCE_RUNNING',
+            label: RebalancesLogLabel.REBALANCE_RUNNING,
             response: rebalanceStatusResponse
           });
-          throw new Error('REBALANCE_RUNNING'); // to repeat backoff
+          throw new Error(RebalancesLogLabel.REBALANCE_RUNNING.toString()); // to repeat backoff
         }
 
         if (rebalanceStatusResponse.data.status !== 'completed') {
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
-            label: 'REBALANCE_NOT_COMPLETED',
+            label: RebalancesLogLabel.REBALANCE_NOT_COMPLETED,
             response: rebalanceStatusResponse
           });
           return {
-            status: 'REBALANCE_NOT_COMPLETED'
+            status: RebalancesLogLabel.REBALANCE_NOT_COMPLETED
           };
         }
 
@@ -72,11 +73,11 @@ export async function monitorRebalance(
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
-            label: 'REBALANCE_EXECUTION_FAILURE',
+            label: RebalancesLogLabel.REBALANCE_EXECUTION_FAILURE,
             response: rebalanceStatusResponse
           });
           return {
-            status: 'REBALANCE_EXECUTION_FAILURE'
+            status: RebalancesLogLabel.REBALANCE_EXECUTION_FAILURE
           };
         }
 
@@ -92,12 +93,12 @@ export async function monitorRebalance(
         await insertGliderPortfolioRebalanceLog(db, {
           gliderPortfolioRebalancesId: rebalanceId,
           gliderRebalanceId: gliderRebalanceId,
-          label: 'REBALANCE_COMPLETED',
+          label: RebalancesLogLabel.REBALANCE_COMPLETED,
           response: rebalanceStatusResponse
         });
 
         return {
-          status: 'REBALANCE_COMPLETED',
+          status: RebalancesLogLabel.REBALANCE_COMPLETED,
           txHash: transactionHash,
           blockNumber: Number(blockNumber)
         } as BackoffRebalanceResult;
@@ -117,13 +118,13 @@ export async function monitorRebalance(
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
       gliderRebalanceId: gliderRebalanceId,
-      label: 'REBALANCE_BACKOFF_EXHAUSTED'
+      label: RebalancesLogLabel.REBALANCE_BACKOFF_EXHAUSTED
     });
-    throw new Error('REBALANCE_BACKOFF_EXHAUSTED');
+    throw new Error(RebalancesLogLabel.REBALANCE_BACKOFF_EXHAUSTED.toString());
   }
 
-  if (gliderRebalanceResult.status !== 'REBALANCE_COMPLETED') {
-    throw new Error(gliderRebalanceResult.status);
+  if (gliderRebalanceResult.status !== RebalancesLogLabel.REBALANCE_COMPLETED) {
+    throw new Error(gliderRebalanceResult.status.toString());
   }
 
   return gliderRebalanceResult;
