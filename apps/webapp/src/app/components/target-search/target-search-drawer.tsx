@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useState, useRef, useEffect } from 'react';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
@@ -27,7 +27,19 @@ export default function TargetSearchDrawer({
 }: TargetSearchDrawerProps) {
   const trpc = useTRPC();
   const [searchString, setSearchString] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const showPopularTargets = searchString.length === 0;
+
+  useEffect(() => {
+    if (isOpen) {
+      // Focus the search input after the drawer opens
+      const timer = setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   const debouncedSearchString = useDebounce(searchString, 400);
 
@@ -81,13 +93,14 @@ export default function TargetSearchDrawer({
   })();
 
   return (
-    <Drawer>
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
         <div className="h-[85dvh]">
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <SearchInput
+                ref={searchInputRef}
                 value={searchString}
                 onChange={(e) => setSearchString(e.target.value)}
                 placeholder="Farcaster username, wallet address, or ENS name"
@@ -110,10 +123,11 @@ export default function TargetSearchDrawer({
                   <TargetSearchRow
                     key={`${row.address}-${row.fid}`}
                     target={row}
-                    isTracked={isAuthedAccountTrackingTarget(
-                      row.searchTarget,
+                    isTracked={isAuthedAccountTrackingTarget({
+                      targetEvmAddress: row.searchTarget.evmAddress,
+                      targetNeynarUser: row.searchTarget.neynarUser,
                       authedAccountTargets
-                    )}
+                    })}
                     isLoadingTrackedStatus={isPendingAuthedAccountTargets}
                   />
                 ))}

@@ -39,7 +39,7 @@ export default function TargetsLayout({
   return (
     <ConnectedWalletGate>
       <Header pageTitle="Targets" />
-      <div className="border-b-1 border-border pb-4">
+      <div className="border-b-1 border-border p-4">
         <StatusBox />
       </div>
       <PageContainer className="pb-0">{children}</PageContainer>
