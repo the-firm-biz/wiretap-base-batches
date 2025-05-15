@@ -5,14 +5,14 @@ export type UpdatePortfolioParams = {
   accountEntityAddress: string;
   portfolioId: string;
   tokenAddress?: Address;
-  tokenPercentage?: number;
+  tokenPercentageBps?: number;
 };
 
-export async function updateGladerPortfolio({
+export async function updateGliderPortfolio({
   accountEntityAddress,
   portfolioId,
   tokenAddress,
-  tokenPercentage
+  tokenPercentageBps
 }: UpdatePortfolioParams): Promise<string> {
   const assets = [
     {
@@ -22,7 +22,8 @@ export async function updateGladerPortfolio({
   ];
   const weightings = [100];
 
-  if (tokenPercentage && tokenPercentage > 0) {
+  if (tokenPercentageBps && tokenPercentageBps > 0) {
+    const tokenPercentage = tokenPercentageBps / 100
     assets.push({
       blockType: 'asset',
       assetId: tokenAddress!

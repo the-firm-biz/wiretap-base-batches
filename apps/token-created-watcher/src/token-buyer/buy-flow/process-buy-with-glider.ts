@@ -1,15 +1,15 @@
-import type { TokenBuyerPortfolio } from '@wiretap/db';
-import type { SuccessAware } from './types.js';
+import {
+  insertGliderPortfolioRebalanceLog,
+  singletonDb,
+  type TokenBuyerPortfolio
+} from '@wiretap/db';
 import { env } from '../../env.js';
-import {updateGladerPortfolio} from "./update-glader-portfolio.js";
-import type {Address} from "viem";
-import {triggerGliderPortfolioRebalance} from "./trigger-glider-portfolio-rebalance.js";
-import {triggerTokenWithdrawalFromGliderPortfolio} from "./trigger-token-withdrawal-from-glider-portfolio.js";
+import { initiatePortfolioRebalance } from './initiate-portfolio-rebalance.js';
 
 export async function processBuyWithGlider(
-  tokenPercentage: number,
+  tokenPercentageBps: number,
   balance: bigint,
-  tokenBuyerPortfolio: TokenBuyerPortfolio
+  tokenBuyerPortfolio: Required<TokenBuyerPortfolio>
 ) {
   if (!env.IS_GLIDER_ENABLED) {
     console.log('Glider is disabled');
@@ -20,19 +20,17 @@ export async function processBuyWithGlider(
   if (!portfolio) {
     return;
   }
-  // // 1. update portfolio
-  // todo: insert rebalance and set CREATED
-  // const updateRawResponse = await updateGladerPortfolio({
-  //   accountEntityAddress: account.accountEntityAddress,
-  //   portfolioId: portfolio!.portfolioId,
-  //   tokenAddress: token.address as Address,
-  //   tokenPercentage
-  // });
-  // if (!isSuccess(updateRawResponse)) {
-  //   // todo: FAILED with updateRawResponse
-  //   return;
-  // }
-  // todo: UPDATED
+
+  const db = singletonDb({
+    databaseUrl: env.DATABASE_URL
+  });
+
+  const rebalanceId = await initiatePortfolioRebalance(
+    db,
+    balance,
+    tokenPercentageBps,
+    tokenBuyerPortfolio
+  );
 
   try {
     // 2. trigger rebalance
@@ -82,6 +80,12 @@ export async function processBuyWithGlider(
     // todo: PENDING with rebalanceId
     //
     //   // TODO: is there a way to see workflowId status
+  } catch (error) {
+    console.log(`Error during buy with glider flow ${JSON.stringify(error)}`);
+    await insertGliderPortfolioRebalanceLog(db, {
+      gliderPortfolioRebalancesId: rebalanceId,
+      action: 'ERROR'
+    });
   } finally {
     // set portfolio back to 100% ETH
     // const resetFullEthPortfolio = await updateGladerPortfolio({
@@ -91,19 +95,5 @@ export async function processBuyWithGlider(
     // if (!isSuccess(resetFullEthPortfolio)) {
     //   // todo: FAILED_WITHDRAW_REQUEST with updateRawResponse
     // }
-  }
-}
-
-function isSuccess(rawResponse: string | undefined): boolean {
-  console.log(`>>> ${rawResponse}\n\n`);
-  if (!rawResponse) {
-    return false;
-  }
-  try {
-    const updatedPortfolioResponse = JSON.parse(rawResponse);
-    return (updatedPortfolioResponse as SuccessAware)?.success ?? false;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
-    return false;
   }
 }
