@@ -4,7 +4,7 @@ import {
   type TokenBuyerPortfolio
 } from '@wiretap/db';
 import { env } from '../../env.js';
-import { withdrawTokenFromPortfolio } from './withdraw-token-from-portfolio.js';
+import { updatePortfolio } from './update-portfolio.js';
 
 export async function processBuyWithGlider(
   tokenPercentageBps: number,
@@ -34,15 +34,13 @@ export async function processBuyWithGlider(
   // );
 
   try {
-    // await updatePortfolioInGlider(
+    // await updatePortfolio(
     //   db,
     //   rebalanceId,
     //   tokenPercentageBps,
     //   tokenBuyerPortfolio
     // );
-
     // const gliderRebalanceId = await triggerPortfolioRebalance(db, rebalanceId, tokenBuyerPortfolio)
-
     // const gliderRebalanceResult = await monitorRebalance(
     //   db,
     //   rebalanceId,
@@ -50,9 +48,7 @@ export async function processBuyWithGlider(
     //   tokenBuyerPortfolio
     // );
     // console.log(gliderRebalanceResult)
-
-    await withdrawTokenFromPortfolio(db, rebalanceId, tokenBuyerPortfolio);
-
+    // await withdrawTokenFromPortfolio(db, rebalanceId, tokenBuyerPortfolio);
   } catch (error) {
     console.log(`Error during buy with glider flow ${JSON.stringify(error)}`);
     await insertGliderPortfolioRebalanceLog(db, {
@@ -60,13 +56,19 @@ export async function processBuyWithGlider(
       action: 'ERROR'
     });
   } finally {
-    // set portfolio back to 100% ETH
-    // const resetFullEthPortfolio = await updateGladerPortfolio({
-    //   accountEntityAddress: account.accountEntityAddress,
-    //   portfolioId: portfolio.portfolioId
-    // });
-    // if (!isSuccess(resetFullEthPortfolio)) {
-    //   // todo: FAILED_WITHDRAW_REQUEST with updateRawResponse
-    // }
+    try {
+      // set portfolio back to 100% ETH
+      await updatePortfolio(db, rebalanceId, 0, tokenBuyerPortfolio);
+      await insertGliderPortfolioRebalanceLog(db, {
+        gliderPortfolioRebalancesId: rebalanceId,
+        action: 'SET_FULL_ETH',
+      })
+    } catch (error) {
+      console.log(`ERROR_SET_FULL_ETH ${error}`);
+      await insertGliderPortfolioRebalanceLog(db, {
+        gliderPortfolioRebalancesId: rebalanceId,
+        action: 'ERROR_SET_FULL_ETH'
+      });
+    }
   }
 }
