@@ -18,25 +18,25 @@ export default function Providers({
 }) {
   return (
     <ThemeProvider>
-      <WalletProvider cookies={cookies}>
-        <MiniKitProvider
-          apiKey={clientEnv.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-          chain={base}
-          config={{
-            appearance: {
-              mode: 'auto',
-              theme: 'snake',
-              name: 'WireTap',
-              logo: '/wiretap-social-pfp-1024.png'
-            }
-          }}
-        >
+      <MiniKitProvider
+        apiKey={clientEnv.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+        chain={base}
+        config={{
+          appearance: {
+            mode: 'auto',
+            theme: 'snake',
+            name: 'WireTap',
+            logo: '/wiretap-social-pfp-1024.png'
+          }
+        }}
+      >
+        <WalletProvider cookies={cookies}>
           <TRPCReactProvider>
             <ReactQueryDevtools initialIsOpen={false} />
             {children}
           </TRPCReactProvider>
-        </MiniKitProvider>
-      </WalletProvider>
+        </WalletProvider>
+      </MiniKitProvider>
     </ThemeProvider>
   );
 }

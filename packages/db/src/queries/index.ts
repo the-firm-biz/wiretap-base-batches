@@ -27,3 +27,5 @@ export * from './get-all-pool-addresses.js';
 export * from './get-or-create-pool.js';
 export * from './get-currency.js';
 export * from './update-pool-ath-mcap.js';
+export * from './get-pool.js';
+export * from './delete-account-entity-trackers.js';

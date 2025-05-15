@@ -1,6 +1,6 @@
 {
-  "id": "4cd5ab2e-720d-40f5-bd33-33202d7df000",
-  "prevId": "daa50869-65ae-4cf3-bec9-922831f6ec6a",
+  "id": "4db33d3a-0300-4176-a3c6-1b75fdd88918",
+  "prevId": "cfd121a7-baed-40a4-96ac-f73ecaa1fa8e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -52,6 +52,24 @@
           "primaryKey": false,
           "notNull": true
         },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pfp_url": {
+          "name": "pfp_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "follower_count": {
+          "name": "follower_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "fid": {
           "name": "fid",
           "type": "integer",
@@ -77,25 +95,25 @@
         "farcaster_accounts_account_entity_id_account_entities_id_fk": {
           "name": "farcaster_accounts_account_entity_id_account_entities_id_fk",
           "tableFrom": "farcaster_accounts",
+          "tableTo": "account_entities",
           "columnsFrom": [
             "account_entity_id"
           ],
-          "tableTo": "account_entities",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "farcaster_accounts_fid_unique": {
           "name": "farcaster_accounts_fid_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "fid"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -144,43 +162,43 @@
           "columns": [
             {
               "expression": "lower(\"address\")",
-              "isExpression": true,
               "asc": true,
+              "isExpression": true,
               "nulls": "last"
             }
           ],
           "isUnique": true,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "wallets_account_entity_id_account_entities_id_fk": {
           "name": "wallets_account_entity_id_account_entities_id_fk",
           "tableFrom": "wallets",
+          "tableTo": "account_entities",
           "columnsFrom": [
             "account_entity_id"
           ],
-          "tableTo": "account_entities",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "wallets_verification_source_id_verification_sources_id_fk": {
           "name": "wallets_verification_source_id_verification_sources_id_fk",
           "tableFrom": "wallets",
+          "tableTo": "verification_sources",
           "columnsFrom": [
             "verification_source_id"
           ],
-          "tableTo": "verification_sources",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -230,25 +248,25 @@
         "x_accounts_account_entity_id_account_entities_id_fk": {
           "name": "x_accounts_account_entity_id_account_entities_id_fk",
           "tableFrom": "x_accounts",
+          "tableTo": "account_entities",
           "columnsFrom": [
             "account_entity_id"
           ],
-          "tableTo": "account_entities",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "x_accounts_xid_unique": {
           "name": "x_accounts_xid_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "xid"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -290,25 +308,25 @@
         "wire_tap_accounts_account_entity_id_account_entities_id_fk": {
           "name": "wire_tap_accounts_account_entity_id_account_entities_id_fk",
           "tableFrom": "wire_tap_accounts",
+          "tableTo": "account_entities",
           "columnsFrom": [
             "account_entity_id"
           ],
-          "tableTo": "account_entities",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "wire_tap_accounts_account_entity_id_unique": {
           "name": "wire_tap_accounts_account_entity_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "account_entity_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -356,28 +374,28 @@
         "account_entity_trackers_tracker_wire_tap_account_id_wire_tap_accounts_id_fk": {
           "name": "account_entity_trackers_tracker_wire_tap_account_id_wire_tap_accounts_id_fk",
           "tableFrom": "account_entity_trackers",
+          "tableTo": "wire_tap_accounts",
           "columnsFrom": [
             "tracker_wire_tap_account_id"
           ],
-          "tableTo": "wire_tap_accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "account_entity_trackers_tracked_account_entity_id_account_entities_id_fk": {
           "name": "account_entity_trackers_tracked_account_entity_id_account_entities_id_fk",
           "tableFrom": "account_entity_trackers",
+          "tableTo": "account_entities",
           "columnsFrom": [
             "tracked_account_entity_id"
           ],
-          "tableTo": "account_entities",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -456,15 +474,15 @@
           "columns": [
             {
               "expression": "lower(\"address\")",
-              "isExpression": true,
               "asc": true,
+              "isExpression": true,
               "nulls": "last"
             }
           ],
           "isUnique": true,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {},
@@ -528,34 +546,34 @@
             }
           ],
           "isUnique": true,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "glider_portfolios_wire_tap_account_id_wire_tap_accounts_id_fk": {
           "name": "glider_portfolios_wire_tap_account_id_wire_tap_accounts_id_fk",
           "tableFrom": "glider_portfolios",
+          "tableTo": "wire_tap_accounts",
           "columnsFrom": [
             "wire_tap_account_id"
           ],
-          "tableTo": "wire_tap_accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "glider_portfolios_portfolio_id_unique": {
           "name": "glider_portfolios_portfolio_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "portfolio_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -635,76 +653,76 @@
         }
       },
       "indexes": {
-        "tokens_account_entity_id_idx": {
-          "name": "tokens_account_entity_id_idx",
+        "tokens_block_idx": {
+          "name": "tokens_block_idx",
           "columns": [
             {
-              "expression": "account_entity_id",
+              "expression": "name",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "tokens_address_lower_unique": {
           "name": "tokens_address_lower_unique",
           "columns": [
             {
               "expression": "lower(\"address\")",
-              "isExpression": true,
               "asc": true,
+              "isExpression": true,
               "nulls": "last"
             }
           ],
           "isUnique": true,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "tokens_deployment_contract_id_contracts_id_fk": {
           "name": "tokens_deployment_contract_id_contracts_id_fk",
           "tableFrom": "tokens",
+          "tableTo": "contracts",
           "columnsFrom": [
             "deployment_contract_id"
           ],
-          "tableTo": "contracts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "tokens_account_entity_id_account_entities_id_fk": {
           "name": "tokens_account_entity_id_account_entities_id_fk",
           "tableFrom": "tokens",
+          "tableTo": "account_entities",
           "columnsFrom": [
             "account_entity_id"
           ],
-          "tableTo": "account_entities",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "tokens_block_blocks_number_fk": {
           "name": "tokens_block_blocks_number_fk",
           "tableFrom": "tokens",
+          "tableTo": "blocks",
           "columnsFrom": [
             "block"
           ],
-          "tableTo": "blocks",
           "columnsTo": [
             "number"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -743,15 +761,15 @@
           "columns": [
             {
               "expression": "LOWER(\"name\")",
-              "isExpression": true,
               "asc": true,
+              "isExpression": true,
               "nulls": "last"
             }
           ],
           "isUnique": true,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {},
@@ -816,35 +834,35 @@
             }
           ],
           "isUnique": true,
-          "with": {},
-          "method": "btree",
           "where": "\"wire_tap_session_keys\".\"is_active\" IS TRUE",
-          "concurrently": false
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
         "wire_tap_session_keys_wire_tap_account_id_wire_tap_accounts_id_fk": {
           "name": "wire_tap_session_keys_wire_tap_account_id_wire_tap_accounts_id_fk",
           "tableFrom": "wire_tap_session_keys",
+          "tableTo": "wire_tap_accounts",
           "columnsFrom": [
             "wire_tap_account_id"
           ],
-          "tableTo": "wire_tap_accounts",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "wire_tap_session_keys_encrypted_session_key_unique": {
           "name": "wire_tap_session_keys_encrypted_session_key_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "encrypted_session_key"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -893,7 +911,7 @@
         },
         "ath_mcap_usd": {
           "name": "ath_mcap_usd",
-          "type": "real",
+          "type": "double precision",
           "primaryKey": false,
           "notNull": true
         },
@@ -917,43 +935,43 @@
           "columns": [
             {
               "expression": "lower(\"pool_address\")",
-              "isExpression": true,
               "asc": true,
+              "isExpression": true,
               "nulls": "last"
             }
           ],
           "isUnique": true,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "pools_token_id_tokens_id_fk": {
           "name": "pools_token_id_tokens_id_fk",
           "tableFrom": "pools",
+          "tableTo": "tokens",
           "columnsFrom": [
             "token_id"
           ],
-          "tableTo": "tokens",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "pools_currency_id_currencies_id_fk": {
           "name": "pools_currency_id_currencies_id_fk",
           "tableFrom": "pools",
+          "tableTo": "currencies",
           "columnsFrom": [
             "currency_id"
           ],
-          "tableTo": "currencies",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1010,15 +1028,15 @@
           "columns": [
             {
               "expression": "lower(\"address\")",
-              "isExpression": true,
               "asc": true,
+              "isExpression": true,
               "nulls": "last"
             }
           ],
           "isUnique": true,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {},
@@ -1031,10 +1049,10 @@
   },
   "enums": {},
   "schemas": {},
-  "views": {},
   "sequences": {},
   "roles": {},
   "policies": {},
+  "views": {},
   "_meta": {
     "columns": {},
     "schemas": {},

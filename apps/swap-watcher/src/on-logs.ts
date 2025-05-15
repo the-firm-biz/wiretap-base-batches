@@ -5,8 +5,9 @@ import type { SwapLog } from './types.js';
 import { pools } from './pools.js';
 import { ChainId, Token } from '@uniswap/sdk-core';
 import { fetchLatest } from '@wiretap/utils/server';
+import { lowercaseAddress } from '@wiretap/utils/shared';
 import { tickToPrice } from '@uniswap/v3-sdk';
-import { getDb, updatePoolAthMcap } from '@wiretap/db';
+import { getDb, getPool, updatePoolAthMcap } from '@wiretap/db';
 import { env } from './env.js';
 
 export function onLogs(
@@ -20,26 +21,34 @@ export function onLogs(
 }
 
 export async function onLog(log: SwapLog) {
-  if (!pools.has(log.address)) {
+  if (!pools.has(lowercaseAddress(log.address))) {
     return;
   }
 
   const db = getDb({ databaseUrl: env.DATABASE_URL });
 
-  const newToken = new Token(ChainId.BASE, log.args.recipient, 18);
-  const pairedToken = new Token(ChainId.BASE, log.args.sender, 18);
+  const pool = await getPool(db, log.address);
+
+  if (!pool) {
+    console.error('Pool not found', log.address);
+    return;
+  }
+
+  const newToken = new Token(ChainId.BASE, pool.tokens.address, 18);
+  const pairedToken = new Token(ChainId.BASE, pool.currencies.address, 18);
 
   const uniswapPrice = tickToPrice(newToken, pairedToken, log.args.tick);
 
   const tokenPriceEth = parseFloat(uniswapPrice.toSignificant(18));
   const ethUsdPrice = await fetchLatest('eth_usd');
   const tokenPriceUsd = tokenPriceEth * ethUsdPrice.formatted;
+  const tokenMcapUsd = tokenPriceUsd * pool.tokens.totalSupply;
 
-  const tokenPool = await updatePoolAthMcap(db, log.address, tokenPriceUsd);
+  const tokenPool = await updatePoolAthMcap(db, log.address, tokenMcapUsd);
 
   if (tokenPool) {
-    console.log('New token pool ATH MCAP set', tokenPool.athMcapUsd);
+    console.log(`ATH MCAP set to ${tokenPool.athMcapUsd} for ${log.address}`);
   } else {
-    console.debug('ATH mcap not updated for pool', log.address);
+    console.log(`ATH mcap not updated for pool ${log.address}`);
   }
 }

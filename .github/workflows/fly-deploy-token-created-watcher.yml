@@ -20,7 +20,7 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy -a token-created-watcher-${{ github.ref_name == 'main' && 'production' || 'staging' }} --remote-only --config apps/token-created-watcher/fly-${{ github.ref_name == 'main' && 'production' || 'staging' }}.toml
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_TOKEN_CREATED_WATCHER_API_TOKEN }}
+          FLY_API_TOKEN: ${{ secrets.FLY_ORG_TOKEN }}
 
   notify-slack:
     runs-on: ubuntu-latest

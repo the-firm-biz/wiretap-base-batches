@@ -16,7 +16,7 @@ import {
   isAddressEqual,
   type ViemClient
 } from '@wiretap/utils/shared';
-import { UnformattedTarget } from '@/app/utils/target/types';
+import { SearchTarget } from '@/app/utils/target/types';
 
 const getAccountImage = async (
   viemClient: ViemClient,
@@ -40,7 +40,7 @@ const getTargetByAddress = async (
   neynarClient: NeynarAPIClient,
   evmAddress: Address,
   knownBasename?: Basename
-): Promise<UnformattedTarget> => {
+): Promise<SearchTarget> => {
   const basename = knownBasename
     ? knownBasename
     : await getBasename(viemClient, evmAddress);
@@ -73,7 +73,7 @@ export const targetSearch = publicProcedure
       input,
       ctx
     }): Promise<{
-      results: UnformattedTarget[];
+      results: SearchTarget[];
       nextCursor?: string;
     }> => {
       const { searchString, cursor } = input;
@@ -86,8 +86,16 @@ export const targetSearch = publicProcedure
         const { users: neynarSearchedUsers, nextCursor } =
           await searchByUsername(neynarClient, searchString, cursor);
 
-        const searchResults: UnformattedTarget[] = neynarSearchedUsers.map(
-          (user) => ({ neynarUser: user })
+        console.log('> > > >', {
+          searchString,
+          cursor,
+          nextCursor
+        });
+
+        const searchResults: SearchTarget[] = neynarSearchedUsers.map(
+          (user) => ({
+            neynarUser: user
+          })
         );
 
         // If cursor is provided we already checked for exact matches - early return
@@ -108,13 +116,13 @@ export const targetSearch = publicProcedure
               )
             );
             if (!isAlreadyInResults) {
-              const account = await getTargetByAddress(
+              const targetViaAddress = await getTargetByAddress(
                 viemClient,
                 neynarClient,
                 evmAddress,
                 searchString as Basename
               );
-              searchResults.unshift(account);
+              searchResults.unshift(targetViaAddress);
             }
           }
         }
@@ -127,12 +135,12 @@ export const targetSearch = publicProcedure
             )
           );
           if (!isAlreadyInResults) {
-            const account = await getTargetByAddress(
+            const targetViaAddress = await getTargetByAddress(
               viemClient,
               neynarClient,
               searchString
             );
-            searchResults.unshift(account);
+            searchResults.unshift(targetViaAddress);
           }
         }
 

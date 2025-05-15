@@ -14,6 +14,7 @@ import { TypewriterText } from './animated-typewriter-text';
 import React, { useState, useEffect } from 'react';
 import { FlashingDot } from '../flashing-dot';
 import { useAddFrame, useMiniKit } from '@coinbase/onchainkit/minikit';
+
 import { FarcasterIcon } from '../icons/FarcasterIcon';
 
 export function ConnectedWalletGate({
@@ -22,6 +23,7 @@ export function ConnectedWalletGate({
   children: React.ReactNode;
 }) {
   const { address } = useAccount();
+
   const { open } = useAppKit();
   const { open: isOpen } = useAppKitState();
   const addFrame = useAddFrame();

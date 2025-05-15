@@ -1,9 +1,10 @@
 import { getAllPoolAddresses } from '@wiretap/db';
 import { getDb } from '@wiretap/db';
-import { getAddress, isAddress, type Address } from 'viem';
+import { isAddress, type Address } from 'viem';
 import { env } from './env.js';
 import { getRedis } from '@wiretap/redis';
 import { INDEXING_POOLS_PUBSUB_CHANNEL } from '@wiretap/config';
+import { lowercaseAddress } from '@wiretap/utils/shared';
 
 export const pools = new Set<Address>([]);
 
@@ -18,7 +19,7 @@ async function persistPools(): Promise<void> {
     const poolAddresses = await getAllPoolAddresses(db);
 
     poolAddresses.forEach((address) => {
-      pools.add(address);
+      pools.add(lowercaseAddress(address));
     });
     console.log(`Pools persisted with ${poolAddresses.length} addresses`);
   } catch (error) {
@@ -84,10 +85,9 @@ export const startPoolsWatcher = async (): Promise<() => Promise<void>> => {
         return;
       }
 
-      const address = getAddress(message);
-      pools.add(address);
+      pools.add(lowercaseAddress(message));
 
-      console.debug(`Added pool ${address} successfully`);
+      console.debug(`Added pool ${message} successfully`);
     } catch (error) {
       console.error('Error processing pool address', error, message);
     }

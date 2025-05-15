@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { env } from 'process';
+import superjson from 'superjson';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   createTRPCClient,
@@ -50,14 +51,12 @@ const trpcClient = createTRPCClient<TrpcRouter>({
     splitLink({
       condition: (op) => isBatchablePath(op.path),
       true: httpBatchLink({
-        // @todo trpc - superjson?
-        // transformer: superjson,
+        transformer: superjson,
         url: getBaseUrl() + '/api/trpc',
         headers: getRequestHeaders
       }),
       false: httpLink({
-        // @todo trpc - superjson?
-        // transformer: superjson,
+        transformer: superjson,
         url: getBaseUrl() + '/api/trpc',
         headers: getRequestHeaders
       })
@@ -66,7 +65,10 @@ const trpcClient = createTRPCClient<TrpcRouter>({
 });
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
-const getQueryClient = () => {
+/**
+ * @returns Tanstack Query client
+ */
+export const getTanstackQueryClient = () => {
   if (typeof window === 'undefined') {
     // Server: always make a new query client
     return createQueryClient();
@@ -84,12 +86,12 @@ const getQueryClient = () => {
  * React query utils to make imperitive query calls, invalidate queries etc.
  */
 export const trpcClientUtils = createTRPCQueryUtils({
-  queryClient: getQueryClient(),
+  queryClient: getTanstackQueryClient(),
   client: trpcClient
 });
 
 export function TRPCReactProvider(props: { children: React.ReactNode }) {
-  const queryClient = getQueryClient();
+  const queryClient = getTanstackQueryClient();
   const [memoisedClient] = useState(() => trpcClient);
 
   return (

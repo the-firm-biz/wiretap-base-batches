@@ -1,5 +1,5 @@
 {
-  "id": "daa50869-65ae-4cf3-bec9-922831f6ec6a",
+  "id": "cfd121a7-baed-40a4-96ac-f73ecaa1fa8e",
   "prevId": "cf402d8b-a459-47ba-83eb-ddccf03f73f8",
   "version": "7",
   "dialect": "postgresql",
@@ -635,11 +635,11 @@
         }
       },
       "indexes": {
-        "tokens_account_entity_id_idx": {
-          "name": "tokens_account_entity_id_idx",
+        "tokens_block_idx": {
+          "name": "tokens_block_idx",
           "columns": [
             {
-              "expression": "account_entity_id",
+              "expression": "name",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -893,7 +893,7 @@
         },
         "ath_mcap_usd": {
           "name": "ath_mcap_usd",
-          "type": "real",
+          "type": "double precision",
           "primaryKey": false,
           "notNull": true
         },

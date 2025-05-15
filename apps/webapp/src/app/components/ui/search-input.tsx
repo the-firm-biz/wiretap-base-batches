@@ -1,3 +1,4 @@
+import { textStyles } from '@/app/styles/template-strings';
 import { CloseIcon } from '../icons/CloseIcon';
 import { SearchIcon } from '../icons/SearchIcon';
 import { Input } from './input';
@@ -14,7 +15,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   return (
     <div className="relative">
       <SearchIcon className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2" />
-      <Input className="pl-7" {...props} />
+      <Input className={`${textStyles.compact} pl-7`} {...props} />
       {onClear && !isEmpty && (
         <button
           className="absolute cursor-pointer right-2 top-1/2 h-4 w-4 -translate-y-1/2"

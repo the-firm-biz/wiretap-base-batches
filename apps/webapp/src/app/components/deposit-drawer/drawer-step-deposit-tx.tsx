@@ -1,13 +1,21 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
+import { useEffect, useState, useRef, useMemo } from 'react';
+import {
+  useBalance,
+  useSendTransaction,
+  useWaitForTransactionReceipt
+} from 'wagmi';
 import { toast } from 'sonner';
 import { DepositState } from './deposit-drawer';
 import Image from 'next/image';
 import { textStyles } from '@/app/styles/template-strings';
 import AnimatedEllipsisText from '../animated-ellipsis-text';
-import { trpcClientUtils, useTRPC } from '@/app/trpc-clients/trpc-react-client';
+import {
+  getTanstackQueryClient,
+  trpcClientUtils,
+  useTRPC
+} from '@/app/trpc-clients/trpc-react-client';
 import { Address, parseEther } from 'viem';
 import { formatUsd } from '@/app/utils/format/format-usd';
 import { useQuery } from '@tanstack/react-query';
@@ -27,6 +35,14 @@ export const DrawerStepDepositTransaction = ({
   depositState
 }: DepositDrawerProps) => {
   const trpc = useTRPC();
+  const queryClient = getTanstackQueryClient();
+  const { queryKey: useBalanceQueryKey } = useBalance();
+  const balanceQueryKeyAsString = useBalanceQueryKey.join('/');
+
+  const memoisedBalanceQueryKey = useMemo(() => {
+    return balanceQueryKeyAsString.split('/');
+  }, [balanceQueryKeyAsString]);
+
   // A hack to prevent calling sendTransaction twice
   const hasDeclaritivelyCalledSendTransaction = useRef(false);
 
@@ -42,8 +58,14 @@ export const DrawerStepDepositTransaction = ({
     mutation: {
       onError: (error: unknown) => {
         const baseError = error as BaseError;
-        // @todo sonner - style and add button
-        toast.error(`Error. ${baseError.shortMessage}`);
+        toast(
+          <div className="flex w-full justify-between items-center">
+            <div className="flex flex-col gap-1">
+              <div className={textStyles['compact-emphasis']}>Error</div>
+              <div className={textStyles.label}>{baseError.shortMessage}</div>
+            </div>
+          </div>
+        );
         setTxError(baseError);
       },
       onSuccess: (hash: Address) => {
@@ -86,14 +108,25 @@ export const DrawerStepDepositTransaction = ({
     }
   }, [amountEthToDeposit, gliderPortfolioAddress, sendTransaction]);
 
-  // Success lifecycle event
+  // On tx confirmation - success lifecycle event
   useEffect(() => {
     if (isTxConfirmed) {
-      toast.success(`Deposit Complete. ${amountEthToDeposit} ETH`);
-      // Invalidate authed user portfolio query
+      toast(
+        <div className="flex w-full justify-between items-center">
+          <div className="flex flex-col gap-1">
+            <div className={textStyles['compact-emphasis']}>
+              Deposit Complete
+            </div>
+            <div className={textStyles.label}>${amountEthToDeposit} ETH</div>
+          </div>
+        </div>
+      );
+
+      // Invalidate user balance & user portfolio queries
+      queryClient.invalidateQueries({ queryKey: memoisedBalanceQueryKey });
       trpcClientUtils.wireTapAccount.getAuthedAccountGliderPortfolio.invalidate();
     }
-  }, [amountEthToDeposit, isTxConfirmed]);
+  }, [amountEthToDeposit, isTxConfirmed, memoisedBalanceQueryKey, queryClient]);
 
   const getImage = () => {
     if (isTxError) {

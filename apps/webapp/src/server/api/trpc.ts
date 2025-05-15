@@ -1,3 +1,4 @@
+import superjson from 'superjson';
 import { HttpDb, singletonDb } from '@wiretap/db';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { ZodError } from 'zod';
@@ -39,8 +40,7 @@ export const createInnerContext = (opts: {
 };
 
 const t = initTRPC.context<typeof createInnerContext>().create({
-  // @TODO trpc - superjson?
-  // transformer: superjson
+  transformer: superjson,
   errorFormatter: ({ shape, error }) => ({
     ...shape,
     data: {

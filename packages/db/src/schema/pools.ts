@@ -1,8 +1,8 @@
 import {
   boolean,
+  doublePrecision,
   integer,
   pgTable,
-  real,
   serial,
   text,
   timestamp,
@@ -27,7 +27,7 @@ export const pools = pgTable(
     isPrimary: boolean('is_primary').notNull(),
     feeBps: integer('fee_bps').notNull(),
     /** All time high market cap in USD */
-    athMcapUsd: real('ath_mcap_usd').notNull(),
+    athMcapUsd: doublePrecision('ath_mcap_usd').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
   },

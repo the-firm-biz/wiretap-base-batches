@@ -1,3 +1,4 @@
+import React from 'react';
 import Image from 'next/image';
 import { textStyles } from '../../styles/template-strings';
 import { Button } from '@/app/components/ui/button';
@@ -7,16 +8,18 @@ import { cn } from '@/app/utils/cn';
 import DitheredImage from '../../components/dithered-image';
 import DitheredAnimation from '../../components/dithered-animation';
 import { PaletteSwitcher } from '@/app/components/palette-switcher';
+import ReelToReelAnimation from './animated-reel-to-reel';
 
 export default function BigeonsBasementPage() {
   return (
     <div
       className={cn(
-        'grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20',
+        'grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-dvh p-8 pb-20 gap-16 sm:p-20',
         textStyles.body
       )}
     >
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+        <ReelToReelAnimation />
         <PaletteSwitcher />
         {/* Logo test area */}
         <div className="flex items-center gap-2 p-4">

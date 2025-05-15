@@ -73,8 +73,8 @@ describe('getAccountEntityTrackersForWireTapAccount', () => {
     ]);
   });
 
-  it('returns undefined if Account Entity Trackers for Wiretap Account do not exist', async () => {
+  it('returns empty array if Account Entity Trackers for Wiretap Account do not exist', async () => {
     const response = await getAccountEntityTrackersForWireTapAccount(db, 99999);
-    expect(response).toBeUndefined();
+    expect(response).toStrictEqual([]);
   });
 });

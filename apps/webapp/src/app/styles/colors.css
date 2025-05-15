@@ -119,8 +119,8 @@
   --accent: var(--color-sage-200);
   --accent-foreground: var(--color-sage-900);
   --positive: var(--color-green-600);
-  --negative: var(--color-red-500);
-  --destructive: var(--color-red-900);
+  --negative: var(--color-red-600);
+  --destructive: var(--color-red-600);
   --destructive-foreground: var(--color-red-50);
   --border: var(--color-sage-500);
   --input: var(--color-sage-500);

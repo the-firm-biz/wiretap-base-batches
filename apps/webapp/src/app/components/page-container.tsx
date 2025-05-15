@@ -1,10 +1,19 @@
+import { cn } from '../utils/cn';
+
 export default function PageContainer({
-  children
+  children,
+  className
 }: Readonly<{
   children: React.ReactNode;
+  className?: string;
 }>) {
   return (
-    <main className="p-4 max-w-screen-md w-full mx-auto flex-1 h-full flex flex-col">
+    <main
+      className={cn(
+        'p-4 relative max-w-screen-md w-full mx-auto flex-1 h-full flex flex-col',
+        className
+      )}
+    >
       {children}
     </main>
   );
