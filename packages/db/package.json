@@ -19,7 +19,8 @@
     "db:migration-push": "tsx ./src/scripts/db-push.ts",
     "db:migration": "pnpm run db:migration-generate && pnpm run db:migration-push",
     "test-db:migration": "NODE_OPTIONS='--import tsx' drizzle-kit generate && drizzle-kit migrate --config drizzle.test.config.ts",
-    "local-script:reindex-pools-addresses": "tsx ./src/scripts/reindex-pools-addresses.ts"
+    "local-script:reindex-pools-addresses": "tsx ./src/scripts/reindex-pools-addresses.ts",
+    "local-script:reindex-token-image-url": "tsx ./src/scripts/reindex-token-image-url.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
