@@ -4,14 +4,7 @@ import {
   type TokenBuyerPortfolio
 } from '@wiretap/db';
 import { env } from '../../env.js';
-import { updatePortfolioInGlider } from './update-portfolio-in-glider.js';
-import {
-  triggerGliderPortfolioRebalance,
-  type TriggerGliderPortfolioRebalanceResponse
-} from '../glider-api/trigger-glider-portfolio-rebalance.js';
-import { isSuccess } from './utils.js';
-import { createPortfolioRebalance } from './create-portfolio-rebalance.js';
-import { triggerPortfolioRebalance } from './trigger-portfolio-rebalance.js';
+import { monitorRebalance } from './monitor-rebalance.js';
 
 export async function processBuyWithGlider(
   tokenPercentageBps: number,
@@ -32,47 +25,34 @@ export async function processBuyWithGlider(
     databaseUrl: env.DATABASE_URL
   });
 
-  const rebalanceId = await createPortfolioRebalance(
-    db,
-    balance,
-    tokenPercentageBps,
-    tokenBuyerPortfolio
-  );
+  const rebalanceId = 6;
+  // const rebalanceId = await createPortfolioRebalance(
+  //   db,
+  //   balance,
+  //   tokenPercentageBps,
+  //   tokenBuyerPortfolio
+  // );
 
   try {
-    await updatePortfolioInGlider(
+    // await updatePortfolioInGlider(
+    //   db,
+    //   rebalanceId,
+    //   tokenPercentageBps,
+    //   tokenBuyerPortfolio
+    // );
+
+    // const gliderRebalanceId = await triggerPortfolioRebalance(db, rebalanceId, tokenBuyerPortfolio)
+    const gliderRebalanceId =
+      'ao04x0r6-queue-strategy-rebalance-2025-05-15T06:21:43Z';
+
+    const gliderRebalanceResult = await monitorRebalance(
       db,
       rebalanceId,
-      tokenPercentageBps,
+      gliderRebalanceId,
       tokenBuyerPortfolio
     );
+    console.log(gliderRebalanceResult)
 
-    const gliderRebalanceId = await triggerPortfolioRebalance(db, rebalanceId, tokenBuyerPortfolio)
-
-    // // 3. pull status
-    // const rebalanceStatusResponse = await callWithBackOff(
-    //   async () => {
-    //     const statusResponse = await rebalanceStatus(portfolio.portfolioId, rebalanceId)
-    //     const gliderRebalanceStatus = JSON.parse(statusResponse) as GliderRebalanceStatus;
-    //     if (gliderRebalanceStatus.data.status === 'running') {
-    //       throw new Error('still running')
-    //     }
-    //     return gliderRebalanceStatus;
-    //   },
-    //   {
-    //     startingDelay: 400,
-    //     timeMultiple: 1.3
-    //   },
-    //   {
-    //     name: `rebalance status ${rebalanceId} portfolio ${portfolio.address}`
-    //   }
-    // );
-    // if (!rebalanceStatusResponse || rebalanceStatusResponse.data.status !== 'completed') {
-    //   // todo: FAILED
-    //   return
-    // }
-    // todo: mark REBALANCED
-    //
     // 4. withdraw
     // const requestWithdrawResponse = await triggerTokenWithdrawalFromGliderPortfolio(
     //   portfolio.portfolioId, portfolio.address as Address, token.address as Address
