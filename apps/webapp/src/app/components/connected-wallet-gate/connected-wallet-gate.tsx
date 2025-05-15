@@ -83,7 +83,7 @@ export function ConnectedWalletGate({
             </div>
           </div>
 
-          <div className="p-4 border border-border rounded-md flex flex-1 relative overflow-hidden min-h-fit">
+          <div className="p-4 border border-border rounded-md flex flex-col flex-1 relative overflow-hidden min-h-fit">
             <DitheredAnimation
               style={{
                 position: 'absolute',
