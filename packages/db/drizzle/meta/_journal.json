@@ -169,20 +169,6 @@
       "when": 1747241872160,
       "tag": "0023_brown_warbound",
       "breakpoints": true
-    },
-    {
-      "idx": 24,
-      "version": "7",
-      "when": 1747328737690,
-      "tag": "0024_far_northstar",
-      "breakpoints": true
-    },
-    {
-      "idx": 25,
-      "version": "7",
-      "when": 1747328746167,
-      "tag": "0025_rebalances-log-label-seed",
-      "breakpoints": true
     }
   ]
 }
