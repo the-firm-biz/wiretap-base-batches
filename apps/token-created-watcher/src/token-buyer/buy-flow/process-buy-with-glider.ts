@@ -4,7 +4,7 @@ import {
   type TokenBuyerPortfolio
 } from '@wiretap/db';
 import { env } from '../../env.js';
-import { monitorRebalance } from './monitor-rebalance.js';
+import { withdrawTokenFromPortfolio } from './withdraw-token-from-portfolio.js';
 
 export async function processBuyWithGlider(
   tokenPercentageBps: number,
@@ -42,29 +42,17 @@ export async function processBuyWithGlider(
     // );
 
     // const gliderRebalanceId = await triggerPortfolioRebalance(db, rebalanceId, tokenBuyerPortfolio)
-    const gliderRebalanceId =
-      'ao04x0r6-queue-strategy-rebalance-2025-05-15T06:21:43Z';
 
-    const gliderRebalanceResult = await monitorRebalance(
-      db,
-      rebalanceId,
-      gliderRebalanceId,
-      tokenBuyerPortfolio
-    );
-    console.log(gliderRebalanceResult)
-
-    // 4. withdraw
-    // const requestWithdrawResponse = await triggerTokenWithdrawalFromGliderPortfolio(
-    //   portfolio.portfolioId, portfolio.address as Address, token.address as Address
+    // const gliderRebalanceResult = await monitorRebalance(
+    //   db,
+    //   rebalanceId,
+    //   gliderRebalanceId,
+    //   tokenBuyerPortfolio
     // );
-    // if (!isSuccess(requestWithdrawResponse)) {
-    //   // todo: FAILED_WITHDRAW_REQUEST with updateRawResponse
-    //   return;
-    // }
-    // const workflowId = 'CHANGE_ME_2';
-    // todo: PENDING with rebalanceId
-    //
-    //   // TODO: is there a way to see workflowId status
+    // console.log(gliderRebalanceResult)
+
+    await withdrawTokenFromPortfolio(db, rebalanceId, tokenBuyerPortfolio);
+
   } catch (error) {
     console.log(`Error during buy with glider flow ${JSON.stringify(error)}`);
     await insertGliderPortfolioRebalanceLog(db, {
