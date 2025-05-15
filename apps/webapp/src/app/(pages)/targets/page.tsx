@@ -20,11 +20,9 @@ export default function TargetsPage() {
     ) ?? [];
 
   return (
-    <div>
-      <TrackedTargetsList
-        isPendingAuthedAccountTargets={isPendingAuthedAccountTargets}
-        trackedTargets={trackedTargets}
-      />
-    </div>
+    <TrackedTargetsList
+      isPendingAuthedAccountTargets={isPendingAuthedAccountTargets}
+      trackedTargets={trackedTargets}
+    />
   );
 }
