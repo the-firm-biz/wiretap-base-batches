@@ -11,7 +11,7 @@ const Indicator: React.FC<{ color: 'red' | 'green' }> = ({ color }) => {
 export const StatusBox = () => {
   return (
     <div className="flex justify-center items-center h-32">
-      <div className="border border-border grid grid-cols-[2fr_1fr] max-w-[370px]">
+      <div className="border border-border grid grid-cols-[2fr_1fr] max-w-[370px] w-full">
         <div className="border-r-1 border-border p-4 flex items-center justify-center">
           <ReelToReelAnimation />
         </div>
