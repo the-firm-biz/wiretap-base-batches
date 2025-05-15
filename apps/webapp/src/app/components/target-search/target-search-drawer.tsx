@@ -123,10 +123,11 @@ export default function TargetSearchDrawer({
                   <TargetSearchRow
                     key={`${row.address}-${row.fid}`}
                     target={row}
-                    isTracked={isAuthedAccountTrackingTarget(
-                      row.searchTarget,
+                    isTracked={isAuthedAccountTrackingTarget({
+                      targetEvmAddress: row.searchTarget.evmAddress,
+                      targetNeynarUser: row.searchTarget.neynarUser,
                       authedAccountTargets
-                    )}
+                    })}
                     isLoadingTrackedStatus={isPendingAuthedAccountTargets}
                   />
                 ))}
