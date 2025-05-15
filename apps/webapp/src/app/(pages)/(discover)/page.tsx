@@ -7,9 +7,13 @@ export default function DiscoverPage() {
     <div className="flex flex-col items-center justify-center">
       <TargetSearchDrawer
         trigger={
-          <Button className="w-full" variant="outline">
-            <SearchIcon className="h-4 w-4" />
-            Farcaster username, wallet address...
+          <Button className="w-full relative" variant="outline">
+            <div className="flex items-center min-w-0 gap-2">
+              <SearchIcon className="h-4 w-4" />
+              <span className="truncate">
+                Farcaster username, wallet address...
+              </span>
+            </div>
           </Button>
         }
       />
