@@ -8,7 +8,7 @@ import { updateGliderPortfolio } from '../glider-api/update-glider-portfolio.js'
 import type { Address } from 'viem';
 import { isSuccess } from './utils.js';
 
-export async function updatePortfolio(
+export async function updatePortfolioAssetsRatio(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   rebalanceId: number,
   tokenPercentageBps: number,
