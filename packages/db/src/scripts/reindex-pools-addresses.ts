@@ -99,6 +99,7 @@ const main = async () => {
       currencyId: currency.id,
       feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
       athMcapUsd: mcapUsd,
+      startingMcapUsd: mcapUsd,
       isPrimary: true
     });
 

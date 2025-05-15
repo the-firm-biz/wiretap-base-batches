@@ -26,6 +26,8 @@ export const pools = pgTable(
     /** Whether this is the pool at the time of token creation */
     isPrimary: boolean('is_primary').notNull(),
     feeBps: integer('fee_bps').notNull(),
+    /** Starting market cap in USD */
+    startingMcapUsd: doublePrecision('starting_mcap_usd').notNull(),
     /** All time high market cap in USD */
     athMcapUsd: doublePrecision('ath_mcap_usd').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),

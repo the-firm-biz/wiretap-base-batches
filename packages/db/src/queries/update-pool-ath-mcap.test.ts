@@ -70,7 +70,8 @@ describe('updatePoolAthMcap', () => {
         currencyId: testCurrency!.id,
         isPrimary: true,
         feeBps: 300,
-        athMcapUsd: initialAthMcapUsd
+        athMcapUsd: initialAthMcapUsd,
+        startingMcapUsd: initialAthMcapUsd
       })
       .returning();
 
