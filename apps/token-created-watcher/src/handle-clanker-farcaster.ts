@@ -40,7 +40,7 @@ export async function handleClankerFarcaster(
         neynarClient,
         tokenCreatedData,
         clankerFarcasterArgs,
-        { tracing: { parentSpan: span } },
+        { tracing: { parentSpan: span } }
       ),
     {
       name: 'lookupAndValidateCastConversationWithBackoff',
@@ -77,7 +77,8 @@ export async function handleClankerFarcaster(
           tokenCreatedData,
           tokenCreatorAddress,
           neynarUser,
-          tokenScoreDetails
+          tokenScoreDetails,
+          transactionArgs
         ),
       {
         name: 'handleTokenWithFarcasterUser',
@@ -123,7 +124,7 @@ async function lookupAndValidateCastConversationWithBackoff(
   neynarClient: NeynarAPIClient,
   tokenCreatedData: TokenCreatedOnChainParams,
   clankerFarcasterArgs: HandleClankerFarcasterArgs,
-  { tracing }: Context,
+  { tracing }: Context
 ): Promise<CastWithValidation> {
   const { messageId: castHash } = clankerFarcasterArgs;
 
@@ -167,7 +168,7 @@ async function lookupAndValidateCastConversationWithBackoff(
     {
       name: 'lookupAndValidateCastConversation',
       tracing
-    },
+    }
   );
 
   return (
