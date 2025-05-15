@@ -1,6 +1,5 @@
 import { textStyles } from '@/app/styles/template-strings';
 import ReelToReelAnimation from './animated-reel-to-reel';
-import { FlashingDot } from '@/app/components/flashing-dot';
 
 const Indicator: React.FC<{ color: 'red' | 'green' }> = ({ color }) => {
   if (color === 'red') {
