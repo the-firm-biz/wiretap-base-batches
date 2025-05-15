@@ -1,6 +1,6 @@
 {
-  "id": "344d8aed-e5b9-4393-8740-4d967d30f976",
-  "prevId": "01a88ffc-354f-48b7-9f0f-63f793d93202",
+  "id": "ca688528-cc43-4a61-bd6e-e3d3f76ab7fc",
+  "prevId": "eaf0ec25-276e-41f4-b722-192cdff1f705",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1040,6 +1040,147 @@
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.glider_portfolio_rebalances": {
+      "name": "glider_portfolio_rebalances",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "portfolio_id": {
+          "name": "portfolio_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_id": {
+          "name": "token_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "portfolio_eth_balance_wei": {
+          "name": "portfolio_eth_balance_wei",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_ratio_bps": {
+          "name": "token_ratio_bps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "glider_portfolio_rebalances_portfolio_id_glider_portfolios_id_fk": {
+          "name": "glider_portfolio_rebalances_portfolio_id_glider_portfolios_id_fk",
+          "tableFrom": "glider_portfolio_rebalances",
+          "columnsFrom": [
+            "portfolio_id"
+          ],
+          "tableTo": "glider_portfolios",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "glider_portfolio_rebalances_token_id_tokens_id_fk": {
+          "name": "glider_portfolio_rebalances_token_id_tokens_id_fk",
+          "tableFrom": "glider_portfolio_rebalances",
+          "columnsFrom": [
+            "token_id"
+          ],
+          "tableTo": "tokens",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.glider_portfolio_rebalances_log": {
+      "name": "glider_portfolio_rebalances_log",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "glider_portfolio_rebalances_id": {
+          "name": "glider_portfolio_rebalances_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "glider_rebalance_id": {
+          "name": "glider_rebalance_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "response": {
+          "name": "response",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "glider_portfolio_rebalances_log_glider_portfolio_rebalances_id_glider_portfolio_rebalances_id_fk": {
+          "name": "glider_portfolio_rebalances_log_glider_portfolio_rebalances_id_glider_portfolio_rebalances_id_fk",
+          "tableFrom": "glider_portfolio_rebalances_log",
+          "columnsFrom": [
+            "glider_portfolio_rebalances_id"
+          ],
+          "tableTo": "glider_portfolio_rebalances",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

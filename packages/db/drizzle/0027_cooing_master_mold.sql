@@ -1,1 +1,0 @@
-ALTER TABLE "glider_portfolio_rebalances_log" ADD COLUMN "gliderRebalanceId" text;
