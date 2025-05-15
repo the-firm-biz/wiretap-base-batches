@@ -43,7 +43,14 @@ createAppKit({
   featuredWalletIds: [
     'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa' // Will Always suggest Coinbase Wallet
   ],
-  siweConfig: siweConfig
+  siweConfig: siweConfig,
+  themeVariables: {
+    '--w3m-font-family': 'var(--font-sans)',
+    '--w3m-accent': 'var(--color-sage-400)',
+    '--w3m-color-mix': 'var(--color-sage-500)',
+    '--w3m-color-mix-strength': 20,
+    '--w3m-border-radius-master': '1px'
+  }
 });
 
 export function WalletProvider({
