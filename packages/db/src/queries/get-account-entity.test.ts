@@ -86,7 +86,8 @@ describe('getAccountEntity', () => {
       accountEntityId: testAccountEntity!.id,
       score: null,
       block: block!.number,
-      totalSupply: 100_000_000_000
+      totalSupply: 100_000_000_000,
+      creatorTokenIndex: 1
     };
     await db.insert(tokens).values(newToken);
   });

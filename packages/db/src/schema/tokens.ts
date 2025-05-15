@@ -32,6 +32,7 @@ export const tokens = pgTable(
     accountEntityId: integer('account_entity_id')
       .notNull()
       .references(() => accountEntities.id),
+    creatorTokenIndex: integer('creator_token_index').notNull(),
     totalSupply: bigint('total_supply', { mode: 'number' }).notNull(),
     block: bigint('block', { mode: 'number' })
       .notNull()

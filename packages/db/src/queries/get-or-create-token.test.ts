@@ -17,7 +17,8 @@ const newToken: NewToken = {
   deploymentContractId: 1,
   accountEntityId: 1,
   score: 0.999,
-  totalSupply: 100_000_000_000
+  totalSupply: 100_000_000_000,
+  creatorTokenIndex: 1
 };
 
 describe('getOrCreateToken', () => {

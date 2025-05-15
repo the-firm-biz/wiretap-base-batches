@@ -197,6 +197,13 @@
       "when": 1747329693928,
       "tag": "0027_rebalances-log-label-seed",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1747333342456,
+      "tag": "0028_zippy_sentry",
+      "breakpoints": true
     }
   ]
 }

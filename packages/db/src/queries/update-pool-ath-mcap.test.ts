@@ -50,7 +50,8 @@ describe('updatePoolAthMcap', () => {
         deploymentContractId: testContract!.id,
         accountEntityId: testAccountEntity!.id,
         totalSupply: 1000000000,
-        block: testBlock!.number
+        block: testBlock!.number,
+        creatorTokenIndex: 1
       })
       .returning();
     const [testCurrency] = await db

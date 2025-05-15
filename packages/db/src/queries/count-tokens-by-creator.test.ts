@@ -81,7 +81,8 @@ describe('countTokensByCreator', () => {
         accountEntityId: accountEntityId1,
         deploymentContractId: contractId,
         block: blockNumber,
-        totalSupply: 100_000_000_000
+        totalSupply: 100_000_000_000,
+        creatorTokenIndex: 1
       },
       {
         ...baseToken,
@@ -89,7 +90,8 @@ describe('countTokensByCreator', () => {
         accountEntityId: accountEntityId1,
         deploymentContractId: contractId,
         block: blockNumber,
-        totalSupply: 100_000_000_000
+        totalSupply: 100_000_000_000,
+        creatorTokenIndex: 2
       },
       {
         ...baseToken,
@@ -97,7 +99,8 @@ describe('countTokensByCreator', () => {
         accountEntityId: accountEntityId1,
         deploymentContractId: contractId,
         block: blockNumber,
-        totalSupply: 100_000_000_000
+        totalSupply: 100_000_000_000,
+        creatorTokenIndex: 3
       }
     ]);
 
@@ -108,7 +111,8 @@ describe('countTokensByCreator', () => {
       accountEntityId: accountEntityId2,
       deploymentContractId: contractId,
       block: blockNumber,
-      totalSupply: 100_000_000_000
+      totalSupply: 100_000_000_000,
+      creatorTokenIndex: 1
     });
 
     const count1 = await countTokensByCreator(db, accountEntityId1);
