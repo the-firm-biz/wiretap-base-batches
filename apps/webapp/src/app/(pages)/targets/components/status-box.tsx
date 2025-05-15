@@ -76,7 +76,7 @@ export const StatusBox = () => {
             />
           </div>
           <div className="flex flex-col items-end gap-1">
-            <div className={textStyles.label}>Funding Balance</div>
+            <div className={textStyles.label}>WireTap Balance</div>
             {isLoading ? (
               <Skeleton className="h-5 w-22" />
             ) : (
