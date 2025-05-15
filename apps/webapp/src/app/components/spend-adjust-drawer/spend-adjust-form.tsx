@@ -18,6 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { formatUsd } from '../../utils/format/format-usd';
 import { useBalance } from 'wagmi';
 import { formatUnits } from '../../utils/format/format-units';
+import { EthIcon } from '../icons/EthIcon';
 
 const REQUIRED_FIELD_MESSAGE = 'Required';
 const MAX_SPEND_LOW_LIMIT_ETH = 0.001;
@@ -159,11 +160,15 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <div className="pt-2">
+                <div className="relative pt-2">
+                  <div className="absolute h-9 w-9 p-[10px] bottom-0 left-0">
+                    <EthIcon className="size-4" />
+                  </div>
                   <Input
                     type="number"
                     {...field}
                     disabled={isDisabledForm}
+                    className="pl-7"
                     value={field.value === undefined ? '' : field.value}
                     onChange={(e) => {
                       const value = e.target.value;
