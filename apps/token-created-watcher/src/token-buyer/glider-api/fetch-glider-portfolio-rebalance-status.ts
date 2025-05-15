@@ -7,6 +7,7 @@ export type GliderRebalanceStatus = SuccessAware & {
     status: string;
     result: {
       result: {
+        executionResult: string, // success | failure
         userOpResults: [{
           receipt: {
             receipt: {

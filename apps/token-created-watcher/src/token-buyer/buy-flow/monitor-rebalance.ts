@@ -9,6 +9,7 @@ import { fetchGliderPortfolioRebalanceStatus } from '../glider-api/fetch-glider-
 
 type BackoffRebalanceStatus =
   | 'REBALANCE_FAILED'
+  | 'REBALANCE_EXECUTION_FAILURE'
   | 'REBALANCE_COMPLETED'
   | 'REBALANCE_NOT_COMPLETED';
 
@@ -65,6 +66,20 @@ export async function monitorRebalance(
           };
         }
 
+        const executionResult =
+          rebalanceStatusResponse.data.result.result.executionResult;
+        if (executionResult !== 'success') {
+          await insertGliderPortfolioRebalanceLog(db, {
+            gliderPortfolioRebalancesId: rebalanceId,
+            gliderRebalanceId: gliderRebalanceId,
+            label: 'REBALANCE_EXECUTION_FAILURE',
+            response: rebalanceStatusResponse
+          });
+          return {
+            status: 'REBALANCE_EXECUTION_FAILURE'
+          };
+        }
+
         const { blockNumber, transactionHash } =
           rebalanceStatusResponse.data.result.result.userOpResults[0].receipt
             .receipt;
@@ -90,7 +105,8 @@ export async function monitorRebalance(
       {
         delayFirstAttempt: true,
         startingDelay: 3000,
-        numOfAttempts: 20
+        numOfAttempts: 20,
+        timeMultiple: 1.3
       },
       {
         name: `rebalance status ${gliderRebalanceId}`
