@@ -1,7 +1,6 @@
 import type { SuccessAware } from '../glider-api/types.js';
 
 export function isSuccess(rawResponse: string | undefined): boolean {
-  console.log(`>>> ${rawResponse}\n\n`);
   if (!rawResponse) {
     return false;
   }
