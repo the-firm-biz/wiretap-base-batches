@@ -11,7 +11,8 @@ import {
   type Token,
   type Wallet,
   type XAccount,
-  type Pool
+  type Pool,
+  countTokensByCreator
 } from '@wiretap/db';
 import type { TokenCreatedOnChainParams } from '../types/token-created.js';
 import type { Address } from 'viem';
@@ -82,6 +83,8 @@ export const commitTokenDetailsToDb = async ({
         timestamp: block.timestamp
       });
 
+      const creatorTokenIndex = await countTokensByCreator(tx, accountEntityId);
+
       const createdToken = await getOrCreateToken(tx, {
         address: tokenAddress,
         score: tokenScore,
@@ -92,7 +95,8 @@ export const commitTokenDetailsToDb = async ({
         name: tokenName,
         block: block.number,
         totalSupply: CLANKER_3_1_TOTAL_SUPPLY,
-        imageUrl
+        imageUrl,
+        creatorTokenIndex
       });
 
       const currency = await getCurrency(tx, poolContext.pairedAddress);
