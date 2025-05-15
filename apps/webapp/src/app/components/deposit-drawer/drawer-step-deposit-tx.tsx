@@ -122,9 +122,11 @@ export const DrawerStepDepositTransaction = ({
         </div>
       );
 
-      // Invalidate user balance & user portfolio queries
-      queryClient.invalidateQueries({ queryKey: memoisedBalanceQueryKey });
-      trpcClientUtils.wireTapAccount.getAuthedAccountGliderPortfolio.invalidate();
+      setTimeout(() => {
+        // Invalidate user balance & user portfolio queries
+        queryClient.invalidateQueries({ queryKey: memoisedBalanceQueryKey });
+        trpcClientUtils.wireTapAccount.invalidate();
+      }, 800);
     }
   }, [amountEthToDeposit, isTxConfirmed, memoisedBalanceQueryKey, queryClient]);
 

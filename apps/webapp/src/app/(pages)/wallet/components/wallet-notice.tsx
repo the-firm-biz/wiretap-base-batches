@@ -124,7 +124,7 @@ export function WalletNotice() {
     }
 
     return (
-      <Link href={`/discover`} className="flex-1">
+      <Link href={`/`} className="flex-1">
         <Button>
           Discover
           <ChevronRight className="size-4" />
