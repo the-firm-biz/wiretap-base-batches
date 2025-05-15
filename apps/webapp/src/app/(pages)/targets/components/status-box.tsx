@@ -1,11 +1,12 @@
 import { textStyles } from '@/app/styles/template-strings';
 import ReelToReelAnimation from './animated-reel-to-reel';
+import { FlashingDot } from '@/app/components/flashing-dot';
 
 const Indicator: React.FC<{ color: 'red' | 'green' }> = ({ color }) => {
   if (color === 'red') {
-    return <div className="w-2 h-2 rounded-full bg-red-500"></div>;
+    return <div className="w-2 h-2 rounded-full bg-negative"></div>;
   }
-  return <div className="w-2 h-2 rounded-full bg-green-500"></div>;
+  return <div className="w-2 h-2 rounded-full bg-positive"></div>;
 };
 
 export const StatusBox = () => {
