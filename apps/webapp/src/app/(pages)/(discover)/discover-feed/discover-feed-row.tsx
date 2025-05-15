@@ -19,10 +19,14 @@ export function DiscoverFeedRow({
     tokenCreatedAt,
     tokenName,
     tokenSymbol,
+    tokenImageUrl,
     poolAthMcapUsd,
-    creatorTokenCreatedCount
+    // poolStartingMcapUsd,
+    creatorTokenIndex
     // deploymentContractAddress,
   } = token;
+
+  const hasTokenImage = tokenImageUrl !== null && tokenImageUrl !== '';
 
   const getDisplayName = () => {
     if (farcasterDisplayName) {
@@ -68,7 +72,7 @@ export function DiscoverFeedRow({
         </div>
         <div className="flex items-center gap-1">
           {/* @todo Discover - style badge */}
-          <Badge>Launched #{creatorTokenCreatedCount} tokens</Badge>
+          <Badge>Launch #{creatorTokenIndex}</Badge>
           <span className={textStyles['label']}>on </span>
           {/* @todo Discover - Clanker logo */}
           <span className={textStyles['label-mid']}>Clanker</span>
@@ -79,8 +83,20 @@ export function DiscoverFeedRow({
         </div>
         <div className="flex flex-col rounded-md border border-border gap-4 p-[12px]">
           <div className="flex gap-1 space-between w-full">
-            <div className="flex flex-col flex-1">
-              <p className={textStyles['label']}>{tokenName}</p>
+            <div className="flex gap-2">
+              <div className="w-[32px] h-[32px] rounded-full overflow-hidden">
+                <Image
+                  // @todo Discover - token image fallback
+                  src={hasTokenImage ? tokenImageUrl : '/user-dithered.png'}
+                  alt={tokenSymbol}
+                  width={32}
+                  height={32}
+                />
+              </div>
+              <div className="flex flex-col flex-1">
+                <p className={textStyles['compact-emphasis']}>{tokenSymbol}</p>
+                <p className={textStyles['label']}>{tokenName}</p>
+              </div>
             </div>
             <div className="flex gap-1">
               {/* @todo Discover - Base scan & dexscreener links */}
@@ -88,6 +104,7 @@ export function DiscoverFeedRow({
             </div>
           </div>
           {/* @todo Discover - WireTap Edge */}
+          {/* Calculate the gap between poolStartingMcapUsd and poolAthMcapUsd */}
           <div className="flex border border-border w-fit px-8">
             WireTap Edge
           </div>
@@ -101,7 +118,7 @@ export function DiscoverFeedRow({
                 maximumFractionDigits: 0
               })}
             </p>
-            {/* @todo Discover - MCap change percentage - use fixed $25k starting  */}
+            {/* @todo Discover - MCap change percentage - we don't have data for prev 24hrs mcap so leave this */}
           </div>
         </div>
       </div>

@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'euc.li'
+      },
+      {
+        protocol: 'https',
+        hostname: 'imagedelivery.net'
       }
     ]
   }

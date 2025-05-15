@@ -1,4 +1,4 @@
-import { and, desc, eq, lt, or, sql } from 'drizzle-orm';
+import { and, desc, eq, lt, or } from 'drizzle-orm';
 import { tokens } from '../schema/tokens.js';
 import { farcasterAccounts } from '../schema/accounts/farcaster-accounts.js';
 import { pools } from '../schema/pools.js';
@@ -22,7 +22,8 @@ export interface TokenWithCreatorMetadata {
   tokenTotalSupply: number;
   tokenDeploymentTxHash: string;
   tokenCreatedAt: Date;
-  creatorTokenCreatedCount: number;
+  tokenImageUrl: string | null;
+  creatorTokenIndex: number;
   creatorAddress: string | null;
   deploymentContractAddress: string;
   farcasterFid: number | null;
@@ -31,6 +32,7 @@ export interface TokenWithCreatorMetadata {
   farcasterPfpUrl: string | null;
   farcasterFollowerCount: number | null;
   poolAthMcapUsd: number | null;
+  poolStartingMcapUsd: number | null;
   poolAddress: string | null;
 }
 
@@ -39,6 +41,7 @@ interface GetTokensWithCreatorMetadataArgs {
   cursor?: TokenWithCreatorMetadataCursor;
 }
 
+// @todo discover - tokens are duplicated with this uquery
 export async function getTokensWithCreatorMetadata(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   { pageSize = 50, cursor }: GetTokensWithCreatorMetadataArgs
@@ -50,16 +53,13 @@ export async function getTokensWithCreatorMetadata(
       tokenSymbol: tokens.symbol,
       tokenAddress: tokens.address,
       tokenName: tokens.name,
+      tokenImageUrl: tokens.imageUrl,
       tokenTotalSupply: tokens.totalSupply,
       tokenDeploymentTxHash: tokens.deploymentTransactionHash,
       tokenCreatedAt: tokens.createdAt,
-      creatorTokenCreatedCount: sql<number>`(
-        SELECT COUNT(*) 
-        FROM ${tokens} t2 
-        WHERE t2.account_entity_id = ${tokens.accountEntityId}
-      )`,
+      creatorTokenIndex: tokens.creatorTokenIndex,
 
-      // Wallets fiels
+      // Wallets fields
       creatorAddress: wallets.address,
 
       // Contract fields
@@ -74,6 +74,7 @@ export async function getTokensWithCreatorMetadata(
 
       // Pool fields
       poolAthMcapUsd: pools.athMcapUsd,
+      poolStartingMcapUsd: pools.startingMcapUsd,
       poolAddress: pools.address
     })
     .from(tokens)
@@ -100,6 +101,6 @@ export async function getTokensWithCreatorMetadata(
           )
         : undefined
     )
-    .orderBy(desc(tokens.createdAt), desc(tokens.id))
+    .orderBy(desc(tokens.createdAt))
     .limit(pageSize);
 }

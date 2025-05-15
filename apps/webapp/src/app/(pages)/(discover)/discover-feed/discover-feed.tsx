@@ -17,6 +17,7 @@ export function DiscoverFeed() {
 
   return (
     <div className="flex flex-col py-2 gap-2">
+      {/* @todo Discover - loading skeles */}
       {data?.pages
         .flatMap((page) => page.tokens)
         .map((token) => <DiscoverFeedRow key={token.tokenId} token={token} />)}
