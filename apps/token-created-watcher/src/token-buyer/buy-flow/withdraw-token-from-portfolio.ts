@@ -24,7 +24,7 @@ export async function withdrawTokenFromPortfolio(
   if (!isSuccess(withdrawRequestResponse)) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
-      action: 'WITHDRAW_REQUEST_FAILED',
+      label: 'WITHDRAW_REQUEST_FAILED',
       response: withdrawRequestResponse
     });
     throw new Error('WITHDRAW_REQUEST_FAILED')
@@ -32,7 +32,7 @@ export async function withdrawTokenFromPortfolio(
 
   await insertGliderPortfolioRebalanceLog(db, {
     gliderPortfolioRebalancesId: rebalanceId,
-    action: 'WITHDRAW_REQUESTED',
+    label: 'WITHDRAW_REQUESTED',
     response: withdrawRequestResponse
   });
   // TODO: is there a way to see get tx by workflowId from response

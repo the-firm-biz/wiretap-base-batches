@@ -197,6 +197,13 @@
       "when": 1747291144132,
       "tag": "0027_cooing_master_mold",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1747300637901,
+      "tag": "0028_marvelous_scarecrow",
+      "breakpoints": true
     }
   ]
 }

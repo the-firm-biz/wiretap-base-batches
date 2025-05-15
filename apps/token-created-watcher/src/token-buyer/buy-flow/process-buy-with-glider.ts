@@ -57,7 +57,7 @@ export async function processBuyWithGlider(
     console.log(`Error during buy with glider flow ${JSON.stringify(error)}`);
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
-      action: 'ERROR'
+      label: 'ERROR'
     });
   } finally {
     try {
@@ -65,13 +65,13 @@ export async function processBuyWithGlider(
       await updatePortfolioAssetsRatio(db, rebalanceId, 0, tokenBuyerPortfolio);
       await insertGliderPortfolioRebalanceLog(db, {
         gliderPortfolioRebalancesId: rebalanceId,
-        action: 'SET_FULL_ETH'
+        label: 'SET_FULL_ETH'
       });
     } catch (error) {
       console.log(`ERROR_SET_FULL_ETH ${error}`);
       await insertGliderPortfolioRebalanceLog(db, {
         gliderPortfolioRebalancesId: rebalanceId,
-        action: 'ERROR_SET_FULL_ETH'
+        label: 'ERROR_SET_FULL_ETH'
       });
     }
   }

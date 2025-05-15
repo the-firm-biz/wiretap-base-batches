@@ -25,14 +25,14 @@ export async function updatePortfolioAssetsRatio(
   if (!isSuccess(updateRawResponse)) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
-      action: 'UPDATE_FAILED',
+      label: 'UPDATE_FAILED',
       response: updateRawResponse
     });
     throw new Error(updateRawResponse);
   }
   await insertGliderPortfolioRebalanceLog(db, {
     gliderPortfolioRebalancesId: rebalanceId,
-    action: 'UPDATED',
+    label: 'UPDATED',
     response: updateRawResponse
   });
 

@@ -21,7 +21,7 @@ export async function createPortfolioRebalance(
   });
   await insertGliderPortfolioRebalanceLog(db, {
     gliderPortfolioRebalancesId: rebalanceId,
-    action: 'CREATED'
+    label: 'CREATED'
   });
   return rebalanceId;
 }

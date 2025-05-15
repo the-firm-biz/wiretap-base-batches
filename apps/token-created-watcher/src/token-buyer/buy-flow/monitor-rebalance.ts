@@ -38,7 +38,7 @@ export async function monitorRebalance(
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
-            action: 'REBALANCE_FAILED',
+            label: 'REBALANCE_FAILED',
             response: rebalanceStatusResponse
           });
           return {
@@ -52,7 +52,7 @@ export async function monitorRebalance(
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
-            action: 'REBALANCE_RUNNING',
+            label: 'REBALANCE_RUNNING',
             response: rebalanceStatusResponse
           });
           throw new Error('REBALANCE_RUNNING'); // to repeat backoff
@@ -62,7 +62,7 @@ export async function monitorRebalance(
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
-            action: 'REBALANCE_NOT_COMPLETED',
+            label: 'REBALANCE_NOT_COMPLETED',
             response: rebalanceStatusResponse
           });
           return {
@@ -81,7 +81,7 @@ export async function monitorRebalance(
         await insertGliderPortfolioRebalanceLog(db, {
           gliderPortfolioRebalancesId: rebalanceId,
           gliderRebalanceId: gliderRebalanceId,
-          action: 'REBALANCE_COMPLETED',
+          label: 'REBALANCE_COMPLETED',
           response: rebalanceStatusResponse
         });
 
@@ -92,7 +92,7 @@ export async function monitorRebalance(
         } as BackoffRebalanceResult;
       },
       {
-        startingDelay: 400,
+        startingDelay: 1000,
         timeMultiple: 1.3,
         retry: (err, n) => {
           console.log(err);
@@ -108,7 +108,7 @@ export async function monitorRebalance(
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
       gliderRebalanceId: gliderRebalanceId,
-      action: 'REBALANCE_BACKOFF_EXHAUSTED'
+      label: 'REBALANCE_BACKOFF_EXHAUSTED'
     });
     throw new Error('REBALANCE_BACKOFF_EXHAUSTED');
   }

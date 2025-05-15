@@ -22,7 +22,7 @@ export async function triggerPortfolioRebalance(
   if (!isSuccess(triggerRebalanceRawResponse)) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
-      action: 'TRIGGER_FAILED',
+      label: 'TRIGGER_FAILED',
       response: triggerRebalanceRawResponse
     });
     throw new Error('TRIGGER_FAILED');
@@ -34,7 +34,7 @@ export async function triggerPortfolioRebalance(
   ).data.rebalanceId;
   await insertGliderPortfolioRebalanceLog(db, {
     gliderPortfolioRebalancesId: rebalanceId,
-    action: 'TRIGGERED',
+    label: 'TRIGGERED',
     response: triggerRebalanceRawResponse,
     gliderRebalanceId
   });
