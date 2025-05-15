@@ -7,6 +7,7 @@ import './styles/globals.css';
 import { departureMono, ppMondwest, loRes12 } from './styles/font-family';
 import { headers } from 'next/headers';
 import { Toaster } from './components/ui/sonner';
+import { LowBalanceBanner } from './components/low-balance-banner';
 
 export const generateMetadata = (): Metadata => {
   return {
@@ -57,7 +58,10 @@ export default async function RootLayout({
       >
         <div className="lcd-grid-overlay" aria-hidden="true"></div>
         <Providers cookies={cookies}>
-          <div className="flex flex-col min-h-dvh">{children}</div>
+          <div className="flex flex-col min-h-dvh">
+            <LowBalanceBanner />
+            {children}
+          </div>
           <Toaster />
         </Providers>
       </body>
