@@ -13,7 +13,12 @@ export default function PageContainer({
     <main
       className={cn('p-4 relative flex-1 h-full flex flex-col', mainClassName)}
     >
-      <div className={cn('max-w-screen-md w-full mx-auto', className)}>
+      <div
+        className={cn(
+          'max-w-screen-md w-full flex-1 h-full flex flex-col mx-auto',
+          className
+        )}
+      >
         {children}
       </div>
     </main>

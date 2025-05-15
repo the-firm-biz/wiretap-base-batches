@@ -7,7 +7,12 @@ export default function DiscoverPage() {
     <div className="flex flex-col items-center justify-center">
       <TargetSearchDrawer
         trigger={
-          <Button className="w-full relative" variant="outline">
+          /** Custom button is made to look like an input box */
+          <Button
+            className="w-full relative justify-start border-b-1 font-sans"
+            variant="outline"
+          >
+            {/** TODO: import buttonwithicon from shadcn and apply it here */}
             <div className="flex items-center min-w-0 gap-2">
               <SearchIcon className="h-4 w-4" />
               <span className="truncate">
