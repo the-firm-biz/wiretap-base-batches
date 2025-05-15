@@ -92,12 +92,9 @@ export async function monitorRebalance(
         } as BackoffRebalanceResult;
       },
       {
-        startingDelay: 1000,
-        timeMultiple: 1.3,
-        retry: (err, n) => {
-          console.log(err);
-          return true;
-        }
+        delayFirstAttempt: true,
+        startingDelay: 3000,
+        numOfAttempts: 20,
       },
       {
         name: `rebalance status ${gliderRebalanceId}`
