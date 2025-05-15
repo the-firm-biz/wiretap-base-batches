@@ -46,6 +46,7 @@ export function ConnectedWalletGate({
   if (!address || isPartiallyConnected) {
     return (
       <PageContainer>
+        {/* header */}
         <div className="flex justify-between items-center mb-4">
           <div>
             <div
@@ -79,6 +80,7 @@ export function ConnectedWalletGate({
           </div>
         </div>
 
+        {/* body */}
         <div className="p-4 border border-border rounded-md flex flex-col flex-1 relative overflow-hidden min-h-fit">
           <DitheredAnimation
             style={{
