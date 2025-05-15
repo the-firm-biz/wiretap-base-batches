@@ -183,13 +183,6 @@
       "when": 1747326342728,
       "tag": "0025_oval_vanisher",
       "breakpoints": true
-    },
-    {
-      "idx": 26,
-      "version": "7",
-      "when": 1747331915235,
-      "tag": "0026_aberrant_sabra",
-      "breakpoints": true
     }
   ]
 }
