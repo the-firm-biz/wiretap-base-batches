@@ -12,6 +12,7 @@ type BackoffRebalanceStatus =
   | RebalancesLogLabel.REBALANCE_RUNNING
   | RebalancesLogLabel.REBALANCE_NOT_COMPLETED
   | RebalancesLogLabel.REBALANCE_EXECUTION_FAILURE
+  | RebalancesLogLabel.REBALANCE_RESULTED_FALSE
   | RebalancesLogLabel.REBALANCE_COMPLETED;
 
 export interface BackoffRebalanceResult {
@@ -67,9 +68,22 @@ export async function monitorRebalance(
           };
         }
 
+        const dataResult = rebalanceStatusResponse?.data?.result?.success;
+        if (!dataResult) {
+          await insertGliderPortfolioRebalanceLog(db, {
+            gliderPortfolioRebalancesId: rebalanceId,
+            gliderRebalanceId: gliderRebalanceId,
+            label: RebalancesLogLabel.REBALANCE_RESULTED_FALSE,
+            response: rebalanceStatusResponse
+          });
+          return {
+            status: RebalancesLogLabel.REBALANCE_RESULTED_FALSE
+          };
+        }
+
         const executionResult =
-          rebalanceStatusResponse.data.result.result.executionResult;
-        if (executionResult !== 'success') {
+          rebalanceStatusResponse?.data?.result?.result?.executionResult;
+        if (executionResult && executionResult !== 'success') {
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
