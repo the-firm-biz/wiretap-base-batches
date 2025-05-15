@@ -5,6 +5,9 @@ import { textStyles } from '@/app/styles/template-strings';
 import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import ReelToReelAnimation from './animated-reel-to-reel';
 import AnimatedEllipsisText from '@/app/components/animated-ellipsis-text';
+import { useBalance } from 'wagmi';
+import { formatUnits } from '@/app/utils/format/format-units';
+import { Skeleton } from '@/app/components/ui/skeleton';
 
 const Indicator: React.FC<{ color: 'red' | 'green'; isLoading: boolean }> = ({
   color,
@@ -22,14 +25,32 @@ const Indicator: React.FC<{ color: 'red' | 'green'; isLoading: boolean }> = ({
 export const StatusBox = () => {
   const trpc = useTRPC();
 
-  const { data: authedAccountTargets, isPending } = useQuery(
-    trpc.wireTapAccount.getAuthedAccountTargets.queryOptions()
+  const { data: gliderPortfolio, isLoading: isLoadingPortfolio } = useQuery(
+    trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
+  const { data: portfolioBalance, isLoading: isLoadingPortfolioBalance } =
+    useBalance({
+      address: gliderPortfolio?.address,
+      query: {
+        enabled: !!gliderPortfolio?.address
+      }
+    });
+
+  const isLoading = isLoadingPortfolio || isLoadingPortfolioBalance;
+
+  const ethDisplayValue = formatUnits(
+    portfolioBalance?.value || BigInt(0),
+    18,
+    5
+  );
+
+  const { data: authedAccountTargets, isPending: isPendingAccountTargets } =
+    useQuery(trpc.wireTapAccount.getAuthedAccountTargets.queryOptions());
 
   const isActive = !!authedAccountTargets && authedAccountTargets.length > 0;
 
   const label = (() => {
-    if (isPending) {
+    if (isPendingAccountTargets) {
       return <AnimatedEllipsisText>Loading</AnimatedEllipsisText>;
     }
     if (isActive) {
@@ -42,7 +63,7 @@ export const StatusBox = () => {
     <div className="flex justify-center items-center h-32">
       <div className="border border-border grid grid-cols-[2fr_1fr] max-w-[370px] w-full">
         <div
-          className={`border-r-1 border-border p-4 flex items-center justify-center ${isPending ? 'opacity-65' : ''}`}
+          className={`border-r-1 border-border p-4 flex items-center justify-center ${isPendingAccountTargets ? 'opacity-65' : ''}`}
         >
           <ReelToReelAnimation isActive={isActive} />
         </div>
@@ -51,12 +72,18 @@ export const StatusBox = () => {
             <div className={`${textStyles['compact-emphasis']}`}>{label}</div>
             <Indicator
               color={isActive ? 'green' : 'red'}
-              isLoading={isPending}
+              isLoading={isPendingAccountTargets}
             />
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col items-end gap-1">
             <div className={textStyles.label}>Funding Balance</div>
-            <div className={textStyles['compact-emphasis']}>0 ETH</div>
+            {isLoading ? (
+              <Skeleton className="h-5 w-22" />
+            ) : (
+              <div className={textStyles['compact-emphasis']}>
+                {ethDisplayValue} ETH
+              </div>
+            )}
           </div>
         </div>
       </div>
