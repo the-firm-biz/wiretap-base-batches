@@ -118,6 +118,11 @@ export async function monitorRebalance(
         } as BackoffRebalanceResult;
       },
       {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        retry: (e: any, attemptNumber: number): boolean => {
+          console.log(e);
+          return true;
+        },
         delayFirstAttempt: true,
         startingDelay: 3000,
         numOfAttempts: 20,
@@ -127,7 +132,6 @@ export async function monitorRebalance(
         name: `rebalance status ${gliderRebalanceId}`
       }
     );
-
   if (!gliderRebalanceResult) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
