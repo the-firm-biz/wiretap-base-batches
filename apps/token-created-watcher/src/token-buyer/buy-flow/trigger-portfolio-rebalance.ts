@@ -7,18 +7,16 @@ import {
   type HttpDb,
   insertGliderPortfolioRebalanceLog,
   type ServerlessDb,
-  type ServerlessDbTransaction,
-  type TokenBuyerPortfolio
+  type ServerlessDbTransaction
 } from '@wiretap/db';
 
 export async function triggerPortfolioRebalance(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   rebalanceId: number,
-  { portfolio }: TokenBuyerPortfolio
+  portfolioId: string
 ): Promise<string> {
-  const triggerRebalanceRawResponse = await triggerGliderPortfolioRebalance(
-    portfolio!.portfolioId
-  );
+  const triggerRebalanceRawResponse =
+    await triggerGliderPortfolioRebalance(portfolioId);
   if (!isSuccess(triggerRebalanceRawResponse)) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,

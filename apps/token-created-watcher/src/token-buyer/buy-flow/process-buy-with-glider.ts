@@ -9,13 +9,16 @@ import { createPortfolioRebalance } from './create-portfolio-rebalance.js';
 import { triggerPortfolioRebalance } from './trigger-portfolio-rebalance.js';
 import { monitorRebalance } from './monitor-rebalance.js';
 import { withdrawTokenFromPortfolio } from './withdraw-token-from-portfolio.js';
+import type { Address } from 'viem';
+import { ac } from 'vitest/dist/chunks/reporters.d.79o4mouw.js';
+import { undefined } from 'zod';
 
 export async function processBuyWithGlider(
   tokenPercentageBps: number,
   balance: bigint,
-  tokenBuyerPortfolio: Required<TokenBuyerPortfolio>
+  tokenBuyerPortfolio: TokenBuyerPortfolio
 ): Promise<void> {
-  const { portfolio } = tokenBuyerPortfolio;
+  const { portfolio, token, account } = tokenBuyerPortfolio;
   if (!portfolio) {
     return;
   }
@@ -24,35 +27,41 @@ export async function processBuyWithGlider(
     databaseUrl: env.DATABASE_URL
   });
 
-  const rebalanceId = await createPortfolioRebalance(
-    db,
+  const rebalanceId = await createPortfolioRebalance(db, {
     balance,
     tokenPercentageBps,
-    tokenBuyerPortfolio
-  );
+    portfolioId: portfolio.wireTapId,
+    tokenId: token.id
+  });
 
   try {
-    await updatePortfolioAssetsRatio(
-      db,
+    await updatePortfolioAssetsRatio(db, {
       rebalanceId,
       tokenPercentageBps,
-      tokenBuyerPortfolio
-    );
+      tokenAddress: token.address as Address,
+      portfolioId: portfolio.portfolioId,
+      accountEntityAddress: account.accountEntityAddress as Address
+    });
     const gliderRebalanceId = await triggerPortfolioRebalance(
       db,
       rebalanceId,
-      tokenBuyerPortfolio
+      portfolio.portfolioId
     );
 
     const gliderRebalanceResult = await monitorRebalance(
       db,
       rebalanceId,
       gliderRebalanceId,
-      tokenBuyerPortfolio
+      portfolio.portfolioId
     );
     console.log(gliderRebalanceResult);
 
-    await withdrawTokenFromPortfolio(db, rebalanceId, tokenBuyerPortfolio);
+    await withdrawTokenFromPortfolio(db, {
+      rebalanceId,
+      tokenAddress: token.address as Address,
+      portfolioAddress: portfolio.address as Address,
+      portfolioId: portfolio.portfolioId
+    });
   } catch (error) {
     console.log(`Error during buy with glider flow ${JSON.stringify(error)}`);
     await insertGliderPortfolioRebalanceLog(db, {
@@ -62,7 +71,12 @@ export async function processBuyWithGlider(
   } finally {
     try {
       // set portfolio back to 100% ETH
-      await updatePortfolioAssetsRatio(db, rebalanceId, 0, tokenBuyerPortfolio);
+      await updatePortfolioAssetsRatio(db, {
+        rebalanceId,
+        tokenPercentageBps: 0,
+        portfolioId: portfolio.portfolioId,
+        accountEntityAddress: account.accountEntityAddress as Address
+      });
       await insertGliderPortfolioRebalanceLog(db, {
         gliderPortfolioRebalancesId: rebalanceId,
         label: 'SET_FULL_ETH'

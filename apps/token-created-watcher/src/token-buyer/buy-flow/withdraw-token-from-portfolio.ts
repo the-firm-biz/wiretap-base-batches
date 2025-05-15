@@ -2,24 +2,34 @@ import {
   type HttpDb,
   insertGliderPortfolioRebalanceLog,
   type ServerlessDb,
-  type ServerlessDbTransaction,
-  type TokenBuyerPortfolio
+  type ServerlessDbTransaction
 } from '@wiretap/db';
-import {
-  triggerTokenWithdrawalFromGliderPortfolio
-} from '../glider-api/trigger-token-withdrawal-from-glider-portfolio.js';
+import { triggerTokenWithdrawalFromGliderPortfolio } from '../glider-api/trigger-token-withdrawal-from-glider-portfolio.js';
 import type { Address } from 'viem';
 import { isSuccess } from './utils.js';
 
+type WithdrawTokenFromPortfolio = {
+  rebalanceId: number;
+  portfolioId: string;
+  portfolioAddress: Address;
+  tokenAddress: Address;
+};
+
 export async function withdrawTokenFromPortfolio(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
-  rebalanceId: number,
-  { portfolio, token }: TokenBuyerPortfolio
+  {
+    rebalanceId,
+    portfolioId,
+    portfolioAddress,
+    tokenAddress
+  }: WithdrawTokenFromPortfolio
 ) {
-
-  const withdrawRequestResponse = await triggerTokenWithdrawalFromGliderPortfolio(
-    portfolio!.portfolioId, portfolio!.address as Address, token.address as Address
-  );
+  const withdrawRequestResponse =
+    await triggerTokenWithdrawalFromGliderPortfolio(
+      portfolioId,
+      portfolioAddress,
+      tokenAddress
+    );
 
   if (!isSuccess(withdrawRequestResponse)) {
     await insertGliderPortfolioRebalanceLog(db, {
@@ -27,7 +37,7 @@ export async function withdrawTokenFromPortfolio(
       label: 'WITHDRAW_REQUEST_FAILED',
       response: withdrawRequestResponse
     });
-    throw new Error('WITHDRAW_REQUEST_FAILED')
+    throw new Error('WITHDRAW_REQUEST_FAILED');
   }
 
   await insertGliderPortfolioRebalanceLog(db, {
@@ -36,5 +46,4 @@ export async function withdrawTokenFromPortfolio(
     response: withdrawRequestResponse
   });
   // TODO: is there a way to see get tx by workflowId from response
-
 }

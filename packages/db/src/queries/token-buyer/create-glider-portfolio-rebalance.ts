@@ -6,7 +6,7 @@ import type {
 import {
   gliderPortfolioRebalances,
   type NewGliderPortfolioRebalance
-} from '../../schema/glider-portfolio-rebalances.js';
+} from '../../schema/index.js';
 
 export async function createGliderPortfolioRebalance(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,

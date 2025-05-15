@@ -2,8 +2,7 @@ import {
   type HttpDb,
   insertGliderPortfolioRebalanceLog,
   type ServerlessDb,
-  type ServerlessDbTransaction,
-  type TokenBuyerPortfolio
+  type ServerlessDbTransaction
 } from '@wiretap/db';
 import { callWithBackOff } from '@wiretap/utils/server';
 import {
@@ -12,7 +11,10 @@ import {
 } from '../glider-api/fetch-glider-portfolio-rebalance-status.js';
 import { isSuccess } from './utils.js';
 
-type BackoffRebalanceStatus = 'REBALANCE_FAILED' | 'REBALANCE_COMPLETED' | 'REBALANCE_NOT_COMPLETED';
+type BackoffRebalanceStatus =
+  | 'REBALANCE_FAILED'
+  | 'REBALANCE_COMPLETED'
+  | 'REBALANCE_NOT_COMPLETED';
 
 export interface BackoffRebalanceResult {
   status: BackoffRebalanceStatus;
@@ -24,14 +26,14 @@ export async function monitorRebalance(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   rebalanceId: number,
   gliderRebalanceId: string,
-  { portfolio }: TokenBuyerPortfolio
+  portfolioId: string
 ) {
   const gliderRebalanceResult: BackoffRebalanceResult | undefined =
     await callWithBackOff(
       async () => {
         const rebalanceStatusResponse =
           await fetchGliderPortfolioRebalanceStatus(
-            portfolio!.portfolioId,
+            portfolioId,
             gliderRebalanceId
           );
         if (!isSuccess(rebalanceStatusResponse)) {
@@ -70,13 +72,14 @@ export async function monitorRebalance(
           };
         }
 
-        const {
-          blockNumber,
-          transactionHash
-        } = gliderRebalanceStatus.data.result.result.userOpResults[0].receipt.receipt;
+        const { blockNumber, transactionHash } =
+          gliderRebalanceStatus.data.result.result.userOpResults[0].receipt
+            .receipt;
 
         // TODO: GET portfolio/:portfolioId trades.swaps which stats with swap-8453-${blockNumber}-${transactionHash}
-        console.log(`TODO: GET portfolio/:portfolioId trades.swaps which stats with swap-8453-${blockNumber}-${transactionHash}`)
+        console.log(
+          `TODO: GET portfolio/:portfolioId trades.swaps which stats with swap-8453-${blockNumber}-${transactionHash}`
+        );
 
         await insertGliderPortfolioRebalanceLog(db, {
           gliderPortfolioRebalancesId: rebalanceId,
@@ -94,7 +97,7 @@ export async function monitorRebalance(
       {
         delayFirstAttempt: true,
         startingDelay: 3000,
-        numOfAttempts: 20,
+        numOfAttempts: 20
       },
       {
         name: `rebalance status ${gliderRebalanceId}`

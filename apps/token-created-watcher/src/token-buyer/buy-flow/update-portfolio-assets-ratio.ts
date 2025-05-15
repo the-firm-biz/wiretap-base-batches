@@ -1,24 +1,35 @@
 import {
-  type HttpDb, insertGliderPortfolioRebalanceLog,
+  type HttpDb,
+  insertGliderPortfolioRebalanceLog,
   type ServerlessDb,
   type ServerlessDbTransaction,
-  type TokenBuyerPortfolio
 } from '@wiretap/db';
 import { updateGliderPortfolio } from '../glider-api/update-glider-portfolio.js';
 import type { Address } from 'viem';
 import { isSuccess } from './utils.js';
 
+type UpdatePortfolioAssetsRatioParams = {
+  rebalanceId: number;
+  portfolioId: string;
+  accountEntityAddress: Address;
+  tokenPercentageBps: number;
+  tokenAddress?: Address
+};
+
 export async function updatePortfolioAssetsRatio(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
-  rebalanceId: number,
-  tokenPercentageBps: number,
-  { account, portfolio, token }: TokenBuyerPortfolio
+  {
+    rebalanceId,
+    tokenPercentageBps,
+    accountEntityAddress,
+    portfolioId,
+    tokenAddress
+  }: UpdatePortfolioAssetsRatioParams,
 ): Promise<void> {
-
   const updateRawResponse = await updateGliderPortfolio({
-    accountEntityAddress: account.accountEntityAddress,
-    portfolioId: portfolio!.portfolioId,
-    tokenAddress: token.address as Address,
+    accountEntityAddress,
+    portfolioId: portfolioId,
+    tokenAddress: tokenAddress,
     tokenPercentageBps
   });
 
@@ -35,5 +46,4 @@ export async function updatePortfolioAssetsRatio(
     label: 'UPDATED',
     response: updateRawResponse
   });
-
 }
