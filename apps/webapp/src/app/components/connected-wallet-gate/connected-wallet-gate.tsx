@@ -46,7 +46,7 @@ export function ConnectedWalletGate({
   if (!address || isPartiallyConnected) {
     return (
       <PageContainer>
-        <div className="flex flex-1 flex-col h-full gap-4">
+        <div className="flex flex-col gap-4 min-h-[calc(100vh-theme(spacing.4)*2)] box-border overflow-hidden">
           <div className="flex justify-between items-center">
             <div>
               <div
@@ -83,7 +83,7 @@ export function ConnectedWalletGate({
             </div>
           </div>
 
-          <div className="p-4 border border-border rounded-md flex flex-col flex-1 relative overflow-hidden">
+          <div className="p-4 border border-border rounded-md flex flex-1 relative overflow-hidden min-h-fit">
             <DitheredAnimation
               style={{
                 position: 'absolute',
@@ -104,14 +104,14 @@ export function ConnectedWalletGate({
                       textStyles['body-emphasis'],
                       'bg-background'
                     )}
-                    emphasisStart={65}
+                    emphasisStart={67}
                   />
                 </p>
               </div>
               <div className="flex-1" />
               <Button
                 size="lg"
-                className="h-[64px]"
+                className="h-[64px] mt-8"
                 onClick={() => open()}
                 variant="secondary"
               >
@@ -125,7 +125,7 @@ export function ConnectedWalletGate({
             </p>
             <SupportedProtocolsCarousel />
           </div>
-          <Button asChild variant="outline" className="mb-8">
+          <Button asChild variant="outline" className="mb-2">
             <a href="https://thefirm.biz" target="blank">
               Get Our Next Release Early
             </a>
