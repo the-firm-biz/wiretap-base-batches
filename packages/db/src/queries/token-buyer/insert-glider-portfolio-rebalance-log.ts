@@ -6,7 +6,7 @@ import type {
 import {
   gliderPortfolioRebalancesLog,
   type NewGliderPortfolioRebalancesLog
-} from '../../schema/glider-portfolio-rebalances-log.js';
+} from '../../schema/index.js';
 
 export async function insertGliderPortfolioRebalanceLog(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
@@ -14,6 +14,5 @@ export async function insertGliderPortfolioRebalanceLog(
 ): Promise<void> {
   await db
     .insert(gliderPortfolioRebalancesLog)
-    .values(NewGliderPortfolioRebalancesLog)
-    .returning();
+    .values(NewGliderPortfolioRebalancesLog);
 }
