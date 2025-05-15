@@ -25,6 +25,14 @@ export default function TargetsPage() {
         isPendingAuthedAccountTargets={isPendingAuthedAccountTargets}
         trackedTargets={trackedTargets}
       />
+      <TrackedTargetsList
+        isPendingAuthedAccountTargets={isPendingAuthedAccountTargets}
+        trackedTargets={trackedTargets}
+      />
+      <TrackedTargetsList
+        isPendingAuthedAccountTargets={isPendingAuthedAccountTargets}
+        trackedTargets={trackedTargets}
+      />
     </div>
   );
 }
