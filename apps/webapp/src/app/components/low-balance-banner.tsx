@@ -9,9 +9,7 @@ import { useBalance } from 'wagmi';
 import useBannerStore from '../zustand/banners';
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-
-// The minimal portfolio balance under which it doesn't make sense to trigger a rebalance.
-const MIN_REBALANCE_LIMIT_WEI = BigInt(100000000000000); // 0.0001
+import { MIN_REBALANCE_LIMIT_WEI } from '@/app/constants';
 
 export const LowBalanceBanner = () => {
   const trpc = useTRPC();

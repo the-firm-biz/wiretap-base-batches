@@ -18,6 +18,7 @@ import { formatUsd } from '@/app/utils/format/format-usd';
 import { DepositState, DepositDrawerStep } from './deposit-drawer';
 import { Address } from 'viem';
 import { formatUnits } from '@/app/utils/format/format-units';
+import { MIN_GLIDER_REBALANCE_AMOUNT_ETH } from '@/app/constants';
 
 interface EthDepositFormProps {
   userBalance: number;
@@ -27,8 +28,6 @@ interface EthDepositFormProps {
 const REQUIRED_FIELD_MESSAGE = 'Required';
 const TRANSFER_GAS_ESTIMATE_ETH = 0.0000005; // @todo: Could be improved by running an eth transfer gas estimate
 const MAX_ALPHA_TESTING_DEPOSIT_AMOUNT = 0.05;
-// @TODO release - update to 0.0001
-const MIN_GLIDER_REBALANCE_AMOUNT_ETH = 0.00001; // Glider will not rebalance trades lower that $0.50
 
 export function EthDepositForm({
   userBalance,
