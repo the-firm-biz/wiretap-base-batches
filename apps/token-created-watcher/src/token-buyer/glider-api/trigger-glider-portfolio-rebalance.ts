@@ -1,4 +1,11 @@
 import { env } from '../../env.js';
+import type { SuccessAware } from './types.js';
+
+export type TriggerGliderPortfolioRebalanceResponse = SuccessAware & {
+  data: {
+    rebalanceId: string;
+  };
+};
 
 export async function triggerGliderPortfolioRebalance(
   portfolioId: string

@@ -1,5 +1,4 @@
 import {
-  createGliderPortfolioRebalance,
   type HttpDb, insertGliderPortfolioRebalanceLog,
   type ServerlessDb,
   type ServerlessDbTransaction,
@@ -9,22 +8,12 @@ import { updateGliderPortfolio } from '../glider-api/update-glider-portfolio.js'
 import type { Address } from 'viem';
 import { isSuccess } from './utils.js';
 
-export async function initiatePortfolioRebalance(
+export async function updatePortfolioInGlider(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
-  balance: bigint,
+  rebalanceId: number,
   tokenPercentageBps: number,
   { account, portfolio, token }: TokenBuyerPortfolio
-): Promise<number> {
-  const rebalanceId = await createGliderPortfolioRebalance(db, {
-    portfolioId: portfolio!.wireTapId,
-    tokenId: token.id,
-    portfolioEthBalanceWei: balance,
-    tokenRatioBps: tokenPercentageBps
-  });
-  await insertGliderPortfolioRebalanceLog(db, {
-    gliderPortfolioRebalancesId: rebalanceId,
-    action: 'CREATED'
-  });
+): Promise<void> {
 
   const updateRawResponse = await updateGliderPortfolio({
     accountEntityAddress: account.accountEntityAddress,
@@ -36,7 +25,7 @@ export async function initiatePortfolioRebalance(
   if (!isSuccess(updateRawResponse)) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
-      action: 'FAILED',
+      action: 'UPDATE_FAILED',
       response: updateRawResponse
     });
     throw new Error(updateRawResponse);
@@ -46,5 +35,5 @@ export async function initiatePortfolioRebalance(
     action: 'UPDATED',
     response: updateRawResponse
   });
-  return rebalanceId;
+
 }

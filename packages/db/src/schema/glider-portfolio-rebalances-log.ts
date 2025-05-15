@@ -9,6 +9,7 @@ export const gliderPortfolioRebalancesLog = pgTable(
       .notNull()
       .references(() => gliderPortfolioRebalances.id),
     action: text().notNull(),
+    gliderRebalanceId: text(),
     response: text()
   }
 );
