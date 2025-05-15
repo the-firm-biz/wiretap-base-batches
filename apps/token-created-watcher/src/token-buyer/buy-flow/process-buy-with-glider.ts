@@ -10,8 +10,6 @@ import { triggerPortfolioRebalance } from './trigger-portfolio-rebalance.js';
 import { monitorRebalance } from './monitor-rebalance.js';
 import { withdrawTokenFromPortfolio } from './withdraw-token-from-portfolio.js';
 import type { Address } from 'viem';
-import { ac } from 'vitest/dist/chunks/reporters.d.79o4mouw.js';
-import { undefined } from 'zod';
 
 export async function processBuyWithGlider(
   tokenPercentageBps: number,
@@ -20,6 +18,7 @@ export async function processBuyWithGlider(
 ): Promise<void> {
   const { portfolio, token, account } = tokenBuyerPortfolio;
   if (!portfolio) {
+    console.error(`No portfolio for ${JSON.stringify(tokenBuyerPortfolio)}`);
     return;
   }
 
