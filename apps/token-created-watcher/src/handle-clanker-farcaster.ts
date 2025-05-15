@@ -18,6 +18,7 @@ import { getTokenScore } from './token-score/get-token-score.js';
 import type { DeployTokenArgs } from './get-transaction-context.js';
 import { TokenIndexerError } from './errors.js';
 import { type Context, trace } from '@wiretap/utils/shared';
+import { buyToken } from './token-buyer/index.js';
 
 export interface HandleClankerFarcasterArgs {
   fid: number;
@@ -84,6 +85,9 @@ export async function handleClankerFarcaster(
         parentSpan
       }
     );
+
+    // TODO: try to call before const createdDbRows
+    buyToken(tokenCreatedData.tokenAddress);
 
     latencyMs =
       createdDbRows && tokenCreatedData.block.timestamp

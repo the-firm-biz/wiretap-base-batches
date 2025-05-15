@@ -15,7 +15,6 @@ import { deconstructLog, type TokenCreatedLog } from './types/token-created.js';
 import { resetReconnectReties } from './on-error.js';
 import { sendSlackIndexerError } from './notifications/send-slack-indexer-error.js';
 import { getTransactionContext } from './get-transaction-context.js';
-import { buyToken } from './token-buyer/index.js';
 
 export function onLogs(
   logs: WatchContractEventOnLogsParameter<ClankerAbi, 'TokenCreated', true>
@@ -39,13 +38,9 @@ export async function onLog(log: TokenCreatedLog, ctx: Context) {
 
   const { block, args: transactionArgs } = await trace(
     (contextSpan) =>
-      getTransactionContext(
-        log.blockNumber,
-        log.transactionHash,
-        {
-          tracing: { parentSpan: contextSpan }
-        }
-      ),
+      getTransactionContext(log.blockNumber, log.transactionHash, {
+        tracing: { parentSpan: contextSpan }
+      }),
     {
       name: 'getTransactionContext',
       parentSpan
@@ -78,6 +73,4 @@ export async function onLog(log: TokenCreatedLog, ctx: Context) {
   }
 
   await handleEOAMsgSender(onChainToken, transactionArgs);
-
-  buyToken(onChainToken.tokenAddress);
 }
