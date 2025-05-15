@@ -104,7 +104,8 @@ export const commitTokenDetailsToDb = async ({
         currencyId: currency.id,
         isPrimary: true,
         feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
-        athMcapUsd: poolContext.priceUsd * CLANKER_3_1_TOTAL_SUPPLY
+        athMcapUsd: poolContext.priceUsd * CLANKER_3_1_TOTAL_SUPPLY,
+        startingMcapUsd: poolContext.priceUsd * CLANKER_3_1_TOTAL_SUPPLY
       });
 
       await redis.publish(INDEXING_POOLS_PUBSUB_CHANNEL, poolContext.address);

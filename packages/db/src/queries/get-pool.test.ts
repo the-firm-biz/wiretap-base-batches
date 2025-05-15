@@ -79,7 +79,8 @@ describe('getPool', () => {
         currencyId: testCurrency!.id,
         isPrimary: true,
         feeBps: 300,
-        athMcapUsd: 1000000
+        athMcapUsd: 1000000,
+        startingMcapUsd: 1000000
       })
       .returning();
   });

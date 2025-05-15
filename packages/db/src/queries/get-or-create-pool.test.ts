@@ -14,6 +14,7 @@ const newPool: NewPool = {
   currencyId: 1,
   feeBps: 300,
   athMcapUsd: 1.25,
+  startingMcapUsd: 1.25,
   isPrimary: true
 };
 

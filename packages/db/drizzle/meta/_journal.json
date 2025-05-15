@@ -169,6 +169,13 @@
       "when": 1747241872160,
       "tag": "0023_brown_warbound",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1747325535089,
+      "tag": "0024_concerned_katie_power",
+      "breakpoints": true
     }
   ]
 }
