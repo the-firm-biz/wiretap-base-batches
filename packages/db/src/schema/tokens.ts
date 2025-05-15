@@ -42,6 +42,9 @@ export const tokens = pgTable(
   (table) => [
     index('tokens_account_entity_id_idx').on(table.accountEntityId),
     uniqueIndex('tokens_address_lower_unique').on(lower(table.address))
+     // Used for pagination
+     index('tokens_created_at_idx').on(table.createdAt),
+     index('tokens_created_at_id_idx').on(table.createdAt, table.id)
   ]
 );
 
