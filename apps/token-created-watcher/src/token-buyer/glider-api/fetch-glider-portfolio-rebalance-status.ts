@@ -20,7 +20,7 @@ export type GliderRebalanceStatus = SuccessAware & {
   }
 }
 
-export async function fetchGliderPortfolioRebalanceStatus(portfolioId: string, rebalanceId: string): Promise<string> {
+export async function fetchGliderPortfolioRebalanceStatus(portfolioId: string, rebalanceId: string): Promise<GliderRebalanceStatus> {
   const result = await fetch(
     `https://api.glider.fi/v1/portfolio/${portfolioId}/rebalance/status/${rebalanceId}`,
     {
@@ -31,5 +31,5 @@ export async function fetchGliderPortfolioRebalanceStatus(portfolioId: string, r
       }
     }
   );
-  return await result.text();
+  return await result.json() as GliderRebalanceStatus;
 }

@@ -9,7 +9,7 @@ export type TriggerGliderPortfolioRebalanceResponse = SuccessAware & {
 
 export async function triggerGliderPortfolioRebalance(
   portfolioId: string
-): Promise<string> {
+): Promise<TriggerGliderPortfolioRebalanceResponse> {
   const result = await fetch(
     `https://api.glider.fi/v1/portfolio/${portfolioId}/rebalance/schedule/trigger`,
     {
@@ -23,5 +23,5 @@ export async function triggerGliderPortfolioRebalance(
       })
     }
   );
-  return await result.text();
+  return await result.json() as TriggerGliderPortfolioRebalanceResponse;
 }

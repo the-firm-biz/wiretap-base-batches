@@ -6,7 +6,6 @@ import {
 } from '@wiretap/db';
 import { triggerTokenWithdrawalFromGliderPortfolio } from '../glider-api/trigger-token-withdrawal-from-glider-portfolio.js';
 import type { Address } from 'viem';
-import { isSuccess } from './utils.js';
 
 type WithdrawTokenFromPortfolio = {
   rebalanceId: number;
@@ -31,7 +30,7 @@ export async function withdrawTokenFromPortfolio(
       tokenAddress
     );
 
-  if (!isSuccess(withdrawRequestResponse)) {
+  if (!withdrawRequestResponse.success) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
       label: 'WITHDRAW_REQUEST_FAILED',

@@ -1,6 +1,6 @@
 {
-  "id": "ca688528-cc43-4a61-bd6e-e3d3f76ab7fc",
-  "prevId": "eaf0ec25-276e-41f4-b722-192cdff1f705",
+  "id": "1c7894c7-f2af-402e-bf6d-e3285c38d70e",
+  "prevId": "6e6d5d22-7cc9-4d01-9dea-dad549da306b",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1160,7 +1160,7 @@
         },
         "response": {
           "name": "response",
-          "type": "text",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         }

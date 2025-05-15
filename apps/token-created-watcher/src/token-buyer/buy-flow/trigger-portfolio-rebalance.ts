@@ -1,8 +1,4 @@
-import {
-  triggerGliderPortfolioRebalance,
-  type TriggerGliderPortfolioRebalanceResponse
-} from '../glider-api/trigger-glider-portfolio-rebalance.js';
-import { isSuccess } from './utils.js';
+import { triggerGliderPortfolioRebalance } from '../glider-api/trigger-glider-portfolio-rebalance.js';
 import {
   type HttpDb,
   insertGliderPortfolioRebalanceLog,
@@ -17,7 +13,7 @@ export async function triggerPortfolioRebalance(
 ): Promise<string> {
   const triggerRebalanceRawResponse =
     await triggerGliderPortfolioRebalance(portfolioId);
-  if (!isSuccess(triggerRebalanceRawResponse)) {
+  if (!triggerRebalanceRawResponse.success) {
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
       label: 'TRIGGER_FAILED',
@@ -25,11 +21,7 @@ export async function triggerPortfolioRebalance(
     });
     throw new Error('TRIGGER_FAILED');
   }
-  const gliderRebalanceId = (
-    JSON.parse(
-      triggerRebalanceRawResponse
-    ) as TriggerGliderPortfolioRebalanceResponse
-  ).data.rebalanceId;
+  const gliderRebalanceId = triggerRebalanceRawResponse.data.rebalanceId;
   await insertGliderPortfolioRebalanceLog(db, {
     gliderPortfolioRebalancesId: rebalanceId,
     label: 'TRIGGERED',

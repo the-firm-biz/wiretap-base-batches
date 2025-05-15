@@ -1,12 +1,13 @@
 import { type Address, erc20Abi } from 'viem';
 import { env } from '../../env.js';
 import { httpPublicClient } from '../../rpc-clients.js';
+import type {SuccessAware} from "./types.js";
 
 export async function triggerTokenWithdrawalFromGliderPortfolio(
   portfolioId: string,
   portfolioAddress: Address,
   tokenAddress: Address
-): Promise<string> {
+): Promise<SuccessAware> {
   const tokenBalance = await httpPublicClient.readContract({
     address: tokenAddress,
     abi: erc20Abi,
@@ -34,5 +35,5 @@ export async function triggerTokenWithdrawalFromGliderPortfolio(
       })
     }
   );
-  return await result.text();
+  return await result.json() as SuccessAware;
 }

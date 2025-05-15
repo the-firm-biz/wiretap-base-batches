@@ -1,5 +1,6 @@
 import type { Address } from 'viem';
 import { env } from '../../env.js';
+import type { SuccessAware } from './types.js';
 
 export type UpdatePortfolioParams = {
   accountEntityAddress: string;
@@ -13,7 +14,7 @@ export async function updateGliderPortfolio({
   portfolioId,
   tokenAddress,
   tokenPercentageBps
-}: UpdatePortfolioParams): Promise<string> {
+}: UpdatePortfolioParams): Promise<SuccessAware> {
   const assets = [
     {
       blockType: 'asset',
@@ -53,5 +54,5 @@ export async function updateGliderPortfolio({
       })
     }
   );
-  return await response.text();
+  return await response.json() as SuccessAware;
 }

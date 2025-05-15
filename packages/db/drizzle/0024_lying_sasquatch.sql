@@ -13,7 +13,7 @@ CREATE TABLE "glider_portfolio_rebalances_log" (
 	"label" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"glider_rebalance_id" text,
-	"response" text
+	"response" jsonb
 );
 --> statement-breakpoint
 DROP INDEX "tokens_block_idx";--> statement-breakpoint

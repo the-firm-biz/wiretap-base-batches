@@ -5,11 +5,7 @@ import {
   type ServerlessDbTransaction
 } from '@wiretap/db';
 import { callWithBackOff } from '@wiretap/utils/server';
-import {
-  fetchGliderPortfolioRebalanceStatus,
-  type GliderRebalanceStatus
-} from '../glider-api/fetch-glider-portfolio-rebalance-status.js';
-import { isSuccess } from './utils.js';
+import { fetchGliderPortfolioRebalanceStatus } from '../glider-api/fetch-glider-portfolio-rebalance-status.js';
 
 type BackoffRebalanceStatus =
   | 'REBALANCE_FAILED'
@@ -36,7 +32,7 @@ export async function monitorRebalance(
             portfolioId,
             gliderRebalanceId
           );
-        if (!isSuccess(rebalanceStatusResponse)) {
+        if (!rebalanceStatusResponse.success) {
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
@@ -47,10 +43,7 @@ export async function monitorRebalance(
             status: 'REBALANCE_FAILED'
           };
         }
-        const gliderRebalanceStatus = JSON.parse(
-          rebalanceStatusResponse
-        ) as GliderRebalanceStatus;
-        if (gliderRebalanceStatus.data.status === 'running') {
+        if (rebalanceStatusResponse.data.status === 'running') {
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
@@ -60,7 +53,7 @@ export async function monitorRebalance(
           throw new Error('REBALANCE_RUNNING'); // to repeat backoff
         }
 
-        if (gliderRebalanceStatus.data.status !== 'completed') {
+        if (rebalanceStatusResponse.data.status !== 'completed') {
           await insertGliderPortfolioRebalanceLog(db, {
             gliderPortfolioRebalancesId: rebalanceId,
             gliderRebalanceId: gliderRebalanceId,
@@ -73,7 +66,7 @@ export async function monitorRebalance(
         }
 
         const { blockNumber, transactionHash } =
-          gliderRebalanceStatus.data.result.result.userOpResults[0].receipt
+          rebalanceStatusResponse.data.result.result.userOpResults[0].receipt
             .receipt;
 
         // TODO: GET portfolio/:portfolioId trades.swaps which stats with swap-8453-${blockNumber}-${transactionHash}
