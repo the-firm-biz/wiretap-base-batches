@@ -38,13 +38,9 @@ export async function onLog(log: TokenCreatedLog, ctx: Context) {
 
   const { block, args: transactionArgs } = await trace(
     (contextSpan) =>
-      getTransactionContext(
-        log.blockNumber,
-        log.transactionHash,
-        {
-          tracing: { parentSpan: contextSpan }
-        }
-      ),
+      getTransactionContext(log.blockNumber, log.transactionHash, {
+        tracing: { parentSpan: contextSpan }
+      }),
     {
       name: 'getTransactionContext',
       parentSpan

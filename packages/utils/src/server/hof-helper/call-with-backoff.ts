@@ -25,14 +25,14 @@ export async function callWithBackOff<T>(
     }
   };
 
-  const backoffSpan = new Span(`backoff_${contextName}`);
+  const backoffSpan = new Span(`backoff: ${contextName}`);
   try {
     const backOffResult = await backOff(async () => {
       return await trace(
         async (contextSpan) => {
           const fnResult = await fn(contextSpan);
-          if (!fnResult) {
-            throw new Error(`no result for ${contextName}`);
+          if (fnResult === undefined) {
+            throw new Error(`undefined result for ${contextName}`);
           }
           return fnResult;
         },

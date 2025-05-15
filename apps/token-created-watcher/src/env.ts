@@ -12,6 +12,7 @@ const envSchema = z.object({
   NEYNAR_API_KEY: z.string(),
   SERVER_ALCHEMY_API_KEY: z.string(),
   DATABASE_URL: z.string(),
+  GLIDER_API_KEY: z.string(),
   IS_SLACK_NOTIFICATION_ENABLED: stringBool,
   REDIS_URL: z.string()
 });
