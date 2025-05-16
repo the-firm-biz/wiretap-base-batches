@@ -346,6 +346,10 @@ importers:
         version: 5.8.3
 
   packages/config:
+    dependencies:
+      viem:
+        specifier: ^2.29.2
+        version: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
     devDependencies:
       '@wiretap/eslint-config':
         specifier: workspace:*
