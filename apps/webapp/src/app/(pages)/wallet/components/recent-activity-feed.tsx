@@ -20,19 +20,19 @@ export function RecentActivityFeed({
     useShallow((state) => state.lowBalanceBannerPresent)
   );
   const getMaxHeight = () => {
-    // Header
+    // Header height
     // 64 +
-    // Wallet balance area
+    // Wallet balance height
     // 196 +
-    // Recent activity text + top padding
+    // Recent activity text + top padding height
     // 68 +
-    // Footer
+    // Footer height
     // 69
-    // Without low balance banner total = 397
+    // Without low balance banner total = 397px
 
-    // LowBalanceBanner
+    // LowBalanceBanner height
     // + 40
-    // With low balance banner total = 437
+    // With low balance banner total = 437px
     if (isShowingLowBalanceBanner) {
       return `max-h-[calc(100dvh-437px)]`;
     }
