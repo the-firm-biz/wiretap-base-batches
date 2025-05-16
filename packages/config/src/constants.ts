@@ -1,3 +1,5 @@
+import { parseEther } from 'viem';
+
 export const CLANKER_3_1_FIRST_DEPLOYED_TOKEN_BLOCK = 27733501;
 
 /** Farcaster user follower count threshold */
@@ -25,3 +27,9 @@ export const ETH_USD_PRICE_ID =
 
 /** PubSub channel for indexing pools */
 export const INDEXING_POOLS_PUBSUB_CHANNEL = 'indexer:token-pool-added';
+
+/**
+ * The minimum trade size where we will attempt to execute a rebalance
+ * @TODO: make USD based
+ */
+export const MIN_TRADE_THRESHOLD_WEI: bigint = parseEther('0.0002', 'wei');
