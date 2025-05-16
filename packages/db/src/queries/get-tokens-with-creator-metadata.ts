@@ -15,6 +15,7 @@ export interface TokenWithCreatorMetadataCursor {
 }
 
 export interface TokenWithCreatorMetadata {
+  accountEntityId: number;
   tokenId: number;
   tokenSymbol: string;
   tokenAddress: string;
@@ -46,8 +47,9 @@ export async function getTokensWithCreatorMetadata(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   { pageSize = 50, cursor }: GetTokensWithCreatorMetadataArgs
 ): Promise<TokenWithCreatorMetadata[]> {
-  return await db
+  const tokensWithMetadata = await db
     .select({
+      accountEntityId: tokens.accountEntityId,
       // Token fields
       tokenId: tokens.id,
       tokenSymbol: tokens.symbol,
@@ -103,4 +105,24 @@ export async function getTokensWithCreatorMetadata(
     )
     .orderBy(desc(tokens.createdAt))
     .limit(pageSize);
+
+  // Post-processing
+  // Due to left joins we can end up with duplicate rows in the result set
+  // For now, since UI doesn't really need that much info about the token
+  // we ignore possible multi-fid multi-pool scenarios and just take the first match
+  // Note that due to this the result can be fewer than pageSize elements
+  // TODO: For the full public launch this should be revisited
+
+  const processedTokensWithMetadata = tokensWithMetadata.reduce<
+    TokenWithCreatorMetadata[]
+  >((acc, cur) => {
+    const duplicatedTokenRow = acc.find((t) => t.tokenId === cur.tokenId);
+    if (duplicatedTokenRow) {
+      return acc;
+    }
+    acc.push(cur);
+    return acc;
+  }, []);
+
+  return processedTokensWithMetadata;
 }
