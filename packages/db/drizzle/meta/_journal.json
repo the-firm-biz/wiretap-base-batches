@@ -218,6 +218,13 @@
       "when": 1747383579567,
       "tag": "0030_rebalance-label-trigger-tx",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1747396245756,
+      "tag": "0031_rebalance-label-tx-monitoring",
+      "breakpoints": true
     }
   ]
 }

@@ -12,8 +12,10 @@ import { withdrawTokenFromPortfolio } from './withdraw-token-from-portfolio.js';
 import { type Address, erc20Abi } from 'viem';
 import { callWithBackOff, RebalancesLogLabel } from '@wiretap/utils/server';
 import { httpPublicClient } from '../../rpc-clients.js';
-import { executeRebalanceWithCallData } from './execute-rebalance-with-calldata.js';
+import { executeBuyOnUniswap } from './execute-buy-on-uniswap.js';
 import { CURRENCY_ADDRESSES } from '@wiretap/config';
+import { bigIntReplacer } from '@wiretap/utils/shared';
+import { monitorTransactionExecution } from './monitor-transaction-execution.js';
 
 type BuyAmounts = {
   tokenPercentageBps: number;
@@ -66,17 +68,21 @@ export async function processBuyWithGlider(
       }
     );
 
-
     if (!wethBalance || wethBalance === 0n) {
-      const txWorkflow = await executeRebalanceWithCallData(db, {
+      const executionId = await executeBuyOnUniswap(db, {
         portfolioId: portfolio.portfolioId,
         rebalanceId,
         amountInWei: buyAmountInWei,
         tokenAddress: token.address as Address,
         recipient: portfolio.address as Address
-        }
+      });
+      const txExecutionId = await monitorTransactionExecution(
+        db,
+        rebalanceId,
+        executionId,
+        portfolio.portfolioId
       );
-      console.log(txWorkflow);
+      console.log(txExecutionId);
     } else {
       const gliderRebalanceId = await triggerPortfolioRebalance(
         db,
@@ -99,7 +105,9 @@ export async function processBuyWithGlider(
       portfolioId: portfolio.portfolioId
     });
   } catch (error) {
-    console.log(`Error during buy with glider flow ${JSON.stringify(error)}`);
+    console.log(
+      `Error during buy with glider flow ${JSON.stringify(error, bigIntReplacer)}`
+    );
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
       label: RebalancesLogLabel.ERROR

@@ -9,10 +9,8 @@ import {
   type ServerlessDb,
   type ServerlessDbTransaction
 } from '@wiretap/db';
-import {  RebalancesLogLabel } from '@wiretap/utils/server';
-import { portfolioExecuteTransaction } from '../glider-api/portfolio-execute-transaction.js';
-import type { SuccessAware } from '../glider-api/types.js';
-import { bigIntReplacer } from '@wiretap/utils/shared';
+import { RebalancesLogLabel } from '@wiretap/utils/server';
+import { executeCustomTransactionOnGlider } from '../glider-api/execute-custom-transaction-on-glider.js';
 
 const swapRouterAbi = [
   {
@@ -26,7 +24,6 @@ const swapRouterAbi = [
           { name: 'tokenOut', type: 'address' },
           { name: 'fee', type: 'uint24' },
           { name: 'recipient', type: 'address' },
-          { name: 'deadline', type: 'uint256' },
           { name: 'amountIn', type: 'uint256' },
           { name: 'amountOutMinimum', type: 'uint256' },
           { name: 'sqrtPriceLimitX96', type: 'uint160' }
@@ -39,17 +36,15 @@ const swapRouterAbi = [
   }
 ] as const;
 
-const DEADLINE_SECONDS = 60;
-
 type ExecuteRebalanceWithCallDataParams = {
-  portfolioId: string,
+  portfolioId: string;
   rebalanceId: number;
   tokenAddress: Address;
   recipient: Address;
   amountInWei: bigint;
 };
 
-export async function executeRebalanceWithCallData(
+export async function executeBuyOnUniswap(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   {
     portfolioId,
@@ -64,32 +59,25 @@ export async function executeRebalanceWithCallData(
     tokenOut: tokenAddress,
     fee: CLANKER_3_1_UNISWAP_FEE_BPS,
     recipient: recipient,
-    deadline: BigInt(Math.floor(Date.now() / 1_000) + DEADLINE_SECONDS),
     amountIn: amountInWei,
     amountOutMinimum: 0n,
     sqrtPriceLimitX96: 0n
   };
 
-  console.log(JSON.stringify(params, bigIntReplacer, 2))
-
-  const calldata = encodeFunctionData({
-    abi: swapRouterAbi,
-    functionName: 'exactInputSingle',
-    args: [params]
+  const executeTxResponse = await executeCustomTransactionOnGlider(portfolioId, {
+    to: '0x2626664c2603336E57B271c5C0b26F421741e481' as Address,
+    data: encodeFunctionData({
+      abi: swapRouterAbi,
+      functionName: 'exactInputSingle',
+      args: [params]
+    }),
+    value: amountInWei.toString() // wrap-and-swap: ETH sent with the call
   });
 
-  const txPayload = {
-    to: '0x2626664c2603336E57B271c5C0b26F421741e481' as Address,
-    value: amountInWei.toString(), // wrap-and-swap: ETH sent with the call
-    data: calldata
-  };
-
-  const executeTxResponse = await portfolioExecuteTransaction(portfolioId, txPayload);
-
-  console.log(JSON.stringify(executeTxResponse, null, 2));
-
   const success =
-    executeTxResponse && (executeTxResponse as SuccessAware).success;
+    executeTxResponse &&
+    executeTxResponse.success &&
+    executeTxResponse.data?.simulation?.success;
 
   if (!success) {
     await insertGliderPortfolioRebalanceLog(db, {
@@ -99,12 +87,13 @@ export async function executeRebalanceWithCallData(
     });
     throw new Error(RebalancesLogLabel.TRIGGER_VIA_TX_FAILED.toString());
   }
-  throw Error('TEST RUN');
-  // const gliderRebalanceId = executeTxResponse.data.rebalanceId;
-  // await insertGliderPortfolioRebalanceLog(db, {
-  //   gliderPortfolioRebalancesId: rebalanceId,
-  //   label: RebalancesLogLabel.TRIGGERED_VIA_TX,
-  //   response: executeTxResponse,
-  //   gliderRebalanceId
-  // });
+
+  const gliderExecutionId = executeTxResponse.data?.executionId;
+  await insertGliderPortfolioRebalanceLog(db, {
+    gliderPortfolioRebalancesId: rebalanceId,
+    label: RebalancesLogLabel.TRIGGERED_VIA_TX,
+    response: executeTxResponse,
+    gliderRebalanceId: gliderExecutionId
+  });
+  return gliderExecutionId;
 }
