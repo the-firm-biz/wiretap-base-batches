@@ -87,7 +87,7 @@ export async function monitorTransactionExecution(
 
       return {
         status: RebalancesLogLabel.TX_EXECUTION_COMPLETED,
-        txHash: executionId
+        txHash: txHash
       } as BackoffTransactionExecutionResult;
     },
     {
