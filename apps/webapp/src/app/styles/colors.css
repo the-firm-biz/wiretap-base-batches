@@ -38,6 +38,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-first-token-badge: var(--first-token-badge);
+  --color-first-token-badge-foreground: var(--first-token-badge-foreground);
+  --color-token-badge: var(--token-badge);
+  --color-token-badge-foreground: var(--token-badge-foreground);
 }
 
 :root {
@@ -62,6 +66,17 @@
   --color-red-900: #7f1d1d;
   --color-green-600: #16a34a;
   --color-green-700: #15803d;
+
+  /** TODO: temp colors for badges, ask BBB to update */
+
+  --color-orange-100: #ffedd5;
+  --color-yellow-400: #facc15;
+  --color-yellow-600: #ca8a04;
+  --color-yellow-900: #713f12;
+  --color-blue-100: #dbeafe;
+  --color-blue-300: #93c5fd;
+  --color-blue-600: #2563eb;
+  --color-blue-900: #1e3a8a;
   /**
   * Light theme values
   */
@@ -99,6 +114,10 @@
   --sidebar-accent-foreground: var(--color-sage-200);
   --sidebar-border: var(--color-sage-900);
   --sidebar-ring: var(--color-sage-900);
+  --first-token-badge: var(--color-orange-100);
+  --first-token-badge-foreground: var(--color-yellow-600);
+  --token-badge: var(--color-blue-100);
+  --token-badge-foreground: var(--color-blue-600);
 }
 /**
  * Dark theme values
@@ -138,6 +157,10 @@
   --sidebar-accent-foreground: var(--color-sage-900);
   --sidebar-border: var(--color-sage-500);
   --sidebar-ring: var(--color-sage-200);
+  --first-token-badge: var(--color-yellow-400);
+  --first-token-badge-foreground: var(--color-yellow-900);
+  --token-badge: var(--color-blue-900);
+  --token-badge-foreground: var(--color-blue-300);
 }
 
 /**

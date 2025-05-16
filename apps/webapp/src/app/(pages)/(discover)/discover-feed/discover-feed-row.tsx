@@ -3,7 +3,7 @@ import AnimatedEllipsisText from '@/app/components/animated-ellipsis-text';
 import { ExternalImage } from '@/app/components/external-image';
 import { SpendAdjustDrawer } from '@/app/components/spend-adjust-drawer/spend-adjust-drawer';
 import { Badge } from '@/app/components/ui/badge';
-import { Button } from '@/app/components/ui/button';
+import { Button, buttonVariants } from '@/app/components/ui/button';
 import { textStyles } from '@/app/styles/template-strings';
 import { trpcClientUtils, useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { formatAddress } from '@/app/utils/format/format-address';
@@ -14,6 +14,14 @@ import { TokenWithCreatorMetadata } from '@wiretap/db';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { ClankerLogoIcon } from '@/app/components/icons/ClankerLogoIcon';
+import { DexScreenerLogoIcon } from '@/app/components/icons/DexScreenerLogoIcon';
+import { GlobeIcon } from '@/app/components/icons/GlobeIcon';
+import { WireTapEdgeBadge } from './wiretap-edge-badge';
+import { cn } from '@/app/utils';
+import {
+  getClankerWorldUrl,
+  getDexScreenerUrl
+} from '@/app/utils/externalUrls';
 
 export function DiscoverFeedRow({
   token,
@@ -31,10 +39,11 @@ export function DiscoverFeedRow({
     creatorAddress,
     tokenCreatedAt,
     tokenName,
+    tokenAddress,
     tokenSymbol,
     tokenImageUrl,
     poolAthMcapUsd,
-    // poolStartingMcapUsd,
+    poolStartingMcapUsd,
     creatorTokenIndex
     // deploymentContractAddress,
   } = token;
@@ -178,13 +187,13 @@ export function DiscoverFeedRow({
         <div className="flex items-center gap-1">
           {creatorTokenIndex + 1 === 1 ? (
             <Badge
-              className={`bg-yellow-100 text-yellow-600 ${textStyles['code-01']}`}
+              className={`bg-first-token-badge text-first-token-badge-foreground ${textStyles['code-01']}`}
             >
               🎉 Launch #{creatorTokenIndex + 1}
             </Badge>
           ) : (
             <Badge
-              className={`bg-blue-100 text-blue-600 ${textStyles['code-01']}`}
+              className={`bg-token-badge text-token-badge-foreground ${textStyles['code-01']}`}
             >
               Launch #{creatorTokenIndex + 1}
             </Badge>
@@ -198,8 +207,8 @@ export function DiscoverFeedRow({
             })}
           </span>
         </div>
-        <div className="flex flex-col rounded-md border border-border gap-4 p-[12px]">
-          <div className="grid grid-cols-[32px_1fr_88px] gap-2 w-full">
+        <div className="flex flex-col rounded-md border border-border gap-4 p-3">
+          <div className="grid grid-cols-[32px_1fr_88px] items-center gap-2 w-full">
             <ExternalImage
               src={tokenImageUrl ?? undefined}
               fallbackSrc="/token-image-missing.svg"
@@ -212,25 +221,47 @@ export function DiscoverFeedRow({
               <p className={textStyles['compact-emphasis']}>{tokenSymbol}</p>
               <p className={textStyles['label']}>{tokenName}</p>
             </div>
-            <div className="flex gap-1">
-              {/* @todo Discover - Base scan & dexscreener links */}
-              <div className="flex gap-1"></div>
+            <div className="flex gap-1 justify-self-end">
+              <a
+                className={cn(
+                  buttonVariants({ variant: 'outline', size: 'icon' }),
+                  'w-10'
+                )}
+                href={getClankerWorldUrl(tokenAddress)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <GlobeIcon className="size-4" />
+              </a>
+              <a
+                className={cn(
+                  buttonVariants({ variant: 'outline', size: 'icon' }),
+                  'w-10'
+                )}
+                href={getDexScreenerUrl(tokenAddress)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <DexScreenerLogoIcon className="size-4" />
+              </a>
             </div>
           </div>
-          {/* @todo Discover - WireTap Edge */}
-          {/* Calculate the gap between poolStartingMcapUsd and poolAthMcapUsd */}
-          <div className="flex border border-border w-fit px-8">
-            WireTap Edge
-          </div>
+          <WireTapEdgeBadge
+            poolStartingMcapUsd={poolStartingMcapUsd}
+            poolAthMcapUsd={poolAthMcapUsd}
+          />
 
           <div className="flex flex-col">
             <p className={textStyles['label']}>Mcap</p>
-            <p className={textStyles['label']}>
+            <p className={textStyles['code-01']}>
               $
-              {poolAthMcapUsd?.toLocaleString(undefined, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-              })}
+              {poolAthMcapUsd
+                ? Intl.NumberFormat('en', {
+                    notation: 'compact',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  }).format(poolAthMcapUsd)
+                : ''}
             </p>
             {/* @todo Discover - MCap change percentage - we don't have data for prev 24hrs mcap so leave this */}
           </div>
