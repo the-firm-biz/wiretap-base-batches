@@ -2,7 +2,8 @@
 
 import { useTheme } from 'next-themes';
 import { useIsMounted } from '@/app/hooks/use-is-mounted';
-import { Sun, Moon } from 'lucide-react';
+import { SunIcon } from './icons/SunIcon';
+import { MoonIcon } from './icons/MoonIcon';
 import { DropdownMenuItem } from './ui/dropdown-menu';
 
 export function PaletteSwitcher() {
@@ -13,7 +14,7 @@ export function PaletteSwitcher() {
 
   const isDark = theme === 'dark';
   const nextTheme = isDark ? 'light' : 'dark';
-  const Icon = isDark ? Moon : Sun;
+  const Icon = isDark ? MoonIcon : SunIcon;
 
   return (
     <DropdownMenuItem
@@ -24,7 +25,7 @@ export function PaletteSwitcher() {
       aria-label="Toggle interface theme"
     >
       Interface Theme
-      <Icon className="w-4 h-4 ml-auto" />
+      <Icon className="w-4 h-4 opacity-70 ml-auto" />
     </DropdownMenuItem>
   );
 }

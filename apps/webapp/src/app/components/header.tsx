@@ -15,8 +15,8 @@ import { PaletteSwitcher } from '@/app/components/palette-switcher';
 import { useAddFrame, useMiniKit } from '@coinbase/onchainkit/minikit';
 import { Button } from './ui/button';
 import { FarcasterIcon } from './icons/FarcasterIcon';
-import { Menu, ExternalLink } from 'lucide-react';
-import React from 'react';
+import { ExternalLinkIcon } from './icons/ExternalLinkIcon';
+import { MenuIcon } from './icons/MenuIcon';
 interface HeaderProps {
   pageTitle: string;
   pageTitleClassName?: ClassValue;
@@ -74,7 +74,7 @@ export function Header({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Open menu">
-                <Menu className="w-5 h-5" />
+                <MenuIcon className="w-5 h-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -87,7 +87,7 @@ export function Header({
                   className="w-full flex items-center gap-2"
                 >
                   Get Our Next Release Early
-                  <ExternalLink
+                  <ExternalLinkIcon
                     className="w-4 h-4 opacity-70"
                     style={{ color: 'currentColor' }}
                   />
