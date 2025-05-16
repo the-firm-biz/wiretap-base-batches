@@ -47,7 +47,18 @@ export async function onLog(log: TokenCreatedLog, ctx: Context) {
     }
   );
 
-  const onChainToken = await deconstructLog(log, transactionArgs, block);
+  const onChainToken = await trace(
+    (contextSpan) =>
+      deconstructLog(
+        log,
+        transactionArgs,
+        {
+          tracing: { parentSpan: contextSpan }
+        },
+        block
+      ),
+    { name: 'deconstructLog', parentSpan }
+  );
 
   if (!onChainToken) {
     return;

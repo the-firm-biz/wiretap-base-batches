@@ -1,12 +1,16 @@
 import type { Address } from 'viem';
 import type { DeployTokenArgs } from './get-transaction-context.js';
-import { computePoolAddress, tickToPrice } from '@uniswap/v3-sdk';
+import { computePoolAddress } from '@uniswap/v3-sdk';
 import { ChainId, Token } from '@uniswap/sdk-core';
 import {
   CLANKER_3_1_UNISWAP_FEE_BPS,
+  Q192,
+  UNISWAP_POOL_V3_ABI,
   UNISWAP_V3_ADDRESSES
 } from '@wiretap/config';
-import { fetchLatest } from '@wiretap/utils/server';
+import { callWithBackOff, fetchLatest } from '@wiretap/utils/server';
+import { httpPublicClient } from './rpc-clients.js';
+import type { Context } from '@wiretap/utils/shared';
 
 export interface PoolContext {
   address: Address;
@@ -18,22 +22,12 @@ export interface PoolContext {
 
 export async function getPoolContext(
   tokenAddress: Address,
-  args: DeployTokenArgs
+  args: DeployTokenArgs,
+  { tracing: { parentSpan } = {} }: Context
 ): Promise<PoolContext> {
   const newToken = new Token(ChainId.BASE, tokenAddress, 18);
   const pairedToken = new Token(ChainId.BASE, args.poolConfig.pairedToken, 18);
-  const token0IsNewToken = newToken.address < pairedToken.address;
-
-  const uniswapPrice = tickToPrice(
-    newToken,
-    pairedToken,
-    args.poolConfig.tickIfToken0IsNewToken
-  );
-
-  const ethUsdPrice = await fetchLatest('eth_usd');
-
-  const priceEth = parseFloat(uniswapPrice.toSignificant(18));
-  const priceUsd = priceEth * ethUsdPrice.formatted;
+  const token0IsNewToken = newToken.sortsBefore(pairedToken);
 
   const poolAddress = computePoolAddress({
     factoryAddress: UNISWAP_V3_ADDRESSES.FACTORY,
@@ -42,11 +36,36 @@ export async function getPoolContext(
     fee: CLANKER_3_1_UNISWAP_FEE_BPS
   });
 
+  const slot0 = await callWithBackOff(
+    () =>
+      httpPublicClient.readContract({
+        address: poolAddress as `0x${string}`,
+        abi: UNISWAP_POOL_V3_ABI,
+        functionName: 'slot0'
+      }),
+    undefined,
+    {
+      name: 'getSlot0',
+      tracing: { parentSpan }
+    }
+  );
+
+  if (!slot0) {
+    throw new Error(`Slot0 not found for pool ${poolAddress}`);
+  }
+
+  const tokenPriceEth = token0IsNewToken
+    ? Number(slot0[0]) ** 2 / Number(Q192)
+    : 1 / (Number(slot0[0]) ** 2 / Number(Q192));
+
+  const ethUsdPrice = await fetchLatest('eth_usd');
+  const priceUsd = tokenPriceEth * ethUsdPrice.formatted;
+
   return {
     address: poolAddress as Address,
     pairedAddress: args.poolConfig.pairedToken,
+    priceEth: tokenPriceEth,
     token0IsNewToken,
-    priceEth,
     priceUsd
   };
 }
