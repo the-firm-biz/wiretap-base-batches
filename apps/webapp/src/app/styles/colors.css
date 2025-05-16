@@ -73,10 +73,8 @@
   --color-yellow-400: #facc15;
   --color-yellow-600: #ca8a04;
   --color-yellow-900: #713f12;
-  --color-blue-100: #dbeafe;
-  --color-blue-300: #93c5fd;
-  --color-blue-600: #2563eb;
-  --color-blue-900: #1e3a8a;
+  --color-blue-200: #bfdbfe;
+  --color-blue-500: #3b82f6;
   /**
   * Light theme values
   */
@@ -116,8 +114,8 @@
   --sidebar-ring: var(--color-sage-900);
   --first-token-badge: var(--color-orange-100);
   --first-token-badge-foreground: var(--color-yellow-600);
-  --token-badge: var(--color-blue-100);
-  --token-badge-foreground: var(--color-blue-600);
+  --token-badge: var(--color-blue-200);
+  --token-badge-foreground: var(--color-blue-500);
 }
 /**
  * Dark theme values
@@ -159,8 +157,8 @@
   --sidebar-ring: var(--color-sage-200);
   --first-token-badge: var(--color-yellow-400);
   --first-token-badge-foreground: var(--color-yellow-900);
-  --token-badge: var(--color-blue-900);
-  --token-badge-foreground: var(--color-blue-300);
+  --token-badge: var(--color-blue-200);
+  --token-badge-foreground: var(--color-blue-500);
 }
 
 /**
