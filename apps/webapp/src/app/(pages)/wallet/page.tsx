@@ -12,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { WalletNotice } from './components/wallet-notice';
 import { useAccount, useBalance } from 'wagmi';
 import { WithdrawDrawer } from '@/app/components/withdraw-drawer/withdraw-drawer';
+import { RecentActivity } from './components/recent-activity';
 
 export default function WalletPage() {
   const trpc = useTRPC();
@@ -39,6 +40,9 @@ export default function WalletPage() {
   });
   const userHasZeroBalance =
     !eoaBalance?.value || eoaBalance.value === BigInt(0);
+
+  const { data: portfolioAnalysisData, isLoading: isLoadingPortfolioAnalysis } =
+    useQuery(trpc.glider.getGliderPortfolioAnalysisData.queryOptions());
 
   return (
     <div>
@@ -73,7 +77,7 @@ export default function WalletPage() {
       </div>
       <div className="px-4">
         <div className="max-w-screen-md w-full mx-auto pt-[32px]">
-          <WalletNotice />
+          {!portfolioAnalysisData ? <WalletNotice /> : <RecentActivity />}
         </div>
       </div>
     </div>
