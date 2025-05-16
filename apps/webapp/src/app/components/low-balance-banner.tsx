@@ -6,15 +6,24 @@ import { useTRPC } from '../trpc-clients/trpc-react-client';
 import { DepositDrawer } from './deposit-drawer/deposit-drawer';
 import { TriangleAlertIcon } from './icons/TriangleAlertIcon';
 import { Button } from '@/app/components/ui/button';
-import { useBalance } from 'wagmi';
+import { useAccount, useBalance } from 'wagmi';
 import useBannerStore from '../zustand/banners';
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { useAppKitState } from '@reown/appkit/react';
+import { getDecodedSiweSessionCookie } from '../utils/siwe/siwe-cookies';
 
 export const LowBalanceBanner = () => {
   const trpc = useTRPC();
-  const setZustandBannerValue = useBannerStore(
-    useShallow((state) => state.setStoreValue)
+
+  const { address } = useAccount();
+  const { open: isOpen } = useAppKitState();
+  const accountCookie = getDecodedSiweSessionCookie();
+  const isPartiallyConnected = !!address && isOpen && !accountCookie;
+  const isNotConnected = !address || isPartiallyConnected;
+
+  const [setZustandBannerValue, lowBalanceBannerPresent] = useBannerStore(
+    useShallow((state) => [state.setStoreValue, state.lowBalanceBannerPresent])
   );
 
   const { data: gliderPortfolio, isLoading: isLoadingPortfolio } = useQuery(
@@ -45,11 +54,21 @@ export const LowBalanceBanner = () => {
     portfolioBalanceWei < MIN_TRADE_THRESHOLD_WEI;
   const isLowBalance = portfolioBalanceWei < minRequiredTotalWei;
 
-  const showBanner = isLowBalance || isBelowMinRebalanceLimit;
-
   useEffect(() => {
-    setZustandBannerValue('lowBalanceBannerPresent', showBanner);
-  }, [showBanner, setZustandBannerValue]);
+    if (isNotConnected) {
+      setZustandBannerValue('lowBalanceBannerPresent', false);
+      return;
+    }
+    setZustandBannerValue(
+      'lowBalanceBannerPresent',
+      isLowBalance || isBelowMinRebalanceLimit
+    );
+  }, [
+    isNotConnected,
+    isLowBalance,
+    isBelowMinRebalanceLimit,
+    setZustandBannerValue
+  ]);
 
   if (
     isLoadingPortfolio ||
@@ -59,7 +78,7 @@ export const LowBalanceBanner = () => {
     return null;
   }
 
-  if (!showBanner) {
+  if (!lowBalanceBannerPresent) {
     return null;
   }
 
