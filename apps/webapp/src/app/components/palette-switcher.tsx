@@ -2,6 +2,9 @@
 
 import { useTheme } from 'next-themes';
 import { useIsMounted } from '@/app/hooks/use-is-mounted';
+import { SunIcon } from './icons/SunIcon';
+import { MoonIcon } from './icons/MoonIcon';
+import { DropdownMenuItem } from './ui/dropdown-menu';
 
 export function PaletteSwitcher() {
   const { theme, setTheme } = useTheme();
@@ -9,20 +12,20 @@ export function PaletteSwitcher() {
 
   if (!isMounted) return null;
 
+  const isDark = theme === 'dark';
+  const nextTheme = isDark ? 'light' : 'dark';
+  const Icon = isDark ? MoonIcon : SunIcon;
+
   return (
-    <div className="flex gap-2">
-      <button
-        className={theme === 'light' ? 'font-bold underline' : ''}
-        onClick={() => setTheme('light')}
-      >
-        Light
-      </button>
-      <button
-        className={theme === 'dark' ? 'font-bold underline' : ''}
-        onClick={() => setTheme('dark')}
-      >
-        Dark
-      </button>
-    </div>
+    <DropdownMenuItem
+      onSelect={(e) => {
+        e.preventDefault();
+        setTheme(nextTheme);
+      }}
+      aria-label="Toggle interface theme"
+    >
+      Interface Theme
+      <Icon className="w-4 h-4 opacity-70 ml-auto" />
+    </DropdownMenuItem>
   );
 }
