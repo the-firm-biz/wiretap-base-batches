@@ -5,12 +5,17 @@ import {
   GetAccountEntityResult,
   getAccountEntityTrackersForWireTapAccount
 } from '@wiretap/db';
-import { Basename, getBasename } from '@wiretap/utils/shared';
+import {
+  Basename,
+  getBasename,
+  getBasenameAvatar
+} from '@wiretap/utils/shared';
 import { Address } from 'viem';
 
 export interface AuthedAccountTarget extends GetAccountEntityResult {
   tracker: AccountEntityTracker;
   basename?: Basename;
+  basenameAvatar?: string;
 }
 
 export const getAuthedAccountTargets = privateProcedure.query(
@@ -39,9 +44,13 @@ export const getAuthedAccountTargets = privateProcedure.query(
           const address: Address | undefined =
             (accountEntityInfo.wallets[0]?.address as Address) ?? undefined;
           let basename: Basename | undefined;
+          let basenameAvatar: string | undefined;
           if (needsBasename && address) {
             try {
               basename = await getBasename(viemClient, address);
+              if (basename) {
+                basenameAvatar = await getBasenameAvatar(viemClient, basename);
+              }
             } catch (error) {
               console.error(
                 '"getAuthedAccountTargets: error getting basename',
@@ -52,7 +61,8 @@ export const getAuthedAccountTargets = privateProcedure.query(
           return {
             tracker,
             ...accountEntityInfo,
-            basename
+            basename,
+            basenameAvatar
           };
         })
       )
