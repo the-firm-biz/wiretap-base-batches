@@ -3,20 +3,46 @@ import { serverEnv } from '@/serverEnv';
 import { z } from 'zod';
 import { getGliderPortfolioForWireTapAccount } from '@wiretap/db';
 import { TRPCError } from '@trpc/server';
-import { Address } from 'viem';
 
-interface SuccessWithdrawResponse {
+export interface GliderPortfolioActivity {
+  id: string;
+  type: 'deposit' | 'withdraw';
+  /** {address}:{chainID} */
+  assetId: string;
+  symbol: string;
+  decimals: number;
+  /** eth i.e. 0.00001. Negative if withdrawal */
+  amount: string;
+  /** wei i.e. 10000000000000 */
+  rawAmount: string;
+  priceUsd: string;
+  valueUsd: string;
+  txHash: string;
+  chainId: number;
+  blockNumber: number;
+  timestamp: string;
+  walletAddress: string;
+}
+
+export interface GliderPortfolioSwapActivity {
+  id: string;
+  // assumed type
+  type: 'swap';
+}
+
+export type GliderPortfolioSwapsAndActivities =
+  | GliderPortfolioActivity
+  | GliderPortfolioSwapActivity;
+
+interface SuccessGetPortfolioDataResponse {
   success: true;
   data: {
-    withdrawId: string;
-    workflowId: string;
-    runId: string;
-    message: string; // i.e. 'Withdraw request submitted successfully'
-    status: string; // i.e. 'submitted'
+    trades: any[];
+    activity: GliderPortfolioActivity[];
   };
 }
 
-interface ErrorWithdrawResponse {
+interface ErrorGetPortfolioDataResponse {
   success: false;
   error: {
     message: string;
@@ -27,19 +53,17 @@ interface ErrorWithdrawResponse {
   };
 }
 
-type WithdrawResponse = SuccessWithdrawResponse | ErrorWithdrawResponse;
-
 export const getGliderPortfolioAnalysisData = privateProcedure
   .input(
     z.object({
       portfolioId: z.string()
     })
   )
-  .mutation(
+  .query(
     async ({
       ctx,
       input: { portfolioId }
-    }): Promise<SuccessWithdrawResponse> => {
+    }): Promise<GliderPortfolioSwapsAndActivities[]> => {
       const { wireTapAccountId, db, viemClient } = ctx;
 
       if (!serverEnv.GLIDER_API_KEY) {
@@ -70,14 +94,17 @@ export const getGliderPortfolioAnalysisData = privateProcedure
       const portfolioAnalysisResponse = await fetch(
         `https://api.glider.fi/v1/portfolio/${portfolioId}`,
         {
+          method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
             'X-API-KEY': serverEnv.GLIDER_API_KEY
           }
         }
       );
 
-      const portfolioAnalysisData = await portfolioAnalysisResponse.json();
+      const portfolioAnalysisData:
+        | SuccessGetPortfolioDataResponse
+        | ErrorGetPortfolioDataResponse =
+        await portfolioAnalysisResponse.json();
 
       //   portfolioAnalysisData.data.activity.forEach((activity) => {
       //     console.log(
@@ -113,15 +140,14 @@ export const getGliderPortfolioAnalysisData = privateProcedure
       //     });
       //   });
 
-      console.log(portfolioAnalysisResponse);
+      if (!portfolioAnalysisData.success) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to fetch portfolio analysis data for Glider Portfolio: ${portfolioAnalysisData.error.message} | code: ${portfolioAnalysisData.error.code}`
+        });
+      }
+      console.log(portfolioAnalysisData.data.activity);
 
-      //   if (!portfolioAnalysisData.success) {
-      //     throw new TRPCError({
-      //       code: 'INTERNAL_SERVER_ERROR',
-      //       message: `Failed to fetch portfolio analysis data for Glider Portfolio: ${withdrawResult.error.message} | code: ${withdrawResult.error.code}`
-      //     });
-      //   }
-
-      return true;
+      return portfolioAnalysisData.data.activity;
     }
   );

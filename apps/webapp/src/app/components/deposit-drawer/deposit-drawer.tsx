@@ -43,6 +43,7 @@ const DepositDrawerComponent = ({ trigger }: DepositDrawerProps) => {
     // Invalidate user balance & portfolio queries
     queryClient.invalidateQueries({ queryKey: useBalanceQueryKey });
     trpcClientUtils.wireTapAccount.invalidate();
+    trpcClientUtils.glider.invalidate();
     // Reset state after the drawer's closing animation is complete
     setTimeout(() => {
       setDepositState(DEFAULT_STATE);
