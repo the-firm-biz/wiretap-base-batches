@@ -9,13 +9,22 @@ import { createPortfolioRebalance } from './create-portfolio-rebalance.js';
 import { triggerPortfolioRebalance } from './trigger-portfolio-rebalance.js';
 import { monitorRebalance } from './monitor-rebalance.js';
 import { withdrawTokenFromPortfolio } from './withdraw-token-from-portfolio.js';
-import type { Address } from 'viem';
-import { RebalancesLogLabel } from '@wiretap/utils/server';
+import { type Address, erc20Abi } from 'viem';
+import { callWithBackOff, RebalancesLogLabel } from '@wiretap/utils/server';
+import { httpPublicClient } from '../../rpc-clients.js';
+import { executeRebalanceWithCallData } from './execute-rebalance-with-calldata.js';
+import { CURRENCY_ADDRESSES } from '@wiretap/config';
+
+type BuyAmounts = {
+  tokenPercentageBps: number;
+  ethBalance: bigint;
+  buyAmountInWei: bigint;
+};
 
 export async function processBuyWithGlider(
-  tokenPercentageBps: number,
-  balance: bigint,
-  tokenBuyerPortfolio: TokenBuyerPortfolio
+  { ethBalance: balance, tokenPercentageBps, buyAmountInWei }: BuyAmounts,
+  tokenBuyerPortfolio: TokenBuyerPortfolio,
+  poolAddress: Address
 ): Promise<void> {
   const { portfolio, token, account } = tokenBuyerPortfolio;
   if (!portfolio) {
@@ -42,19 +51,46 @@ export async function processBuyWithGlider(
       portfolioId: portfolio.portfolioId,
       accountEntityAddress: account.accountEntityAddress as Address
     });
-    const gliderRebalanceId = await triggerPortfolioRebalance(
-      db,
-      rebalanceId,
-      portfolio.portfolioId
+
+    const wethBalance = await callWithBackOff(
+      () =>
+        httpPublicClient.readContract({
+          address: CURRENCY_ADDRESSES['WETH'],
+          abi: erc20Abi,
+          functionName: 'balanceOf',
+          args: [poolAddress]
+        }),
+      undefined,
+      {
+        name: `get weth balance on pool ${poolAddress}`
+      }
     );
 
-    const gliderRebalanceResult = await monitorRebalance(
-      db,
-      rebalanceId,
-      gliderRebalanceId,
-      portfolio.portfolioId
-    );
-    console.log(gliderRebalanceResult);
+
+    if (!wethBalance || wethBalance === 0n) {
+      const txWorkflow = await executeRebalanceWithCallData(db, {
+        portfolioId: portfolio.portfolioId,
+        rebalanceId,
+        amountInWei: buyAmountInWei,
+        tokenAddress: token.address as Address,
+        recipient: portfolio.address as Address
+        }
+      );
+      console.log(txWorkflow);
+    } else {
+      const gliderRebalanceId = await triggerPortfolioRebalance(
+        db,
+        rebalanceId,
+        portfolio.portfolioId
+      );
+      const gliderRebalanceResult = await monitorRebalance(
+        db,
+        rebalanceId,
+        gliderRebalanceId,
+        portfolio.portfolioId
+      );
+      console.log(gliderRebalanceResult);
+    }
 
     await withdrawTokenFromPortfolio(db, {
       rebalanceId,

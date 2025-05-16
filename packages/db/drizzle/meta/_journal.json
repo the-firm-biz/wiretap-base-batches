@@ -211,6 +211,13 @@
       "when": 1747345055829,
       "tag": "0029_REBALANCE_RESULTED_FALSE-label",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1747383579567,
+      "tag": "0030_rebalance-label-trigger-tx",
+      "breakpoints": true
     }
   ]
 }
