@@ -68,14 +68,18 @@ export function DiscoverFeedRow({
 
   const { mutate: trackTarget } = useMutation(
     trpc.wireTapAccount.trackTargetForAuthedAccount.mutationOptions({
-      onSuccess: () => {
+      onSuccess: (response) => {
+        const spendEth = formatUnits(response.maxSpend, 18, 4);
         trpcClientUtils.wireTapAccount.getAuthedAccountTargets.invalidate();
         toast(
           <div className="flex w-full justify-between items-center">
             <div className="flex flex-col gap-1">
               <div className={textStyles['compact-emphasis']}>Now Tracking</div>
               <div className={textStyles.label}>
-                {getDisplayName()} is closely monitored
+                Auto-buy set to{' '}
+                <span className={textStyles['label-emphasis']}>
+                  {spendEth} ETH
+                </span>
               </div>
             </div>
             <Button

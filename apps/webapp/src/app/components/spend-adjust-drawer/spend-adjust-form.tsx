@@ -91,9 +91,6 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
       .min(MAX_SPEND_LOW_LIMIT_ETH, {
         message: `Min spend amount ${MAX_SPEND_LOW_LIMIT_ETH} ETH`
       })
-      .max(portfolioBalanceEth, {
-        message: 'Insufficient ETH in your WireTap Balance'
-      })
       .max(MAX_SPEND_HIGH_LIMIT_ETH, {
         message: `Max ${MAX_SPEND_HIGH_LIMIT_ETH} ETH: Alpha testing phase`
       })
@@ -104,7 +101,7 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
     defaultValues: {
-      newMaxSpendEth: undefined
+      newMaxSpendEth: formatUnits(trackingStatus.maxSpend, 18, 15)
     }
   });
 
@@ -174,10 +171,10 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
                       const value = e.target.value;
 
                       if (value === '') {
-                        field.onChange(undefined);
+                        field.onChange('');
                       } else {
                         const numValue = parseFloat(value);
-                        field.onChange(isNaN(numValue) ? undefined : numValue);
+                        field.onChange(isNaN(numValue) ? '' : numValue);
                       }
                     }}
                   />

@@ -59,7 +59,7 @@ export const LowBalanceBanner = () => {
     return null;
   }
 
-  if (!isLowBalance) {
+  if (!showBanner) {
     return null;
   }
 

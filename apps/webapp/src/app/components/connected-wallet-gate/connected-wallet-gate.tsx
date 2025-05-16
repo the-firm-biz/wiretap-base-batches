@@ -16,6 +16,8 @@ import { FlashingDot } from '../flashing-dot';
 import { useAddFrame, useMiniKit } from '@coinbase/onchainkit/minikit';
 
 import { FarcasterIcon } from '../icons/FarcasterIcon';
+import useBannerStore from '@/app/zustand/banners';
+import { useShallow } from 'zustand/react/shallow';
 
 export function ConnectedWalletGate({
   children
@@ -31,6 +33,10 @@ export function ConnectedWalletGate({
   const hasMinikitContext = !!miniKitContext;
   const hasAddedFrame = miniKitContext?.client.added;
 
+  const setZustandBannerValue = useBannerStore(
+    useShallow((state) => state.setStoreValue)
+  );
+
   // Initialize frame when component mounts
   useEffect(() => {
     if (!isFrameReady) {
@@ -40,6 +46,13 @@ export function ConnectedWalletGate({
 
   const accountCookie = getDecodedSiweSessionCookie();
   const isPartiallyConnected = !!address && isOpen && !accountCookie;
+
+  useEffect(() => {
+    // In case user gets through at the wallet gate - hide the banner
+    if (!address || isPartiallyConnected) {
+      setZustandBannerValue('lowBalanceBannerPresent', false);
+    }
+  }, [address, isPartiallyConnected, setZustandBannerValue]);
 
   const [logoLoaded, setLogoLoaded] = useState(false);
 

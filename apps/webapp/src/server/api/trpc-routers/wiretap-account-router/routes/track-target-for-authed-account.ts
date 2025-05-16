@@ -27,7 +27,7 @@ const DEFAULT_MAX_SPEND_WEI = BigInt('10000000000000000'); // 0.01 ETH
 
 export const trackTargetForAuthedAccount = privateProcedure
   .input(trackSchema)
-  .mutation(async ({ ctx, input }): Promise<AccountEntityTracker | null> => {
+  .mutation(async ({ ctx, input }): Promise<AccountEntityTracker> => {
     const { db, wireTapAccountId } = ctx;
 
     const { targetEvmAddress, targetNeynarUser, targetAccountEntityId } = input;
