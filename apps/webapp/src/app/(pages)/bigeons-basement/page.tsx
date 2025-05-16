@@ -20,7 +20,6 @@ export default function BigeonsBasementPage() {
     >
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <ReelToReelAnimation />
-        <PaletteSwitcher />
         {/* Logo test area */}
         <div className="flex items-center gap-2 p-4">
           <p>Logo used on main background</p>
