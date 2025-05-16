@@ -1,39 +1,26 @@
-import { decodeEventLog } from 'viem';
-import { CLANKER_ABI } from '@wiretap/config';
-import { onLog } from './on-logs.js';
-import type { TokenCreatedLog } from './types/token-created.js';
-import { Span } from '@wiretap/utils/shared';
+import { sendSlackSystemMessage } from './notifications/send-slack-system-message.js';
+import { startTokenCreatedWatcher } from './start-watcher.js';
 
-const log_delegated =  {
-  "address": "0x2a787b2362021cc3eea3c24c4748a6cd5b687382",
-  "blockHash": "0x1e2e8d3e65e3b7135938eccc7c63e05b0823e5a505a0cf1dd55c15e100af0f8d",
-  "blockNumber": "0x1ce4f97",
-  "data": "0x000000000000000000000000d6603bad319f66ec58013d35c0c198a39ce8acd40000000000000000000000001eaf444ebdf6495c57ad52a04c61521bbf564ace00000000000000000000000000000000000000000000000000000000002e5b83000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001a0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc222800000000000000000000000000000000000000000000000000000000000001e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d6603bad319f66ec58013d35c0c198a39ce8acd4000000000000000000000000000000000000000000000000000000000000000754574f534f4f4e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000754574f534f4f4e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004d7b226465736372697074696f6e223a224e6f206465736372697074696f6e2070726f7669646564222c22736f6369616c4d6564696155726c73223a5b5d2c22617564697455726c73223a5b5d7d00000000000000000000000000000000000000",
-  "logIndex": "0x4a",
-  "removed": false,
-  "topics": [
-    "0x6b04d68ca5c822b9c981d731c83ecb1356b96c8596c7659d397d234856a4537b",
-    "0x0000000000000000000000009928584f1925c24871a9dd23d3c78bfcc7a78b07",
-    "0x000000000000000000000000d6603bad319f66ec58013d35c0c198a39ce8acd4",
-    "0x000000000000000000000000eea96d959963eab488a3d4b7d5d347785cf1eab8"
-  ],
-  "transactionHash": "0x44c69b348dbde491751d29e6e5d57df4958646d1084fe22131072527de13b043",
-  "transactionIndex": "0x21"
+sendSlackSystemMessage({
+  type: 'startup'
+});
+
+const unwatchEvents = await startTokenCreatedWatcher();
+
+const cleanup = async (signal: string): Promise<void> => {
+  console.log('Shutting down event watcher...');
+  try {
+    unwatchEvents();
+    await sendSlackSystemMessage({
+      type: 'shutdown',
+      signal
+    });
+  } catch (error) {
+    console.error('Error during shutdown', error);
+  } finally {
+    process.exit(0);
+  }
 };
 
-const decoded = decodeEventLog({
-  abi: CLANKER_ABI,
-  eventName: 'TokenCreated',
-  data: log_delegated.data as `0x${string}`,
-  topics: log_delegated.topics as [
-    signature: `0x${string}`,
-    ...args: `0x${string}`[]
-  ],
-  strict: true
-}) as TokenCreatedLog;
-decoded.transactionHash = log_delegated.transactionHash as `0x${string}`;
-decoded.address = log_delegated.address as `0x${string}`;
-decoded.blockNumber = BigInt(log_delegated.blockNumber);
-const span = new Span(decoded.address);
-await onLog(decoded, { tracing: { parentSpan: span } });
-span.finish('ok');
+process.on('SIGINT', cleanup);
+process.on('SIGTERM', cleanup);
