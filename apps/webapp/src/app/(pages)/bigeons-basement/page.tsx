@@ -7,7 +7,6 @@ import { Input } from '../../components/ui/input';
 import { cn } from '@/app/utils/cn';
 import DitheredImage from '../../components/dithered-image';
 import DitheredAnimation from '../../components/dithered-animation';
-import { PaletteSwitcher } from '@/app/components/palette-switcher';
 import ReelToReelAnimation from './animated-reel-to-reel';
 
 export default function BigeonsBasementPage() {

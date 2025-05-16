@@ -71,9 +71,10 @@ export function Header({
               <FarcasterIcon className="w-4 h-4" /> Add Frame
             </Button>
           )}
+          <HeaderWalletButton />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Open menu">
+              <Button variant="secondary" size="icon" aria-label="Open menu">
                 <MenuIcon className="w-5 h-5" />
               </Button>
             </DropdownMenuTrigger>
@@ -99,7 +100,6 @@ export function Header({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <HeaderWalletButton />
         </div>
       </div>
     </header>

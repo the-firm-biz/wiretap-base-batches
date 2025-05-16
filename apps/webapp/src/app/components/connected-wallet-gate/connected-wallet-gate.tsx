@@ -117,17 +117,12 @@ export function ConnectedWalletGate({
             </Button>
           </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-4 mb-4">
           <p className={`${textStyles['compact']} mb-2`}>
             TRACKING TOKEN LAUNCHES ON
           </p>
           <SupportedProtocolsCarousel />
         </div>
-        <Button asChild variant="outline" className="mt-4">
-          <a href="https://thefirm.biz" target="blank">
-            Get Our Next Release Early
-          </a>
-        </Button>
       </PageContainer>
     );
   }
