@@ -38,10 +38,11 @@ export const WithdrawDrawerContent = ({
           <div className="flex w-full justify-between items-center">
             <div className="flex flex-col gap-1">
               <div className={textStyles['compact-emphasis']}>
-                Withdrawal Complete
+                Withdrawal Initiated
               </div>
               <div className={textStyles.label}>
-                Withdrawn to wallet {!!address && formatAddress(address)}
+                Withdrawing to wallet {!!address && formatAddress(address)}{' '}
+                shortly.
               </div>
             </div>
           </div>
