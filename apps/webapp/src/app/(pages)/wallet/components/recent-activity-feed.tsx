@@ -20,13 +20,14 @@ export function RecentActivityFeed({
     useShallow((state) => state.lowBalanceBannerPresent)
   );
   const totalNonScrollableAreaHeight =
-    69 +
     // Low balance banner
     (isShowingLowBalanceBanner ? 40 : 0) +
     // Header
     64 +
     // Wallet balance area
     196 +
+    // Footer
+    69 +
     // Recent activity text + top padding
     68;
 
