@@ -7,7 +7,7 @@ import { DiscoverFeed } from './discover-feed/discover-feed';
 export default function DiscoverPage() {
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="pb-4 w-full">
+      <div className="w-full">
         <TargetSearchDrawer
           trigger={
             /** Custom button is made to look like an input box */
@@ -25,7 +25,7 @@ export default function DiscoverPage() {
             </Button>
           }
         />
-        <div className="flex flex-col py-4">
+        <div className="flex flex-col pt-4">
           <p className={`pt-4 ${textStyles['compact-emphasis']}`}>
             Recently Active
           </p>
