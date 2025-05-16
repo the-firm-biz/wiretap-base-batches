@@ -49,7 +49,7 @@ export default function WalletPage() {
         },
         {
           enabled: !!portfolio?.portfolioId,
-          refetchInterval: 10000
+          refetchInterval: 5000
         }
       )
     );
