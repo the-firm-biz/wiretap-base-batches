@@ -33,17 +33,17 @@ export const LowBalanceBanner = () => {
     isLoading: isLoadingAuthedAccountTargets
   } = useQuery(trpc.wireTapAccount.getAuthedAccountTargets.queryOptions());
 
-  const minRequiredTotal =
+  const minRequiredTotalWei =
     authedAccountTargets?.reduce(
       (acc, target) => acc + target.tracker.maxSpend,
       BigInt(0)
     ) ?? BigInt(0);
 
+  const portfolioBalanceWei = portfolioBalance?.value ?? BigInt(0);
+
   const isBelowMinRebalanceLimit =
-    !!portfolioBalance?.value &&
-    portfolioBalance.value < MIN_REBALANCE_LIMIT_WEI;
-  const isLowBalance =
-    !!portfolioBalance?.value && portfolioBalance.value < minRequiredTotal;
+    portfolioBalanceWei < MIN_REBALANCE_LIMIT_WEI;
+  const isLowBalance = portfolioBalanceWei < minRequiredTotalWei;
 
   const showBanner = isLowBalance || isBelowMinRebalanceLimit;
 
