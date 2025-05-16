@@ -17,7 +17,6 @@ interface RecentActivityTradeItemProps {
 export function RecentActivityTradeItem({
   tradeItem
 }: RecentActivityTradeItemProps) {
-  const { timestamp, swaps } = tradeItem;
   console.log('tradeItem', tradeItem);
   const fromToken = swaps.find((swap) => swap.type === 'fromToken');
   const toToken = swaps.find((swap) => swap.type === 'toToken');

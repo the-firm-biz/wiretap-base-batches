@@ -133,16 +133,18 @@ export const getGliderPortfolioAnalysisData = privateProcedure
       }
 
       const activities = portfolioAnalysisData.data.activity;
-      const trades: GliderPortfolioTrade[] =
-        portfolioAnalysisData.data.trades.map((trade) => ({
-          ...trade,
-          type: 'trade'
-        }));
+      const trades = portfolioAnalysisData.data.trades;
 
-      const activitiedAndTradesSortedByTimestamp = [
-        ...activities,
-        ...trades
-      ].sort((a, b) => {
+      console.log('activities', activities);
+      const tradesWithType: GliderPortfolioTrade[] = trades.map((trade) => ({
+        ...trade,
+        type: 'trade'
+      }));
+
+      // console.log('tradesWithType', tradesWithType[0]);
+      console.log('trades', trades[0]);
+
+      const sorted = activitiedAndTradesSortedByTimestamp.sort((a, b) => {
         return (
           new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );
