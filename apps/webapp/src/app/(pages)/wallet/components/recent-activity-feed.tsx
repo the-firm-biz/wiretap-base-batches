@@ -19,7 +19,7 @@ export function RecentActivityFeed({
   const isShowingLowBalanceBanner = useBannerStore(
     useShallow((state) => state.lowBalanceBannerPresent)
   );
-  const getTotalNonScrollableAreaHeightClassName = () => {
+  const getMaxHeight = () => {
     // Header
     // 64 +
     // Wallet balance area
@@ -33,7 +33,6 @@ export function RecentActivityFeed({
     // LowBalanceBanner
     // + 40
     // With low balance banner total = 437
-
     if (isShowingLowBalanceBanner) {
       return `max-h-[calc(100dvh-437px)]`;
     }
@@ -47,11 +46,7 @@ export function RecentActivityFeed({
         Recent Activity
       </p>
       <div
-        className={cn(
-          getTotalNonScrollableAreaHeightClassName(),
-          'overflow-y-auto',
-          'pb-4'
-        )}
+        className={cn(getMaxHeight(), 'overflow-y-auto', 'pb-4')}
         // style={{
         //   maxHeight: `calc(100dvh-700px)`
         // }}
