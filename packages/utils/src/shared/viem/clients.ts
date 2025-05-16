@@ -20,7 +20,7 @@ export function createWebsocketPublicClient(
   return viemCreatePublicClient({
     chain: base,
     transport: webSocket(
-      `wss://indulgent-wild-gas.base-mainnet.quiknode.pro/e4eb6a46ca8caa82575bf650c455d5fe5825f40d/`,
+      `wss://base-mainnet.g.alchemy.com/v2/${opts.alchemyApiKey}`,
       {
         keepAlive: { interval: 1_000 }
       }
@@ -36,7 +36,7 @@ export function createHttpPublicClient(
   return viemCreatePublicClient({
     chain: base,
     transport: http(
-      `https://indulgent-wild-gas.base-mainnet.quiknode.pro/e4eb6a46ca8caa82575bf650c455d5fe5825f40d/`
+      `https://base-mainnet.g.alchemy.com/v2/${opts.alchemyApiKey}`
     )
   });
 }
