@@ -6,7 +6,7 @@ import {
   tokens
 } from '@wiretap/db';
 import { eq, isNull } from 'drizzle-orm';
-import { computePoolAddress, tickToPrice } from '@uniswap/v3-sdk';
+import { computePoolAddress } from '@uniswap/v3-sdk';
 import { ChainId, Token } from '@uniswap/sdk-core';
 import { createHttpPublicClient } from '@wiretap/utils/shared';
 import { fetchLatest, initPriceFeeds } from '@wiretap/utils/server';
@@ -14,6 +14,7 @@ import { config } from 'dotenv';
 import {
   CLANKER_3_1_UNISWAP_FEE_BPS,
   CURRENCY_ADDRESSES,
+  Q192,
   UNISWAP_POOL_V3_ABI,
   UNISWAP_V3_ADDRESSES
 } from '@wiretap/config';
@@ -85,9 +86,10 @@ const main = async () => {
       continue;
     }
 
-    const price = tickToPrice(dbToken, pairToken, slot0[1]);
-
-    const priceEth = parseFloat(price.toSignificant(18));
+    const dbTokenIsToken0 = dbToken.sortsBefore(pairToken);
+    const priceEth = dbTokenIsToken0
+      ? Number(slot0[0]) ** 2 / Number(Q192)
+      : 1 / (Number(slot0[0]) ** 2 / Number(Q192));
 
     const ethUsdPrice = await fetchLatest('eth_usd');
     const priceUsd = priceEth * ethUsdPrice.formatted;

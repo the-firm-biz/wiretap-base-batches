@@ -1,12 +1,11 @@
 import { type WatchContractEventOnLogsParameter } from 'viem';
-import { type UniswapPoolV3Abi } from '@wiretap/config';
+import { Q192, type UniswapPoolV3Abi } from '@wiretap/config';
 import { resetReconnectRetries } from './on-error.js';
 import type { SwapLog } from './types.js';
 import { pools } from './pools.js';
 import { ChainId, Token } from '@uniswap/sdk-core';
 import { fetchLatest } from '@wiretap/utils/server';
 import { lowercaseAddress } from '@wiretap/utils/shared';
-import { tickToPrice } from '@uniswap/v3-sdk';
 import { getDb, getPool, updatePoolAthMcap } from '@wiretap/db';
 import { env } from './env.js';
 
@@ -34,12 +33,14 @@ export async function onLog(log: SwapLog) {
     return;
   }
 
-  const newToken = new Token(ChainId.BASE, pool.tokens.address, 18);
+  const targetToken = new Token(ChainId.BASE, pool.tokens.address, 18);
   const pairedToken = new Token(ChainId.BASE, pool.currencies.address, 18);
 
-  const uniswapPrice = tickToPrice(newToken, pairedToken, log.args.tick);
+  const targetTokenIsToken0 = targetToken.sortsBefore(pairedToken);
+  const tokenPriceEth = targetTokenIsToken0
+    ? Number(log.args.sqrtPriceX96) ** 2 / Number(Q192)
+    : 1 / (Number(log.args.sqrtPriceX96) ** 2 / Number(Q192));
 
-  const tokenPriceEth = parseFloat(uniswapPrice.toSignificant(18));
   const ethUsdPrice = await fetchLatest('eth_usd');
   const tokenPriceUsd = tokenPriceEth * ethUsdPrice.formatted;
   const tokenMcapUsd = tokenPriceUsd * pool.tokens.totalSupply;

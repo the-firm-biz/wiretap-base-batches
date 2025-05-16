@@ -3,7 +3,7 @@ import { CLANKER_ABI, type ClankerAbi } from '@wiretap/config';
 import { httpPublicClient } from './rpc-clients.js';
 import type { ContractFunctionArgs } from 'viem';
 import { callWithBackOff } from '@wiretap/utils/server';
-import {  type Context } from '@wiretap/utils/shared';
+import { type Context } from '@wiretap/utils/shared';
 
 export type DeployTokenArgs = ContractFunctionArgs<
   ClankerAbi,

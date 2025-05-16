@@ -8,7 +8,7 @@ import type { ExtractAbiEvent } from 'abitype';
 import type { MinimalBlock } from './block.js';
 import type { DeployTokenArgs } from '../get-transaction-context.js';
 import { getPoolContext, type PoolContext } from '../get-pool-context.js';
-import { bigIntReplacer } from '@wiretap/utils/shared';
+import { bigIntReplacer, trace, type Context } from '@wiretap/utils/shared';
 
 export type TokenCreatedOnChainParams = {
   transactionHash: `0x${string}`;
@@ -33,7 +33,8 @@ export type TokenCreatedLog = Log<
 export async function deconstructLog(
   log: TokenCreatedLog,
   args: DeployTokenArgs,
-  block?: Block,
+  ctx: Context,
+  block?: Block
 ): Promise<TokenCreatedOnChainParams | undefined> {
   const {
     args: { tokenAddress, name: tokenName, symbol, msgSender },
@@ -59,8 +60,16 @@ export async function deconstructLog(
     ? new Date(Number(block.timestamp) * 1000)
     : undefined;
 
-  const poolContext = await getPoolContext(tokenAddress, args);
-
+  const poolContext = await trace(
+    (contextSpan) =>
+      getPoolContext(tokenAddress, args, {
+        tracing: { parentSpan: contextSpan }
+      }),
+    {
+      name: 'getPoolContext',
+      parentSpan: ctx.tracing?.parentSpan
+    }
+  );
   return {
     block: {
       number: Number(blockNumber),
