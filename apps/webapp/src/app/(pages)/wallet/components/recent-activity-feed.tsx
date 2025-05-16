@@ -19,17 +19,27 @@ export function RecentActivityFeed({
   const isShowingLowBalanceBanner = useBannerStore(
     useShallow((state) => state.lowBalanceBannerPresent)
   );
-  const totalNonScrollableAreaHeight =
-    // Low balance banner
-    (isShowingLowBalanceBanner ? 40 : 0) +
+  const getTotalNonScrollableAreaHeightClassName = () => {
     // Header
-    64 +
+    // 64 +
     // Wallet balance area
-    196 +
+    // 196 +
     // Recent activity text + top padding
-    68 +
+    // 68 +
     // Footer
-    69;
+    // 69
+    // Without low balance banner total = 397
+
+    // LowBalanceBanner
+    // + 40
+    // With low balance banner total = 437
+
+    if (isShowingLowBalanceBanner) {
+      return `max-h-[calc(100dvh-437px)]`;
+    }
+
+    return `max-h-[calc(100dvh-397px)]`;
+  };
 
   return (
     <div>
@@ -38,10 +48,13 @@ export function RecentActivityFeed({
       </p>
       <div
         className={cn(
-          `max-h-[calc(100dvh-${totalNonScrollableAreaHeight}px)]`,
+          getTotalNonScrollableAreaHeightClassName(),
           'overflow-y-auto',
           'pb-4'
         )}
+        // style={{
+        //   maxHeight: `calc(100dvh-700px)`
+        // }}
       >
         {portfolioAnalysisData.map((activityItem) => {
           if (
