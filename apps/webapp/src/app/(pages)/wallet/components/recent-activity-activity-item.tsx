@@ -98,7 +98,7 @@ export function RecentActivityActivityItem({
       </div>
       <div className="flex justify-end">
         <a
-          href={`https://basescan.io/tx/${activityItem.txHash}`}
+          href={`https://basescan.org/tx/${activityItem.txHash}`}
           target="_blank"
         >
           <Button variant="ghost" size="link">

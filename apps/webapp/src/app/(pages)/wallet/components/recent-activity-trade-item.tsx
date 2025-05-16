@@ -131,7 +131,7 @@ export function RecentActivityTradeItem({
       </div>
       <div className="flex justify-end">
         <a
-          href={`https://basescan.io/tx/${toToken.transactionHash}`}
+          href={`https://basescan.org/tx/${toToken.transactionHash}`}
           target="_blank"
         >
           <Button variant="ghost" size="link">
