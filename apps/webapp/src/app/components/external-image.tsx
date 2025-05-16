@@ -15,7 +15,10 @@ export const ExternalImage = React.forwardRef<
 
   useEffect(() => {
     const fetchSafeSrc = async () => {
-      const safeSrc = await safeImageSrc(src, fallbackSrc);
+      const finalSrc = src?.startsWith('ipfs://')
+        ? `https://ipfs.io/ipfs/${src.slice(7)}`
+        : src;
+      const safeSrc = await safeImageSrc(finalSrc, fallbackSrc);
       setSafeSrc(safeSrc);
     };
     fetchSafeSrc();

@@ -66,7 +66,7 @@ export const authedAccountTargetToUiTarget = (
       socialUsername: farcasterAccount?.username,
       evmAddress: address
     }),
-    image: farcasterAccount?.pfpUrl ?? undefined,
+    image: farcasterAccount?.pfpUrl ?? authedAccountTarget.basenameAvatar,
     // TODO: Search target is not really used in the case of target coming from the DB,
     // but it is here to simply satisfy typescript. Ideally rethink how to optimize types to pass less data around
     searchTarget: {
