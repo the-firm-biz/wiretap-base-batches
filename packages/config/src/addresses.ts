@@ -1,6 +1,8 @@
 /** Clanker 3.1 contract address */
 export const CLANKER_3_1_ADDRESS = '0x2A787b2362021cC3eEa3C24C4748a6cD5B687382';
 
+export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
 interface AddressMap {
   [label: string]: string;
 }

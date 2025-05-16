@@ -13,7 +13,11 @@ import { DepositDrawer } from '@/app/components/deposit-drawer/deposit-drawer';
 import { useAccount } from 'wagmi';
 import { useBalance } from 'wagmi';
 
-export function WalletNotice() {
+interface WalletNoticeProps {
+  isLoadingParentQueries?: boolean;
+}
+
+export function WalletNotice({ isLoadingParentQueries }: WalletNoticeProps) {
   const trpc = useTRPC();
 
   const { address } = useAccount();
@@ -36,7 +40,8 @@ export function WalletNotice() {
     trpc.wireTapAccount.getAuthedAccountTargets.queryOptions()
   );
   const hasNoTargets = !targets || targets.length === 0;
-  const isLoadingQueries = isLoadingPortfolio || isLoadingTargets;
+  const isLoadingQueries =
+    isLoadingParentQueries || isLoadingPortfolio || isLoadingTargets;
 
   const getImage = () => {
     if (isLoadingQueries) {
