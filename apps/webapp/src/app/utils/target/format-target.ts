@@ -51,6 +51,7 @@ export const authedAccountTargetToUiTarget = (
     (authedAccountTarget.wallets[0]?.address as Address) ?? undefined;
   const farcasterAccount: FarcasterAccount | undefined =
     authedAccountTarget.farcasterAccounts[0];
+  const basename = authedAccountTarget.basename;
 
   return {
     fid: farcasterAccount?.fid,
@@ -58,7 +59,8 @@ export const authedAccountTargetToUiTarget = (
     label: constructLabel({
       socialName: farcasterAccount?.displayName ?? undefined,
       socialUsername: farcasterAccount?.username,
-      evmAddress: address
+      evmAddress: address,
+      basename
     }),
     sublabel: constructSublabel({
       socialUsername: farcasterAccount?.username,

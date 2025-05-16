@@ -5,14 +5,17 @@ import {
   GetAccountEntityResult,
   getAccountEntityTrackersForWireTapAccount
 } from '@wiretap/db';
+import { Basename, getBasename } from '@wiretap/utils/shared';
+import { Address } from 'viem';
 
 export interface AuthedAccountTarget extends GetAccountEntityResult {
   tracker: AccountEntityTracker;
+  basename?: Basename;
 }
 
 export const getAuthedAccountTargets = privateProcedure.query(
   async ({ ctx }): Promise<AuthedAccountTarget[]> => {
-    const { db, wireTapAccountId } = ctx;
+    const { db, viemClient, wireTapAccountId } = ctx;
 
     // TODO: replace getAccountEntityTrackersForWireTapAccount + the batched getAccountEntity with a single SQL query
 
@@ -31,9 +34,25 @@ export const getAuthedAccountTargets = privateProcedure.query(
             console.error('tracked account does not have account entity');
             return null;
           }
+          const needsBasename =
+            accountEntityInfo.farcasterAccounts.length === 0;
+          const address: Address | undefined =
+            (accountEntityInfo.wallets[0]?.address as Address) ?? undefined;
+          let basename: Basename | undefined;
+          if (needsBasename && address) {
+            try {
+              basename = await getBasename(viemClient, address);
+            } catch (error) {
+              console.error(
+                '"getAuthedAccountTargets: error getting basename',
+                error
+              );
+            }
+          }
           return {
             tracker,
-            ...accountEntityInfo
+            ...accountEntityInfo,
+            basename
           };
         })
       )
