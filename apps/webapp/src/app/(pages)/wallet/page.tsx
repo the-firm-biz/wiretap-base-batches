@@ -41,20 +41,17 @@ export default function WalletPage() {
   const userHasZeroBalance =
     !eoaBalance?.value || eoaBalance.value === BigInt(0);
 
-  const {
-    data: portfolioAnalysisData,
-    isLoading: isLoadingPortfolioAnalysis,
-    isFetching: isFetchingPortfolioAnalysis
-  } = useQuery(
-    trpc.glider.getGliderPortfolioAnalysisData.queryOptions(
-      {
-        portfolioId: portfolio?.portfolioId as string
-      },
-      {
-        enabled: !!portfolio?.portfolioId
-      }
-    )
-  );
+  const { data: portfolioAnalysisData, isLoading: isLoadingPortfolioAnalysis } =
+    useQuery(
+      trpc.glider.getGliderPortfolioAnalysisData.queryOptions(
+        {
+          portfolioId: portfolio?.portfolioId as string
+        },
+        {
+          enabled: !!portfolio?.portfolioId
+        }
+      )
+    );
 
   return (
     <div>

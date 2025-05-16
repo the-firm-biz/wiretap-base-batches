@@ -64,7 +64,7 @@ export const getGliderPortfolioAnalysisData = privateProcedure
       ctx,
       input: { portfolioId }
     }): Promise<GliderPortfolioSwapsAndActivities[]> => {
-      const { wireTapAccountId, db, viemClient } = ctx;
+      const { wireTapAccountId, db } = ctx;
 
       if (!serverEnv.GLIDER_API_KEY) {
         throw new TRPCError({
@@ -106,47 +106,14 @@ export const getGliderPortfolioAnalysisData = privateProcedure
         | ErrorGetPortfolioDataResponse =
         await portfolioAnalysisResponse.json();
 
-      //   portfolioAnalysisData.data.activity.forEach((activity) => {
-      //     console.log(
-      //       `${activity.type} of ${activity.amount} ${activity.symbol} at ${activity.timestamp}`
-      //     );
-      //     console.log(
-      //       `  Value: $${activity.valueUsd}, Transaction: ${activity.txHash}`
-      //     );
-      //   });
-
-      //   portfolioAnalysisData.data.trades.forEach((trade) => {
-      //     console.log(
-      //       `Trade: ${trade.tradeDirection} at ${new Date(trade.timestamp).toLocaleString()}`
-      //     );
-      //     console.log(
-      //       `  P&L: $${trade.totalProfitLossUsd} (${trade.totalProfitLossPercent.toFixed(2)}%)`
-      //     );
-      //     console.log(
-      //       `  Sold: $${trade.totalSellValueUsd}, Bought: $${trade.totalBuyValueUsd}`
-      //     );
-
-      //     // Each trade contains individual swap components
-      //     trade.swaps.forEach((swap) => {
-      //       if (swap.type === 'fromToken') {
-      //         console.log(
-      //           `  Sold ${swap.amount} ${swap.symbol} ($${swap.valueUsd})`
-      //         );
-      //       } else if (swap.type === 'toToken') {
-      //         console.log(
-      //           `  Bought ${swap.amount} ${swap.symbol} ($${swap.valueUsd})`
-      //         );
-      //       }
-      //     });
-      //   });
-
       if (!portfolioAnalysisData.success) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch portfolio analysis data for Glider Portfolio: ${portfolioAnalysisData.error.message} | code: ${portfolioAnalysisData.error.code}`
         });
       }
-      console.log(portfolioAnalysisData.data.activity);
+
+      // @todo activity feed - get swaps data, add to chronological array of activity items
 
       return portfolioAnalysisData.data.activity;
     }
