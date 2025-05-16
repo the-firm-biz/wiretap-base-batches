@@ -9,13 +9,24 @@ import { createPortfolioRebalance } from './create-portfolio-rebalance.js';
 import { triggerPortfolioRebalance } from './trigger-portfolio-rebalance.js';
 import { monitorRebalance } from './monitor-rebalance.js';
 import { withdrawTokenFromPortfolio } from './withdraw-token-from-portfolio.js';
-import type { Address } from 'viem';
-import { RebalancesLogLabel } from '@wiretap/utils/server';
+import { type Address, erc20Abi } from 'viem';
+import { callWithBackOff, RebalancesLogLabel } from '@wiretap/utils/server';
+import { httpPublicClient } from '../../rpc-clients.js';
+import { executeBuyOnUniswap } from './execute-buy-on-uniswap.js';
+import { CURRENCY_ADDRESSES } from '@wiretap/config';
+import { bigIntReplacer } from '@wiretap/utils/shared';
+import { monitorTransactionExecution } from './monitor-transaction-execution.js';
+
+type BuyAmounts = {
+  tokenPercentageBps: number;
+  ethBalance: bigint;
+  buyAmountInWei: bigint;
+};
 
 export async function processBuyWithGlider(
-  tokenPercentageBps: number,
-  balance: bigint,
-  tokenBuyerPortfolio: TokenBuyerPortfolio
+  { ethBalance: balance, tokenPercentageBps, buyAmountInWei }: BuyAmounts,
+  tokenBuyerPortfolio: TokenBuyerPortfolio,
+  poolAddress: Address
 ): Promise<void> {
   const { portfolio, token, account } = tokenBuyerPortfolio;
   if (!portfolio) {
@@ -42,19 +53,50 @@ export async function processBuyWithGlider(
       portfolioId: portfolio.portfolioId,
       accountEntityAddress: account.accountEntityAddress as Address
     });
-    const gliderRebalanceId = await triggerPortfolioRebalance(
-      db,
-      rebalanceId,
-      portfolio.portfolioId
+
+    const wethBalance = await callWithBackOff(
+      () =>
+        httpPublicClient.readContract({
+          address: CURRENCY_ADDRESSES['WETH'],
+          abi: erc20Abi,
+          functionName: 'balanceOf',
+          args: [poolAddress]
+        }),
+      undefined,
+      {
+        name: `get weth balance on pool ${poolAddress}`
+      }
     );
 
-    const gliderRebalanceResult = await monitorRebalance(
-      db,
-      rebalanceId,
-      gliderRebalanceId,
-      portfolio.portfolioId
-    );
-    console.log(gliderRebalanceResult);
+    if (!wethBalance || wethBalance === 0n) {
+      const executionId = await executeBuyOnUniswap(db, {
+        portfolioId: portfolio.portfolioId,
+        rebalanceId,
+        amountInWei: buyAmountInWei,
+        tokenAddress: token.address as Address,
+        recipient: portfolio.address as Address
+      });
+      const txExecutionId = await monitorTransactionExecution(
+        db,
+        rebalanceId,
+        executionId,
+        portfolio.portfolioId
+      );
+      console.log(txExecutionId);
+    } else {
+      const gliderRebalanceId = await triggerPortfolioRebalance(
+        db,
+        rebalanceId,
+        portfolio.portfolioId
+      );
+      const gliderRebalanceResult = await monitorRebalance(
+        db,
+        rebalanceId,
+        gliderRebalanceId,
+        portfolio.portfolioId
+      );
+      console.log(gliderRebalanceResult);
+    }
 
     await withdrawTokenFromPortfolio(db, {
       rebalanceId,
@@ -63,7 +105,9 @@ export async function processBuyWithGlider(
       portfolioId: portfolio.portfolioId
     });
   } catch (error) {
-    console.log(`Error during buy with glider flow ${JSON.stringify(error)}`);
+    console.log(
+      `Error during buy with glider flow ${JSON.stringify(error, bigIntReplacer)}`
+    );
     await insertGliderPortfolioRebalanceLog(db, {
       gliderPortfolioRebalancesId: rebalanceId,
       label: RebalancesLogLabel.ERROR

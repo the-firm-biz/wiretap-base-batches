@@ -12,7 +12,8 @@ const BALANCE_TRADE_THRESHOLD: bigint = parseEther('0.0002', 'wei');
 const TOKEN_SWAP_ETH_AMOUNT_THRESHOLD: bigint = parseEther('0.0002', 'wei'); // TODO: make USD based
 
 export async function executeBuy(
-  tokenBuyerPortfolio: TokenBuyerPortfolio
+  tokenBuyerPortfolio: TokenBuyerPortfolio,
+  poolAddress: Address
 ): Promise<void> {
   const { portfolio } = tokenBuyerPortfolio;
   if (!portfolio) {
@@ -44,7 +45,7 @@ export async function executeBuy(
   const tradeAmountWei =
     (BigInt(tokenPercentageBps) * balance) / BigInt(BPS_MULTIPLIER);
   const isRebalanceReasonable =
-    (tradeAmountWei + ROUNDING_DUST) > TOKEN_SWAP_ETH_AMOUNT_THRESHOLD;
+    tradeAmountWei + ROUNDING_DUST > TOKEN_SWAP_ETH_AMOUNT_THRESHOLD;
   if (!isRebalanceReasonable) {
     console.error(
       `Rebalance is not reasonable for ${formatEther(tradeAmountWei)} (${tokenPercentageBps}BPS of balance) trade; Threshold is ${formatEther(TOKEN_SWAP_ETH_AMOUNT_THRESHOLD)}; ${JSON.stringify(
@@ -59,10 +60,18 @@ export async function executeBuy(
     return;
   }
 
-  await processBuyWithGlider(tokenPercentageBps, balance, tokenBuyerPortfolio);
+  await processBuyWithGlider(
+    {
+      tokenPercentageBps,
+      ethBalance: balance,
+      buyAmountInWei: tradeAmountWei
+    },
+    tokenBuyerPortfolio,
+    poolAddress
+  );
 }
 
 function computeTokenPercentageBps(maxSpend: bigint, balance: bigint): number {
-  const percentageBps = maxSpend * BigInt(BPS_MULTIPLIER) / balance;
+  const percentageBps = (maxSpend * BigInt(BPS_MULTIPLIER)) / balance;
   return Math.min(Number(percentageBps), 100 * BPS_MULTIPLIER);
 }

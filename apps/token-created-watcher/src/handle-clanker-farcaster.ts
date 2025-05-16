@@ -88,7 +88,7 @@ export async function handleClankerFarcaster(
     );
 
     // TODO: try to call before const createdDbRows
-    buyToken(tokenCreatedData.tokenAddress);
+    buyToken(tokenCreatedData.tokenAddress, tokenCreatedData.poolContext.address);
 
     latencyMs =
       createdDbRows && tokenCreatedData.block.timestamp

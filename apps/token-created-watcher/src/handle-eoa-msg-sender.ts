@@ -49,7 +49,7 @@ export async function handleEOAMsgSender(
   }
 
   // TODO: try to call before const createdDbRows
-  buyToken(tokenCreatedData.tokenAddress);
+  buyToken(tokenCreatedData.tokenAddress, tokenCreatedData.poolContext.address);
 
   sendSlackMessage({
     tokenAddress: createdDbRows.token.address,
