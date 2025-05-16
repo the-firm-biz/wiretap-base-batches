@@ -15,10 +15,10 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { formatUsd } from '@/app/utils/format/format-usd';
-import { DepositState, DepositDrawerStep } from './deposit-drawer';
-import { Address } from 'viem';
 import { formatUnits } from '@/app/utils/format/format-units';
-import { MIN_GLIDER_REBALANCE_AMOUNT_ETH } from '@/app/constants';
+import { MIN_TRADE_THRESHOLD_WEI } from '@wiretap/config';
+import { DepositState, DepositDrawerStep } from './deposit-drawer';
+import { Address, formatEther } from 'viem';
 
 interface EthDepositFormProps {
   userBalance: number;
@@ -51,12 +51,13 @@ export function EthDepositForm({
     MAX_ALPHA_TESTING_DEPOSIT_AMOUNT - portfolioBalanceEth
   );
 
+  const minDepositAmount = Number(formatEther(MIN_TRADE_THRESHOLD_WEI));
+
   const formSchema = z.object({
     ethToDeposit: z
       .number({ message: REQUIRED_FIELD_MESSAGE })
-      .min(0.1e-17, { message: REQUIRED_FIELD_MESSAGE }) // 1 wei
-      .min(MIN_GLIDER_REBALANCE_AMOUNT_ETH, {
-        message: `Min deposit ${MIN_GLIDER_REBALANCE_AMOUNT_ETH} ETH`
+      .min(minDepositAmount, {
+        message: `Min deposit ${minDepositAmount} ETH`
       })
       .max(userBalance, { message: 'Insufficient ETH in your wallet' })
       .max(MAX_ALPHA_TESTING_DEPOSIT_AMOUNT, {

@@ -1,5 +1,6 @@
 import type { TokenBuyerPortfolio } from '@wiretap/db';
 import { callWithBackOff } from '@wiretap/utils/server';
+import { MIN_TRADE_THRESHOLD_WEI } from '@wiretap/config';
 import { httpPublicClient } from '../rpc-clients.js';
 import { type Address, formatEther, parseEther } from 'viem';
 import { bigIntReplacer } from '@wiretap/utils/shared';
@@ -7,9 +8,6 @@ import { processBuyWithGlider } from './buy-flow/process-buy-with-glider.js';
 
 const BPS_MULTIPLIER: number = 10_000;
 const ROUNDING_DUST = parseEther('0.000001', 'wei');
-
-const BALANCE_TRADE_THRESHOLD: bigint = parseEther('0.0002', 'wei');
-const TOKEN_SWAP_ETH_AMOUNT_THRESHOLD: bigint = parseEther('0.0002', 'wei'); // TODO: make USD based
 
 export async function executeBuy(
   tokenBuyerPortfolio: TokenBuyerPortfolio,
@@ -32,7 +30,7 @@ export async function executeBuy(
       name: `getBalance for portfolio ${portfolio.address}`
     }
   );
-  const isBalanceSufficient = balance && balance > BALANCE_TRADE_THRESHOLD;
+  const isBalanceSufficient = balance && balance >= MIN_TRADE_THRESHOLD_WEI;
   if (!isBalanceSufficient) {
     console.error(`Insufficient portfolio balance ${portfolio.address}`);
     return;
@@ -45,10 +43,10 @@ export async function executeBuy(
   const tradeAmountWei =
     (BigInt(tokenPercentageBps) * balance) / BigInt(BPS_MULTIPLIER);
   const isRebalanceReasonable =
-    tradeAmountWei + ROUNDING_DUST > TOKEN_SWAP_ETH_AMOUNT_THRESHOLD;
+    tradeAmountWei + ROUNDING_DUST > MIN_TRADE_THRESHOLD_WEI;
   if (!isRebalanceReasonable) {
     console.error(
-      `Rebalance is not reasonable for ${formatEther(tradeAmountWei)} (${tokenPercentageBps}BPS of balance) trade; Threshold is ${formatEther(TOKEN_SWAP_ETH_AMOUNT_THRESHOLD)}; ${JSON.stringify(
+      `Rebalance is not reasonable for ${formatEther(tradeAmountWei)} (${tokenPercentageBps}BPS of balance) trade; Threshold is ${formatEther(MIN_TRADE_THRESHOLD_WEI)}; ${JSON.stringify(
         {
           portfolio: portfolio.address,
           balance: balance,

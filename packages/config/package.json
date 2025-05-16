@@ -14,6 +14,9 @@
     "lint": "eslint .",
     "ts:check": "tsc --noEmit"
   },
+  "dependencies": {
+    "viem": "^2.29.2"
+  },
   "devDependencies": {
     "@wiretap/typescript-config": "workspace:*",
     "@wiretap/eslint-config": "workspace:*",

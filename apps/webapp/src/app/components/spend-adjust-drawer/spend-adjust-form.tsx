@@ -89,7 +89,7 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
       .number({ message: REQUIRED_FIELD_MESSAGE })
       .min(0.1e-17, { message: REQUIRED_FIELD_MESSAGE }) // 1 wei
       .min(MAX_SPEND_LOW_LIMIT_ETH, {
-        message: `Min deposit ${MAX_SPEND_LOW_LIMIT_ETH} ETH`
+        message: `Min spend amount ${MAX_SPEND_LOW_LIMIT_ETH} ETH`
       })
       .max(portfolioBalanceEth, {
         message: 'Insufficient ETH in your WireTap Balance'

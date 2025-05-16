@@ -185,27 +185,6 @@ export default function BigeonsBasementPage() {
             height={64}
             mode="color"
           />
-          <DitheredImage
-            src="/user.png"
-            alt="Dithered test"
-            width={32}
-            height={32}
-            bayerMatrix={4}
-          />
-          <DitheredImage
-            src="/user.png"
-            alt="Dithered test"
-            width={32}
-            height={32}
-            // automatically uses smaller matrix at this size
-          />
-          <DitheredImage
-            src="/user.png"
-            alt="test"
-            width={32}
-            height={32}
-            mode="color"
-          />
         </div>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">

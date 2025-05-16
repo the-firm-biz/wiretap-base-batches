@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { MIN_TRADE_THRESHOLD_WEI } from '@wiretap/config';
 import { useTRPC } from '../trpc-clients/trpc-react-client';
 import { DepositDrawer } from './deposit-drawer/deposit-drawer';
 import { TriangleAlertIcon } from './icons/TriangleAlertIcon';
@@ -9,7 +10,6 @@ import { useBalance } from 'wagmi';
 import useBannerStore from '../zustand/banners';
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { MIN_REBALANCE_LIMIT_WEI } from '@/app/constants';
 
 export const LowBalanceBanner = () => {
   const trpc = useTRPC();
@@ -42,7 +42,7 @@ export const LowBalanceBanner = () => {
   const portfolioBalanceWei = portfolioBalance?.value ?? BigInt(0);
 
   const isBelowMinRebalanceLimit =
-    portfolioBalanceWei < MIN_REBALANCE_LIMIT_WEI;
+    portfolioBalanceWei < MIN_TRADE_THRESHOLD_WEI;
   const isLowBalance = portfolioBalanceWei < minRequiredTotalWei;
 
   const showBanner = isLowBalance || isBelowMinRebalanceLimit;

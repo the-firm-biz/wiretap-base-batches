@@ -1,0 +1,20 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect width="32" height="32" rx="16" fill="url(#pattern0_8843_34900)"/>
+<defs>
+<pattern id="pattern0_8843_34900" patternUnits="userSpaceOnUse" viewBox="9 -70 4 4" width="12.5%" height="12.5%" patternContentUnits="objectBoundingBox">
+<g clip-path="url(#clip0_8843_34900)">
+<rect width="4" height="4" transform="translate(9 -70)" fill="#C8D2C9"/>
+<rect width="1" height="2" transform="matrix(-1 0 0 1 13 -70)" fill="#262E29"/>
+<rect width="1" height="1" transform="matrix(4.37114e-08 1 1 -4.37114e-08 10 -69)" fill="#262E29"/>
+<rect width="1" height="1" transform="matrix(4.37114e-08 1 1 -4.37114e-08 11 -68)" fill="#262E29"/>
+<rect width="1" height="1" transform="matrix(4.37114e-08 1 1 -4.37114e-08 12 -67)" fill="#262E29"/>
+<rect width="1" height="2" transform="matrix(-1 0 0 1 10 -70)" fill="#262E29"/>
+<rect width="1" height="1" transform="matrix(-1 0 0 1 12 -70)" fill="#262E29"/>
+<rect width="1" height="2" transform="matrix(-1 0 0 1 10 -68)" fill="#262E29"/>
+<rect width="1" height="1" transform="matrix(4.37114e-08 1 1 -4.37114e-08 9 -69)" fill="#C8D2C9"/>
+</g>
+</pattern><clipPath id="clip0_8843_34900">
+<rect width="4" height="4" fill="white" transform="translate(9 -70)"/>
+</clipPath>
+</defs>
+</svg>
