@@ -60,7 +60,6 @@ export function RecentActivityFeed({
               />
             );
           } else {
-            console.log('activityItem', activityItem);
             return (
               <RecentActivityTradeItem
                 key={activityItem.id}

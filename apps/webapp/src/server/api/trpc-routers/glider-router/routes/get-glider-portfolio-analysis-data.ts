@@ -112,7 +112,7 @@ export const getGliderPortfolioAnalysisData = privateProcedure
       }
 
       const portfolioAnalysisResponse = await fetch(
-        `https://api.glider.fi/v1/portfolio/${portfolioId}`,
+        `https://api.glider.fi/v1/portfolio/ao04x0r6`,
         {
           method: 'GET',
           headers: {
@@ -138,8 +138,6 @@ export const getGliderPortfolioAnalysisData = privateProcedure
         (activity) =>
           activity.type === 'deposit' || activity.type === 'withdraw'
       );
-
-      console.log('depositAndWithdrawals', depositAndWithdrawals);
 
       const tradesWithType: GliderPortfolioTrade[] = trades.map((trade) => ({
         ...trade,

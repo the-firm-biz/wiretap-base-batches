@@ -18,7 +18,6 @@ export function RecentActivityTradeItem({
   tradeItem
 }: RecentActivityTradeItemProps) {
   const { timestamp, swaps } = tradeItem;
-  console.log('tradeItem', tradeItem);
 
   const fromToken = swaps.find((swap) => swap.type === 'fromToken');
   const toToken = swaps.find((swap) => swap.type === 'toToken');
@@ -52,22 +51,23 @@ export function RecentActivityTradeItem({
       {/* From Token */}
       <div className="flex flex-row items-center justify-between gap-2 py-2 px-3 border-dotted rounded-md border ml-6">
         <div className="flex flex-row items-center gap-2">
-          {isFromTokenEth ? (
-            <Image
-              src={`/tokens/eth.png`}
-              alt={fromToken.symbol}
-              width={16}
-              height={16}
-            />
-          ) : (
-            <Image
-              // @todo activity feed - replace with token placeholder image
-              src={`/user-dithered.png`}
-              alt={fromToken.symbol}
-              width={16}
-              height={16}
-            />
-          )}
+          <div className="w-[16px] h-[16px] rounded-full overflow-hidden">
+            {isFromTokenEth ? (
+              <Image
+                src={`/tokens/eth.png`}
+                alt={fromToken.symbol}
+                width={16}
+                height={16}
+              />
+            ) : (
+              <Image
+                src={`/token-image-missing.svg`}
+                alt={fromToken.symbol}
+                width={16}
+                height={16}
+              />
+            )}
+          </div>
           <p className={`${textStyles['compact-emphasis']}`}>
             {fromToken.symbol}
           </p>
@@ -86,22 +86,23 @@ export function RecentActivityTradeItem({
       <div className="border-border border rounded-md ml-6 p-3 flex flex-col gap-4">
         <div className="flex flex-row items-center justify-between gap-2 ">
           <div className="flex flex-row items-center gap-2">
-            {isToTokenEth ? (
-              <Image
-                src={`/tokens/eth.png`}
-                alt={toToken.symbol}
-                width={32}
-                height={32}
-              />
-            ) : (
-              <Image
-                // @todo activity feed - replace with token placeholder image
-                src={`/user-dithered.png`}
-                alt={fromToken.symbol}
-                width={32}
-                height={32}
-              />
-            )}
+            <div className="w-[16px] h-[16px] rounded-full overflow-hidden">
+              {isToTokenEth ? (
+                <Image
+                  src={`/tokens/eth.png`}
+                  alt={toToken.symbol}
+                  width={32}
+                  height={32}
+                />
+              ) : (
+                <Image
+                  src={`/token-image-missing.svg`}
+                  alt={fromToken.symbol}
+                  width={32}
+                  height={32}
+                />
+              )}
+            </div>
             <div className="flex flex-col">
               <p className={`${textStyles['compact-emphasis']}`}>
                 {toToken.symbol}
