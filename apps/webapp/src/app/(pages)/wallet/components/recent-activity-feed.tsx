@@ -11,6 +11,7 @@ import useBannerStore from '@/app/zustand/banners';
 import { useShallow } from 'zustand/react/shallow';
 import { cn } from '@/app/utils/cn';
 import { RecentActivityTradeItem } from './recent-activity-trade-item';
+import { useEffect, useState } from 'react';
 interface RecentActivityProps {
   portfolioAnalysisData: GliderPortfolioTradeOrActivity[];
 }
@@ -18,6 +19,25 @@ interface RecentActivityProps {
 export function RecentActivityFeed({
   portfolioAnalysisData
 }: RecentActivityProps) {
+  const [prevData, setPrevData] = useState<GliderPortfolioTradeOrActivity[]>(
+    portfolioAnalysisData
+  );
+
+  useEffect(() => {
+    // There is new data
+    if (portfolioAnalysisData.length > prevData.length) {
+      const newData = portfolioAnalysisData.filter(
+        (item) => !prevData.includes(item)
+      );
+
+      if (newData.length > 0) {
+        console.log('newData!', newData);
+      }
+
+      setPrevData(portfolioAnalysisData);
+    }
+  }, [portfolioAnalysisData, prevData]);
+
   const isShowingLowBalanceBanner = useBannerStore(
     useShallow((state) => state.lowBalanceBannerPresent)
   );
