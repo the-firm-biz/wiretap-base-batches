@@ -84,7 +84,6 @@ export function Header({
                 <a
                   href="https://thefirm.biz"
                   target="_blank"
-                  rel="noopener noreferrer"
                   className="w-full flex items-center gap-2"
                 >
                   Get Our Next Release Early
