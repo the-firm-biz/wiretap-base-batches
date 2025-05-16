@@ -94,26 +94,25 @@ export const getGliderPortfolioAnalysisData = privateProcedure
       }
 
       // Validate that the portfolio exists & the authed address is the owner
-      // const existingGliderPortfolio = await getGliderPortfolioForWireTapAccount(
-      //   db,
-      //   wireTapAccountId
-      // );
-      // if (!existingGliderPortfolio) {
-      //   throw new TRPCError({
-      //     code: 'BAD_REQUEST',
-      //     message: 'Glider Portfolio does not exist for this WireTapAccount id'
-      //   });
-      // }
-      // if (existingGliderPortfolio.wireTapAccountId !== wireTapAccountId) {
-      //   throw new TRPCError({
-      //     code: 'BAD_REQUEST',
-      //     message: 'You are not the owner of this Glider Portfolio'
-      //   });
-      // }
+      const existingGliderPortfolio = await getGliderPortfolioForWireTapAccount(
+        db,
+        wireTapAccountId
+      );
+      if (!existingGliderPortfolio) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Glider Portfolio does not exist for this WireTapAccount id'
+        });
+      }
+      if (existingGliderPortfolio.wireTapAccountId !== wireTapAccountId) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'You are not the owner of this Glider Portfolio'
+        });
+      }
 
       const portfolioAnalysisResponse = await fetch(
-        // `https://api.glider.fi/v1/portfolio/${portfolioId}`,
-        `https://api.glider.fi/v1/portfolio/ao04x0r6`,
+        `https://api.glider.fi/v1/portfolio/${portfolioId}`,
         {
           method: 'GET',
           headers: {
@@ -135,21 +134,31 @@ export const getGliderPortfolioAnalysisData = privateProcedure
       const activities = portfolioAnalysisData.data.activity;
       const trades = portfolioAnalysisData.data.trades;
 
-      console.log('activities', activities);
+      const depositAndWithdrawals = activities.filter(
+        (activity) =>
+          activity.type === 'deposit' || activity.type === 'withdraw'
+      );
+
+      console.log('depositAndWithdrawals', depositAndWithdrawals);
+
       const tradesWithType: GliderPortfolioTrade[] = trades.map((trade) => ({
         ...trade,
         type: 'trade'
       }));
 
-      // console.log('tradesWithType', tradesWithType[0]);
-      console.log('trades', trades[0]);
+      const allTradesDepositsAndWithdrawals = [
+        ...depositAndWithdrawals,
+        ...tradesWithType
+      ];
 
-      const sorted = activitiedAndTradesSortedByTimestamp.sort((a, b) => {
-        return (
-          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-        );
-      });
+      const allChronologicalActivities = allTradesDepositsAndWithdrawals.sort(
+        (a, b) => {
+          return (
+            new Date(a.timestamp).getTime() + new Date(b.timestamp).getTime()
+          );
+        }
+      );
 
-      return activitiedAndTradesSortedByTimestamp;
+      return allChronologicalActivities;
     }
   );

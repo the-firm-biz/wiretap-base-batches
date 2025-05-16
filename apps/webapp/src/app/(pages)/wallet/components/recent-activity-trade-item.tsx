@@ -17,7 +17,9 @@ interface RecentActivityTradeItemProps {
 export function RecentActivityTradeItem({
   tradeItem
 }: RecentActivityTradeItemProps) {
+  const { timestamp, swaps } = tradeItem;
   console.log('tradeItem', tradeItem);
+
   const fromToken = swaps.find((swap) => swap.type === 'fromToken');
   const toToken = swaps.find((swap) => swap.type === 'toToken');
 
@@ -30,13 +32,11 @@ export function RecentActivityTradeItem({
 
   const fromTokenAddress = fromToken.assetId.split(':')[0];
   const isFromTokenEth = isAddressEqual(fromTokenAddress, ETH_ADDRESS);
-  const sanitisedFromAmount = fromToken.amount.toFixed(5).slice(1);
+  const sanitisedFromAmount = fromToken.amount.toFixed(5);
 
   const toTokenAddress = toToken.assetId.split(':')[0];
   const isToTokenEth = isAddressEqual(toTokenAddress, ETH_ADDRESS);
   const sanitisedToAmount = toToken.amount.toFixed(0);
-  const toTokenAmountAsNumber = Number(toToken.amount);
-  const valueUsed = Math.abs(toTokenAmountAsNumber * Number(toToken.valueUsd));
 
   return (
     <div className="flex flex-col gap-2">
@@ -50,27 +50,28 @@ export function RecentActivityTradeItem({
       </div>
 
       {/* From Token */}
-
-      <div className="flex flex-row items-center gap-2 py-2 px-3 border-dotted border ml-6">
-        {isFromTokenEth ? (
-          <Image
-            src={`/tokens/eth.png`}
-            alt={fromToken.symbol}
-            width={16}
-            height={16}
-          />
-        ) : (
-          <Image
-            // @todo activity feed - replace with token placeholder image
-            src={`/user-dithered.png`}
-            alt={fromToken.symbol}
-            width={16}
-            height={16}
-          />
-        )}
-        <p className={`${textStyles['compact-emphasis']}`}>
-          {fromToken.symbol}
-        </p>
+      <div className="flex flex-row items-center justify-between gap-2 py-2 px-3 border-dotted rounded-md border ml-6">
+        <div className="flex flex-row items-center gap-2">
+          {isFromTokenEth ? (
+            <Image
+              src={`/tokens/eth.png`}
+              alt={fromToken.symbol}
+              width={16}
+              height={16}
+            />
+          ) : (
+            <Image
+              // @todo activity feed - replace with token placeholder image
+              src={`/user-dithered.png`}
+              alt={fromToken.symbol}
+              width={16}
+              height={16}
+            />
+          )}
+          <p className={`${textStyles['compact-emphasis']}`}>
+            {fromToken.symbol}
+          </p>
+        </div>
         <div>
           <span className={cn(`${textStyles['code-02']} text-negative`)}>
             -{' '}
@@ -109,7 +110,7 @@ export function RecentActivityTradeItem({
                 <p className={`${textStyles['label']}`}>Ether</p>
               ) : (
                 <p className={`${textStyles['label']}`}>
-                  {formatAddress(tokenAddress)}
+                  {formatAddress(toTokenAddress)}
                 </p>
               )}
             </div>
@@ -123,19 +124,19 @@ export function RecentActivityTradeItem({
                 {sanitisedToAmount}
               </span>
             </span>
-            <span>${formatUsd(valueUsed)}</span>
+            <span>${formatUsd(toToken.valueUsd)}</span>
           </div>
         </div>
-        <div className="flex justify-end">
-          <a
-            href={`https://basescan.io/tx/${toToken.transactionHash}`}
-            target="_blank"
-          >
-            <Button variant="ghost" size="link">
-              View Tx →
-            </Button>
-          </a>
-        </div>
+      </div>
+      <div className="flex justify-end">
+        <a
+          href={`https://basescan.io/tx/${toToken.transactionHash}`}
+          target="_blank"
+        >
+          <Button variant="ghost" size="link">
+            View Tx →
+          </Button>
+        </a>
       </div>
     </div>
   );
