@@ -98,7 +98,8 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
       const ethDisplayValue = formatUnits(trackingStatus.maxSpend, 18, 4);
       return (
         <SpendAdjustDrawer
-          target={target}
+          targetLabel={target.label}
+          targetImage={target.image}
           trigger={<Button variant="outline">{ethDisplayValue} ETH</Button>}
           trackingStatus={trackingStatus}
           isControlledOpen={isOpenSpendAdjustDrawer}
