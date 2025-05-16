@@ -8,6 +8,7 @@
 ### `/apps`
 
 - [token-created-watcher](apps/token-created-watcher/README.md)
+- [swap-watcher](apps/swap-watcher/README.md)
 - [webapp](apps/webapp/README.md)
 
 ### `/packages`
@@ -45,7 +46,7 @@ pnpm dev:webapp
 ### check types & lint
 
 ```bash
-pnpm lint
+pnpm turbo lint ts:check
 ```
 
 Made sure node version v23.11.0 and pnpm 10.8.1 are installed globally
