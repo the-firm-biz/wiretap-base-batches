@@ -54,6 +54,7 @@ export const WithdrawDrawerContent = ({
             queryKey: useBalanceQueryKey
           });
           trpcClientUtils.wireTapAccount.invalidate();
+          trpcClientUtils.glider.invalidate();
         }, 7000);
         setDrawerIsOpen(false);
       },
