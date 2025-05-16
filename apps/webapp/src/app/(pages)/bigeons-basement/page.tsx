@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import { textStyles } from '../../styles/template-strings';
@@ -8,6 +10,7 @@ import { cn } from '@/app/utils/cn';
 import DitheredImage from '../../components/dithered-image';
 import DitheredAnimation from '../../components/dithered-animation';
 import ReelToReelAnimation from './animated-reel-to-reel';
+import { PixelFirework } from '../../components/pixel-firework-animation';
 
 export default function BigeonsBasementPage() {
   return (
@@ -19,6 +22,7 @@ export default function BigeonsBasementPage() {
     >
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <ReelToReelAnimation />
+        <PixelFirework options={{ scalar: 0.5, particleCount: 200 }} />
         {/* Logo test area */}
         <div className="flex items-center gap-2 p-4">
           <p>Logo used on main background</p>
