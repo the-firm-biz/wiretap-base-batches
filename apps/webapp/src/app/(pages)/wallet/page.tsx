@@ -48,7 +48,8 @@ export default function WalletPage() {
           portfolioId: portfolio?.portfolioId as string
         },
         {
-          enabled: !!portfolio?.portfolioId
+          enabled: !!portfolio?.portfolioId,
+          refetchInterval: 10000
         }
       )
     );

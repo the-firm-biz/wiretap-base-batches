@@ -24,25 +24,45 @@ export interface GliderPortfolioActivity {
   walletAddress: string;
 }
 
-export interface GliderPortfolioSwapActivity {
+/** Raw response type from Glider API */
+export interface GliderPortfolioTradeResponse {
   id: string;
-  // assumed type
-  type: 'swap';
+  tradeType: 'swap';
+  timestamp: string;
+  swaps: GliderPortfolioSwap[];
 }
 
-export type GliderPortfolioSwapsAndActivities =
-  | GliderPortfolioActivity
-  | GliderPortfolioSwapActivity;
+/** Parsed to standardise 'type' field */
+export interface GliderPortfolioTrade extends GliderPortfolioTradeResponse {
+  type: 'trade';
+}
 
-interface SuccessGetPortfolioDataResponse {
+export interface GliderPortfolioSwap {
+  type: 'fromToken' | 'toToken';
+  /** {address}:{chainID} */
+  assetId: string;
+  symbol: string;
+  amount: number;
+  amountRaw: string;
+  decimals: number;
+  priceUsd: number;
+  valueUsd: number;
+  transactionHash: string;
+}
+
+export type GliderPortfolioTradeOrActivity =
+  | GliderPortfolioActivity
+  | GliderPortfolioTrade;
+
+interface SuccessResponse {
   success: true;
   data: {
-    trades: any[];
+    trades: GliderPortfolioTradeResponse[];
     activity: GliderPortfolioActivity[];
   };
 }
 
-interface ErrorGetPortfolioDataResponse {
+interface ErrorResponse {
   success: false;
   error: {
     message: string;
@@ -63,7 +83,7 @@ export const getGliderPortfolioAnalysisData = privateProcedure
     async ({
       ctx,
       input: { portfolioId }
-    }): Promise<GliderPortfolioSwapsAndActivities[]> => {
+    }): Promise<GliderPortfolioTradeOrActivity[]> => {
       const { wireTapAccountId, db } = ctx;
 
       if (!serverEnv.GLIDER_API_KEY) {
@@ -101,9 +121,7 @@ export const getGliderPortfolioAnalysisData = privateProcedure
         }
       );
 
-      const portfolioAnalysisData:
-        | SuccessGetPortfolioDataResponse
-        | ErrorGetPortfolioDataResponse =
+      const portfolioAnalysisData: SuccessResponse | ErrorResponse =
         await portfolioAnalysisResponse.json();
 
       if (!portfolioAnalysisData.success) {
@@ -113,8 +131,32 @@ export const getGliderPortfolioAnalysisData = privateProcedure
         });
       }
 
-      // @todo activity feed - get swaps data, add to chronological array of activity items
+      const activities = portfolioAnalysisData.data.activity;
+      const trades = portfolioAnalysisData.data.trades;
 
-      return portfolioAnalysisData.data.activity;
+      const depositAndWithdrawals = activities.filter(
+        (activity) =>
+          activity.type === 'deposit' || activity.type === 'withdraw'
+      );
+
+      const tradesWithType: GliderPortfolioTrade[] = trades.map((trade) => ({
+        ...trade,
+        type: 'trade'
+      }));
+
+      const allTradesDepositsAndWithdrawals = [
+        ...depositAndWithdrawals,
+        ...tradesWithType
+      ];
+
+      const allChronologicalActivities = allTradesDepositsAndWithdrawals.sort(
+        (a, b) => {
+          return (
+            new Date(a.timestamp).getTime() + new Date(b.timestamp).getTime()
+          );
+        }
+      );
+
+      return allChronologicalActivities;
     }
   );

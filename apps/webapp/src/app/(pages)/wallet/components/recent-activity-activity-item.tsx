@@ -47,22 +47,23 @@ export function RecentActivityActivityItem({
       </div>
       <div className="flex flex-row items-center justify-between gap-2 border-border border rounded-md ml-6 p-3">
         <div className="flex flex-row items-center gap-2">
-          {isTokenEth ? (
-            <Image
-              src={`/tokens/eth.png`}
-              alt={activityItem.symbol}
-              width={40}
-              height={40}
-            />
-          ) : (
-            <Image
-              // @todo activity feed - replace with token placeholder image
-              src={`/user-dithered.png`}
-              alt={activityItem.symbol}
-              width={40}
-              height={40}
-            />
-          )}
+          <div className="w-[32px] h-[32px] rounded-full overflow-hidden">
+            {isTokenEth ? (
+              <Image
+                src={`/tokens/eth.png`}
+                alt={activityItem.symbol}
+                width={32}
+                height={32}
+              />
+            ) : (
+              <Image
+                src={`/token-image-missing.svg`}
+                alt={activityItem.symbol}
+                width={32}
+                height={32}
+              />
+            )}
+          </div>
           <div className="flex flex-col">
             <p className={`${textStyles['compact-emphasis']}`}>
               {activityItem.symbol}
@@ -97,7 +98,7 @@ export function RecentActivityActivityItem({
       </div>
       <div className="flex justify-end">
         <a
-          href={`https://basescan.io/tx/${activityItem.txHash}`}
+          href={`https://basescan.org/tx/${activityItem.txHash}`}
           target="_blank"
         >
           <Button variant="ghost" size="link">
