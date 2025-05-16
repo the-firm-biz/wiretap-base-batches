@@ -10,16 +10,27 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { DownloadIcon } from '@/app/components/icons/DownloadIcon';
 import { DepositDrawer } from '@/app/components/deposit-drawer/deposit-drawer';
+import { useAccount } from 'wagmi';
+import { useBalance } from 'wagmi';
 
 export function WalletNotice() {
   const trpc = useTRPC();
+
+  const { address } = useAccount();
+  const { data: eoaBalance } = useBalance({
+    address: address,
+    query: {
+      enabled: !!address
+    }
+  });
+  const userHasZeroBalance =
+    !eoaBalance?.value || eoaBalance.value === BigInt(0);
 
   const { data: gliderPortfolio, isLoading: isLoadingPortfolio } = useQuery(
     trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
   const hasZeroPortfolioBalance =
-    !gliderPortfolio?.balanceWei ||
-    BigInt(gliderPortfolio.balanceWei) === BigInt(0);
+    !gliderPortfolio?.balanceWei || gliderPortfolio.balanceWei === BigInt(0);
 
   const { data: targets, isLoading: isLoadingTargets } = useQuery(
     trpc.wireTapAccount.getAuthedAccountTargets.queryOptions()
@@ -52,11 +63,19 @@ export function WalletNotice() {
     }
 
     if (hasZeroPortfolioBalance) {
-      return <p className={`${textStyles['title3']}`}>Fund Your Wallet</p>;
+      return (
+        <p className={`${textStyles['title3']} text-center`}>
+          Fund Your Wallet
+        </p>
+      );
     }
 
     if (hasNoTargets) {
-      return <p className={`${textStyles['title3']}`}>Choose Your Targets</p>;
+      return (
+        <p className={`${textStyles['title3']} text-center`}>
+          Choose Your Targets
+        </p>
+      );
     }
 
     return (
@@ -73,14 +92,16 @@ export function WalletNotice() {
 
     if (hasZeroPortfolioBalance || hasNoTargets) {
       return (
-        <p className={`${textStyles['compact']}`}>
-          Your WireTap Balance is used to autobuy tokens at launch
+        <p className={`${textStyles['compact']} text-center`}>
+          Your WireTap Balance is used to auto-buy tokens at launch
         </p>
       );
     }
 
     return (
-      <p className={`${textStyles['compact']}`}>No auto-buys complete yet.</p>
+      <p className={`${textStyles['compact']} text-center`}>
+        No auto-buys completed yet.
+      </p>
     );
   };
 
@@ -93,7 +114,7 @@ export function WalletNotice() {
       return (
         <DepositDrawer
           trigger={
-            <Button>
+            <Button disabled={isLoadingPortfolio || userHasZeroBalance}>
               <DownloadIcon className="size-4" />
               Deposit Funds
             </Button>
@@ -103,7 +124,7 @@ export function WalletNotice() {
     }
 
     return (
-      <Link href={`/discover`} className="flex-1">
+      <Link href={`/`} className="flex-1">
         <Button>
           Discover
           <ChevronRight className="size-4" />

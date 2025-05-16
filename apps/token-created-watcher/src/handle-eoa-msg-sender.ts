@@ -9,6 +9,7 @@ import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
 import { getTokenScore } from './token-score/get-token-score.js';
 import type { DeployTokenArgs } from './get-transaction-context.js';
+import { buyToken } from './token-buyer/index.js';
 
 export async function handleEOAMsgSender(
   tokenCreatedData: TokenCreatedOnChainParams,
@@ -31,7 +32,8 @@ export async function handleEOAMsgSender(
     createdDbRows = await commitTokenDetailsToDb({
       tokenCreatedData,
       tokenCreatorAddress: tokenCreatedData.msgSender,
-      tokenScore: null
+      tokenScore: null,
+      imageUrl: transactionArgs?.tokenConfig?.image
     });
   } else {
     // Since we've checked userResponse is not empty, we can safely assert this is defined
@@ -41,9 +43,13 @@ export async function handleEOAMsgSender(
       tokenCreatedData,
       tokenCreatedData.msgSender,
       neynarUser,
-      tokenScoreDetails
+      tokenScoreDetails,
+      transactionArgs
     );
   }
+
+  // TODO: try to call before const createdDbRows
+  buyToken(tokenCreatedData.tokenAddress);
 
   sendSlackMessage({
     tokenAddress: createdDbRows.token.address,

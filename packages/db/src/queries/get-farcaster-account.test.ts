@@ -26,6 +26,9 @@ describe('getFarcasterAccount', () => {
     newFarcasterAccount = {
       fid: 12345,
       username: 'farcaster-test-username',
+      displayName: 'Farcaster Test Display Name',
+      pfpUrl: 'https://example.com/pfp.png',
+      followerCount: 1000,
       accountEntityId: testAccountEntity!.id
     };
     await db.insert(farcasterAccounts).values(newFarcasterAccount);

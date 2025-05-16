@@ -45,7 +45,7 @@ pnpm dev:webapp
 ### check types & lint
 
 ```bash
-deno task check
+pnpm lint
 ```
 
 Made sure node version v23.11.0 and pnpm 10.8.1 are installed globally

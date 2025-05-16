@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@coinbase/onchainkit": "^0.38.13",
+    "@farcaster/frame-wagmi-connector": "^0.0.30",
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-aspect-ratio": "^1.1.4",
     "@radix-ui/react-dialog": "^1.1.11",
     "@radix-ui/react-label": "^2.1.6",
+    "@radix-ui/react-popover": "^1.1.13",
     "@radix-ui/react-scroll-area": "^1.2.6",
     "@radix-ui/react-separator": "^1.1.4",
     "@radix-ui/react-slot": "^1.2.0",
@@ -51,12 +53,14 @@
     "server-only": "^0.0.1",
     "siwe": "^3.0.0",
     "sonner": "^2.0.3",
+    "superjson": "^2.2.2",
     "tailwind-merge": "^3.2.0",
     "three": "^0.176.0",
     "vaul": "^1.1.2",
     "viem": "^2.29.2",
     "wagmi": "^2.15.1",
-    "zod": "^3.24.4"
+    "zod": "^3.24.4",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

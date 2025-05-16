@@ -15,6 +15,8 @@ describe('getPool', () => {
   });
 
   const testPoolAddress = '0x0000000000000000000000000000000000000004';
+  const testTokenAddress = '0x0000000000000000000000000000000000000002';
+  const testCurrencyAddress = '0x0000000000000000000000000000000000000003';
 
   beforeEach(async () => {
     await unsafe__clearDbTables(db);
@@ -48,13 +50,14 @@ describe('getPool', () => {
       .values({
         name: 'Test Token',
         symbol: 'TEST',
-        address: '0x0000000000000000000000000000000000000002',
+        address: testTokenAddress,
         deploymentTransactionHash:
           '0x1234567890123456789012345678901234567890123456789012345678901234',
         deploymentContractId: testContract!.id,
         accountEntityId: testAccountEntity!.id,
         totalSupply: 1000000000,
-        block: testBlock!.number
+        block: testBlock!.number,
+        creatorTokenIndex: 1
       })
       .returning();
 
@@ -63,7 +66,7 @@ describe('getPool', () => {
       .values({
         name: 'Ethereum',
         symbol: 'ETH',
-        address: '0x0000000000000000000000000000000000000003',
+        address: testCurrencyAddress,
         decimals: 18
       })
       .returning();
@@ -77,7 +80,8 @@ describe('getPool', () => {
         currencyId: testCurrency!.id,
         isPrimary: true,
         feeBps: 300,
-        athMcapUsd: 1000000
+        athMcapUsd: 1000000,
+        startingMcapUsd: 1000000
       })
       .returning();
   });
@@ -86,7 +90,7 @@ describe('getPool', () => {
     const pool = await getPool(db, testPoolAddress as `0x${string}`);
 
     expect(pool).toBeDefined();
-    expect(pool!.address).toBe(testPoolAddress);
+    expect(pool!.pools.address).toBe(testPoolAddress);
   });
 
   it('handles case-insensitive pool address', async () => {
@@ -94,7 +98,15 @@ describe('getPool', () => {
     const pool = await getPool(db, upperCaseAddress);
 
     expect(pool).toBeDefined();
-    expect(pool!.address).toBe(testPoolAddress);
+    expect(pool!.pools.address).toBe(testPoolAddress);
+  });
+
+  it('retrieves pool tokens', async () => {
+    const pool = await getPool(db, testPoolAddress as `0x${string}`);
+
+    expect(pool).toBeDefined();
+    expect(pool!.tokens.address).toBe(testTokenAddress);
+    expect(pool!.currencies.address).toBe(testCurrencyAddress);
   });
 
   it('returns undefined when pool does not exist', async () => {

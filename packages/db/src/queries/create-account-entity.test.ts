@@ -18,7 +18,10 @@ const newWallet: Omit<NewWallet, 'accountEntityId'> = {
 
 const newFarcasterAccount: Omit<NewFarcasterAccount, 'accountEntityId'> = {
   fid: 12345,
-  username: 'farcaster-test-username'
+  username: 'farcaster-test-username',
+  displayName: 'Farcaster Test Display Name',
+  pfpUrl: 'https://example.com/pfp.png',
+  followerCount: 1000
 };
 
 const newXAccount: Omit<NewXAccount, 'accountEntityId'> = {
@@ -90,6 +93,9 @@ describe('createAccountEntity', () => {
           id: expect.any(Number),
           fid: newFarcasterAccount.fid,
           username: newFarcasterAccount.username,
+          displayName: newFarcasterAccount.displayName,
+          pfpUrl: newFarcasterAccount.pfpUrl,
+          followerCount: newFarcasterAccount.followerCount,
           accountEntityId: dbEntities[0]!.id,
           createdAt: expect.any(Date)
         });

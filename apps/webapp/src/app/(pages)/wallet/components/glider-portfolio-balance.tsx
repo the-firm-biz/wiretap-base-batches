@@ -7,6 +7,7 @@ import { useTRPC } from '@/app/trpc-clients/trpc-react-client';
 import { formatUnits } from '@/app/utils/format/format-units';
 import { formatUsd } from '@/app/utils/format/format-usd';
 import { useQuery } from '@tanstack/react-query';
+import { useBalance } from 'wagmi';
 
 export function GliderPortfolioBalance() {
   const trpc = useTRPC();
@@ -14,6 +15,13 @@ export function GliderPortfolioBalance() {
   const { data: gliderPortfolio, isLoading: isLoadingPortfolio } = useQuery(
     trpc.wireTapAccount.getAuthedAccountGliderPortfolio.queryOptions()
   );
+  const { data: portfolioBalance } = useBalance({
+    address: gliderPortfolio?.address,
+    query: {
+      enabled: !!gliderPortfolio?.address
+    }
+  });
+
   const { data: tokenPrice, isLoading: isLoadingTokenPrice } = useQuery(
     trpc.app.getEthPriceUsd.queryOptions()
   );
@@ -21,9 +29,9 @@ export function GliderPortfolioBalance() {
   const isLoadingQueries = isLoadingPortfolio || isLoadingTokenPrice;
 
   const ethDisplayValue = formatUnits(
-    BigInt(gliderPortfolio?.balanceWei || 0),
+    portfolioBalance?.value || BigInt(0),
     18,
-    4
+    5
   );
   const usdDisplayValue = formatUsd(ethDisplayValue * (tokenPrice || 0));
 

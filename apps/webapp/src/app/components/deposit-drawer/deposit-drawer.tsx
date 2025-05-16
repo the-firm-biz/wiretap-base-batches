@@ -6,6 +6,9 @@ import { Address } from 'viem';
 import { DrawerStepInputDepositAmount } from './drawer-step-input-deposit-amount';
 import { DrawerStepSignGliderMessage } from './drawer-step-sign-glider-message';
 import { DrawerStepDepositTransaction } from './drawer-step-deposit-tx';
+import { trpcClientUtils } from '@/app/trpc-clients/trpc-react-client';
+import { getTanstackQueryClient } from '@/app/trpc-clients/trpc-react-client';
+import { useBalance } from 'wagmi';
 
 interface DepositDrawerProps {
   trigger: ReactNode;
@@ -29,15 +32,21 @@ const DEFAULT_STATE: DepositState = {
 };
 
 const DepositDrawerComponent = ({ trigger }: DepositDrawerProps) => {
+  const queryClient = getTanstackQueryClient();
+  const { queryKey: useBalanceQueryKey } = useBalance();
+
   const [drawerIsOpen, setDrawerIsOpen] = useState(false);
   const [depositState, setDepositState] = useState<DepositState>(DEFAULT_STATE);
 
   const handleOpenCloseDrawer = (isOpen: boolean) => {
     setDrawerIsOpen(isOpen);
+    // Invalidate user balance & portfolio queries
+    queryClient.invalidateQueries({ queryKey: useBalanceQueryKey });
+    trpcClientUtils.wireTapAccount.invalidate();
     // Reset state after the drawer's closing animation is complete
     setTimeout(() => {
       setDepositState(DEFAULT_STATE);
-    }, 500);
+    }, 400);
   };
 
   return (

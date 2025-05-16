@@ -40,6 +40,9 @@ describe('getAccountEntity', () => {
     newFarcasterAccount = {
       fid: 12345,
       username: 'farcaster-test-username',
+      displayName: 'Farcaster Test Display Name',
+      pfpUrl: 'https://example.com/pfp.png',
+      followerCount: 1000,
       accountEntityId: testAccountEntity!.id
     };
     await db.insert(farcasterAccounts).values(newFarcasterAccount);
@@ -83,7 +86,8 @@ describe('getAccountEntity', () => {
       accountEntityId: testAccountEntity!.id,
       score: null,
       block: block!.number,
-      totalSupply: 100_000_000_000
+      totalSupply: 100_000_000_000,
+      creatorTokenIndex: 1
     };
     await db.insert(tokens).values(newToken);
   });

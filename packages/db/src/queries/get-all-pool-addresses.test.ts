@@ -21,6 +21,7 @@ describe('getAllPoolAddresses', () => {
       currencyId: 1,
       feeBps: 300,
       athMcapUsd: 1000000001.25,
+      startingMcapUsd: 1000000001.25,
       isPrimary: true
     },
     {
@@ -29,6 +30,7 @@ describe('getAllPoolAddresses', () => {
       currencyId: 1,
       feeBps: 10000,
       athMcapUsd: 10000.25,
+      startingMcapUsd: 10000.25,
       isPrimary: true
     }
   ] as const;
@@ -67,7 +69,8 @@ describe('getAllPoolAddresses', () => {
           deploymentContractId: deploymentContract!.id,
           accountEntityId: testAccountEntity!.id,
           score: 0.999,
-          totalSupply: 100_000_000_000
+          totalSupply: 100_000_000_000,
+          creatorTokenIndex: 1
         },
         {
           block: block!.number,
@@ -79,7 +82,8 @@ describe('getAllPoolAddresses', () => {
           deploymentContractId: deploymentContract!.id,
           accountEntityId: testAccountEntity!.id,
           score: 0.999,
-          totalSupply: 100_000_000_000
+          totalSupply: 100_000_000_000,
+          creatorTokenIndex: 2
         }
       ])
       .returning();

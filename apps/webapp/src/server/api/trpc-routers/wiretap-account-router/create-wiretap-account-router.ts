@@ -2,6 +2,9 @@ import { createTRPCRouter } from '../../trpc';
 import { getAuthedAccountGliderPortfolio } from './routes/get-authed-account-glider-portfolio';
 import { getAuthedAccountTargets } from './routes/get-authed-account-targets';
 import { verifySiweMessage } from './routes/verify-siwe-message';
+import { trackTargetForAuthedAccount } from './routes/track-target-for-authed-account';
+import { untrackTargetForAuthedAccount } from './routes/untrack-target-for-authed-account';
+import { updateTargetMaxSpend } from './routes/update-target-max-spend';
 
 /**
  * Routes specific to getting/setting data for the connected WireTap account
@@ -9,7 +12,10 @@ import { verifySiweMessage } from './routes/verify-siwe-message';
 export const wireTapAccountRouter = createTRPCRouter({
   getAuthedAccountGliderPortfolio: getAuthedAccountGliderPortfolio,
   getAuthedAccountTargets: getAuthedAccountTargets,
-  verifySiweMessage: verifySiweMessage
+  verifySiweMessage: verifySiweMessage,
+  trackTargetForAuthedAccount: trackTargetForAuthedAccount,
+  untrackTargetForAuthedAccount: untrackTargetForAuthedAccount,
+  updateTargetMaxSpend: updateTargetMaxSpend
 });
 
 export type WireTapAccountRouter = typeof wireTapAccountRouter;

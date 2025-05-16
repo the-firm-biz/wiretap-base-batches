@@ -14,6 +14,7 @@ import { TypewriterText } from './animated-typewriter-text';
 import React, { useState, useEffect } from 'react';
 import { FlashingDot } from '../flashing-dot';
 import { useAddFrame, useMiniKit } from '@coinbase/onchainkit/minikit';
+
 import { FarcasterIcon } from '../icons/FarcasterIcon';
 
 export function ConnectedWalletGate({
@@ -22,6 +23,7 @@ export function ConnectedWalletGate({
   children: React.ReactNode;
 }) {
   const { address } = useAccount();
+
   const { open } = useAppKit();
   const { open: isOpen } = useAppKitState();
   const addFrame = useAddFrame();
@@ -44,91 +46,88 @@ export function ConnectedWalletGate({
   if (!address || isPartiallyConnected) {
     return (
       <PageContainer>
-        <div className="flex flex-1 flex-col h-full gap-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <div
-                className={`relative inline-block transition-opacity duration-700 ${logoLoaded ? 'opacity-100' : 'opacity-0'}`}
-              >
-                <Image
-                  className="block dark:hidden"
-                  src="/logo-wiretap-onlight.svg"
-                  alt="WireTap Logo"
-                  width={128}
-                  height={42}
-                  onLoad={() => setLogoLoaded(true)}
-                />
-                <Image
-                  className="hidden dark:block"
-                  src="/logo-wiretap-ondark.svg"
-                  alt="WireTap Logo"
-                  width={128}
-                  height={42}
-                  onLoad={() => setLogoLoaded(true)}
-                />
-                <FlashingDot className="w-0.75 h-0.75 absolute top-[9px] right-[1.5px]" />
-              </div>
-            </div>
-            <div>
-              {hasMinikitContext && !hasAddedFrame && (
-                <Button
-                  onClick={async () => await addFrame()}
-                  variant="outline"
-                >
-                  <FarcasterIcon className="w-4 h-4" /> Add Frame
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <div className="p-4 border border-border rounded-md flex flex-col flex-1 relative overflow-hidden">
-            <DitheredAnimation
-              style={{
-                position: 'absolute',
-                inset: 0,
-                zIndex: 0,
-                pointerEvents: 'none'
-              }}
-            />
-            <div className="relative z-10 flex flex-col flex-1">
-              <div className="w-[184px] flex flex-col gap-4">
-                <p>
-                  <TypewriterText
-                    text={
-                      "Automatically snap up new tokens from social accounts you follow...\n\n...before regular schmucks even know they've launched."
-                    }
-                    className={cn(textStyles['body'], 'bg-background')}
-                    emphasisClass={cn(
-                      textStyles['body-emphasis'],
-                      'bg-background'
-                    )}
-                    emphasisStart={65}
-                  />
-                </p>
-              </div>
-              <div className="flex-1" />
-              <Button
-                size="lg"
-                className="h-[64px]"
-                onClick={() => open()}
-                variant="secondary"
-              >
-                Initiate Protocol
-              </Button>
+        {/* header */}
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <div
+              className={`relative inline-block transition-opacity duration-700 ${logoLoaded ? 'opacity-100' : 'opacity-0'}`}
+            >
+              <Image
+                className="block dark:hidden"
+                src="/logo-wiretap-onlight.svg"
+                alt="WireTap Logo"
+                width={128}
+                height={42}
+                onLoad={() => setLogoLoaded(true)}
+              />
+              <Image
+                className="hidden dark:block"
+                src="/logo-wiretap-ondark.svg"
+                alt="WireTap Logo"
+                width={128}
+                height={42}
+                onLoad={() => setLogoLoaded(true)}
+              />
+              <FlashingDot className="w-0.75 h-0.75 absolute top-[9px] right-[1.5px]" />
             </div>
           </div>
           <div>
-            <p className={`${textStyles['compact']} mb-2`}>
-              TRACKING TOKEN LAUNCHES ON
-            </p>
-            <SupportedProtocolsCarousel />
+            {hasMinikitContext && !hasAddedFrame && (
+              <Button onClick={async () => await addFrame()} variant="outline">
+                <FarcasterIcon className="w-4 h-4" /> Add Frame
+              </Button>
+            )}
           </div>
-          <Button asChild variant="outline" className="mb-8">
-            <a href="https://thefirm.biz" target="blank">
-              Get Our Next Release Early
-            </a>
-          </Button>
         </div>
+
+        {/* body */}
+        <div className="p-4 border border-border rounded-md flex flex-col flex-1 relative overflow-hidden min-h-fit">
+          <DitheredAnimation
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 0,
+              pointerEvents: 'none'
+            }}
+          />
+          <div className="relative z-10 flex flex-col flex-1">
+            <div className="w-[184px] flex flex-col gap-4">
+              <p>
+                <TypewriterText
+                  text={
+                    "Automatically snap up new tokens from social accounts you follow...\n\n...before regular schmucks even know they've launched."
+                  }
+                  className={cn(textStyles['body'], 'bg-background')}
+                  emphasisClass={cn(
+                    textStyles['body-emphasis'],
+                    'bg-background'
+                  )}
+                  emphasisStart={67}
+                />
+              </p>
+            </div>
+            <div className="flex-1" />
+            <Button
+              size="lg"
+              className="h-[64px] mt-8"
+              onClick={() => open()}
+              variant="secondary"
+            >
+              Initiate Protocol
+            </Button>
+          </div>
+        </div>
+        <div className="mt-4">
+          <p className={`${textStyles['compact']} mb-2`}>
+            TRACKING TOKEN LAUNCHES ON
+          </p>
+          <SupportedProtocolsCarousel />
+        </div>
+        <Button asChild variant="outline" className="mt-4">
+          <a href="https://thefirm.biz" target="blank">
+            Get Our Next Release Early
+          </a>
+        </Button>
       </PageContainer>
     );
   }

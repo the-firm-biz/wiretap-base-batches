@@ -44,7 +44,15 @@ export function DrawerStepSignGliderMessage({
     mutation: {
       onError: (error: unknown) => {
         const baseError = error as BaseError;
-        toast.error(`Error. ${baseError.shortMessage}`);
+
+        toast(
+          <div className="flex w-full justify-between items-center">
+            <div className="flex flex-col gap-1">
+              <div className={textStyles['compact-emphasis']}>Error</div>
+              <div className={textStyles.label}>{baseError.shortMessage}</div>
+            </div>
+          </div>
+        );
         setSignError(baseError);
       },
       onSuccess: async (signature) => {
@@ -74,7 +82,16 @@ export function DrawerStepSignGliderMessage({
           }));
         } catch (error) {
           console.error('DrawerStepSignGliderMessage::onSuccess', error);
-          toast.error('Failed to create portfolio');
+          toast(
+            <div className="flex w-full justify-between items-center">
+              <div className="flex flex-col gap-1">
+                <div className={textStyles['compact-emphasis']}>Error</div>
+                <div className={textStyles.label}>
+                  Failed to create portfolio
+                </div>
+              </div>
+            </div>
+          );
           setSignError(new BaseError('Failed to create portfolio'));
         }
       }

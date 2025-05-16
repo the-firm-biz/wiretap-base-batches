@@ -155,6 +155,55 @@
       "when": 1747048964787,
       "tag": "0021_seed-currencies-1",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1747231127690,
+      "tag": "0022_loud_nicolaos",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1747241872160,
+      "tag": "0023_brown_warbound",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1747325535089,
+      "tag": "0024_concerned_katie_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1747326342728,
+      "tag": "0025_oval_vanisher",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1747329686678,
+      "tag": "0026_previous_gamma_corps",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1747329693928,
+      "tag": "0027_rebalances-log-label-seed",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1747333342456,
+      "tag": "0028_zippy_sentry",
+      "breakpoints": true
     }
   ]
 }

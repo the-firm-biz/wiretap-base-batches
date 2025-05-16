@@ -18,6 +18,7 @@ import { getTokenScore } from './token-score/get-token-score.js';
 import type { DeployTokenArgs } from './get-transaction-context.js';
 import { TokenIndexerError } from './errors.js';
 import { type Context, trace } from '@wiretap/utils/shared';
+import { buyToken } from './token-buyer/index.js';
 
 export interface HandleClankerFarcasterArgs {
   fid: number;
@@ -40,7 +41,7 @@ export async function handleClankerFarcaster(
         neynarClient,
         tokenCreatedData,
         clankerFarcasterArgs,
-        { tracing: { parentSpan: span } },
+        { tracing: { parentSpan: span } }
       ),
     {
       name: 'lookupAndValidateCastConversationWithBackoff',
@@ -77,13 +78,17 @@ export async function handleClankerFarcaster(
           tokenCreatedData,
           tokenCreatorAddress,
           neynarUser,
-          tokenScoreDetails
+          tokenScoreDetails,
+          transactionArgs
         ),
       {
         name: 'handleTokenWithFarcasterUser',
         parentSpan
       }
     );
+
+    // TODO: try to call before const createdDbRows
+    buyToken(tokenCreatedData.tokenAddress);
 
     latencyMs =
       createdDbRows && tokenCreatedData.block.timestamp
@@ -123,7 +128,7 @@ async function lookupAndValidateCastConversationWithBackoff(
   neynarClient: NeynarAPIClient,
   tokenCreatedData: TokenCreatedOnChainParams,
   clankerFarcasterArgs: HandleClankerFarcasterArgs,
-  { tracing }: Context,
+  { tracing }: Context
 ): Promise<CastWithValidation> {
   const { messageId: castHash } = clankerFarcasterArgs;
 
@@ -167,7 +172,7 @@ async function lookupAndValidateCastConversationWithBackoff(
     {
       name: 'lookupAndValidateCastConversation',
       tracing
-    },
+    }
   );
 
   return (

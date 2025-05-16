@@ -50,7 +50,8 @@ describe('updatePoolAthMcap', () => {
         deploymentContractId: testContract!.id,
         accountEntityId: testAccountEntity!.id,
         totalSupply: 1000000000,
-        block: testBlock!.number
+        block: testBlock!.number,
+        creatorTokenIndex: 1
       })
       .returning();
     const [testCurrency] = await db
@@ -70,37 +71,20 @@ describe('updatePoolAthMcap', () => {
         currencyId: testCurrency!.id,
         isPrimary: true,
         feeBps: 300,
-        athMcapUsd: initialAthMcapUsd
+        athMcapUsd: initialAthMcapUsd,
+        startingMcapUsd: initialAthMcapUsd
       })
       .returning();
 
     testPool = createdPool!;
   });
 
-  it('updates and returns pool when new athMcapUsd is lower', async () => {
+  it('does not update pool when new athMcapUsd is lower', async () => {
     const lowerAthMcapUsd = 500000;
     const response = await updatePoolAthMcap(
       db,
       testPool.address,
       lowerAthMcapUsd
-    );
-
-    // Verify the pool was updated
-    const [updatedPool] = await db
-      .select()
-      .from(pools)
-      .where(eq(pools.id, testPool.id));
-
-    expect(updatedPool!.athMcapUsd).toBe(lowerAthMcapUsd);
-    expect(response).toStrictEqual(updatedPool);
-  });
-
-  it('does not update when new athMcapUsd is higher', async () => {
-    const higherAthMcapUsd = 1500000;
-    const response = await updatePoolAthMcap(
-      db,
-      testPool.address,
-      higherAthMcapUsd
     );
 
     // Verify the pool was not updated
@@ -111,6 +95,24 @@ describe('updatePoolAthMcap', () => {
 
     expect(unchangedPool!.athMcapUsd).toBe(initialAthMcapUsd);
     expect(response).toBeUndefined();
+  });
+
+  it('updates pool when new athMcapUsd is higher', async () => {
+    const higherAthMcapUsd = 1500000;
+    const response = await updatePoolAthMcap(
+      db,
+      testPool.address,
+      higherAthMcapUsd
+    );
+
+    // Verify the pool was updated
+    const [updatedPool] = await db
+      .select()
+      .from(pools)
+      .where(eq(pools.id, testPool.id));
+
+    expect(updatedPool!.athMcapUsd).toBe(higherAthMcapUsd);
+    expect(response).toStrictEqual(updatedPool);
   });
 
   it('does not update when new athMcapUsd is equal', async () => {

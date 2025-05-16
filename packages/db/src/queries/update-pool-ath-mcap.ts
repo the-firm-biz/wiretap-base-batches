@@ -4,7 +4,8 @@ import type {
   ServerlessDb
 } from '../client.js';
 import { pools, type Pool } from '../schema/pools.js';
-import { and, eq, gt } from 'drizzle-orm';
+import { and, lt, sql } from 'drizzle-orm';
+import { lowerEq } from '../utils/pg-helpers.js';
 
 export async function updatePoolAthMcap(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
@@ -13,9 +14,9 @@ export async function updatePoolAthMcap(
 ): Promise<Pool | undefined> {
   const [updatedPool] = await db
     .update(pools)
-    .set({ athMcapUsd })
+    .set({ athMcapUsd, updatedAt: sql`NOW()` })
     .where(
-      and(eq(pools.address, poolAddress), gt(pools.athMcapUsd, athMcapUsd))
+      and(lowerEq(pools.address, poolAddress), lt(pools.athMcapUsd, athMcapUsd))
     )
     .returning();
 

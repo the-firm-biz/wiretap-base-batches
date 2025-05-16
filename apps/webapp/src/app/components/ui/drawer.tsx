@@ -43,13 +43,22 @@ const DrawerContent = React.forwardRef<
     <DrawerOverlay />
     <DrawerPrimitive.Content
       ref={ref}
+      onPointerDownOutside={(e) => {
+        // https://github.com/radix-ui/primitives/issues/2690#issuecomment-2009617202
+        if (
+          e.target instanceof Element &&
+          e.target.closest('[data-sonner-toast]')
+        ) {
+          e.preventDefault();
+        }
+      }}
       className={cn(
         'fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col rounded-t-[10px] border bg-background',
         className
       )}
       {...props}
     >
-      <div className="mx-auto h-[4px] w-[48px] mt-2 rounded-full bg-black" />
+      <div className="mx-auto h-[4px] w-[48px] mt-2 rounded-full bg-border" />
       <div className="p-4 max-w-screen-md mx-auto w-full">{children}</div>
     </DrawerPrimitive.Content>
   </DrawerPortal>

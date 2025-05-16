@@ -14,6 +14,7 @@ const newPool: NewPool = {
   currencyId: 1,
   feeBps: 300,
   athMcapUsd: 1.25,
+  startingMcapUsd: 1.25,
   isPrimary: true
 };
 
@@ -55,7 +56,8 @@ describe('getOrCreatePool', () => {
         deploymentContractId: deploymentContract!.id,
         accountEntityId: testAccountEntity!.id,
         score: 0.999,
-        totalSupply: 100_000_000_000
+        totalSupply: 100_000_000_000,
+        creatorTokenIndex: 1
       })
       .returning();
     const [currency] = await db

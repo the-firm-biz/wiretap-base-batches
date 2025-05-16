@@ -11,7 +11,8 @@ import {
   type Token,
   type Wallet,
   type XAccount,
-  type Pool
+  type Pool,
+  countTokensByCreator
 } from '@wiretap/db';
 import type { TokenCreatedOnChainParams } from '../types/token-created.js';
 import type { Address } from 'viem';
@@ -30,6 +31,7 @@ export type CommitTokenDetailsToDbParams = {
   tokenCreatorAddress: Address;
   tokenScore: number | null;
   neynarUser?: NeynarUser;
+  imageUrl?: string;
 };
 
 export type CommitTokenDetailsToDbResult = {
@@ -58,7 +60,8 @@ export const commitTokenDetailsToDb = async ({
   },
   tokenCreatorAddress,
   neynarUser,
-  tokenScore
+  tokenScore,
+  imageUrl
 }: CommitTokenDetailsToDbParams): Promise<CommitTokenDetailsToDbResult> => {
   const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
   const redis = getRedis({ redisUrl: env.REDIS_URL });
@@ -80,6 +83,9 @@ export const commitTokenDetailsToDb = async ({
         timestamp: block.timestamp
       });
 
+      // @todo - handle potential race condition here
+      const creatorTokenIndex = await countTokensByCreator(tx, accountEntityId);
+
       const createdToken = await getOrCreateToken(tx, {
         address: tokenAddress,
         score: tokenScore,
@@ -89,7 +95,9 @@ export const commitTokenDetailsToDb = async ({
         symbol,
         name: tokenName,
         block: block.number,
-        totalSupply: CLANKER_3_1_TOTAL_SUPPLY
+        totalSupply: CLANKER_3_1_TOTAL_SUPPLY,
+        imageUrl,
+        creatorTokenIndex
       });
 
       const currency = await getCurrency(tx, poolContext.pairedAddress);
@@ -104,7 +112,8 @@ export const commitTokenDetailsToDb = async ({
         currencyId: currency.id,
         isPrimary: true,
         feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
-        athMcapUsd: poolContext.priceUsd * CLANKER_3_1_TOTAL_SUPPLY
+        athMcapUsd: poolContext.priceUsd * CLANKER_3_1_TOTAL_SUPPLY,
+        startingMcapUsd: poolContext.priceUsd * CLANKER_3_1_TOTAL_SUPPLY
       });
 
       await redis.publish(INDEXING_POOLS_PUBSUB_CHANNEL, poolContext.address);

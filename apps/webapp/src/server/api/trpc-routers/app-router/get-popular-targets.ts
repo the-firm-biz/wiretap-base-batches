@@ -1,11 +1,7 @@
-import {
-  fetchBulkUsers,
-  getSingletonNeynarClient
-} from '@wiretap/utils/server';
+import { fetchBulkUsers } from '@wiretap/utils/server';
 import { publicProcedure } from '../../trpc';
-import { serverEnv } from '@/serverEnv';
 import { TRPCError } from '@trpc/server';
-import { UnformattedTarget } from '@/app/utils/target/types';
+import { SearchTarget } from '@/app/utils/target/types';
 
 // Top FIDs from https://dune.com/queries/3023113/5022265
 const popularFids = [
@@ -21,13 +17,13 @@ const popularFids = [
   861854, 548932
 ];
 
-export const getPopularTargets = publicProcedure.query(
-  async (): Promise<UnformattedTarget[]> => {
-    const neynarClient = getSingletonNeynarClient({
-      apiKey: serverEnv.NEYNAR_API_KEY
-    });
+const top15Fids = popularFids.slice(0, 15);
 
-    const users = await fetchBulkUsers(neynarClient, popularFids);
+export const getPopularTargets = publicProcedure.query(
+  async ({ ctx }): Promise<SearchTarget[]> => {
+    const { neynarClient } = ctx;
+
+    const users = await fetchBulkUsers(neynarClient, top15Fids);
 
     // We don't want to cache the empty array as we're sure there should be users, thus throwing 500
     if (!users) {
@@ -37,6 +33,9 @@ export const getPopularTargets = publicProcedure.query(
       });
     }
 
-    return users.map((user) => ({ neynarUser: user })) ?? [];
+    return users.map((user) => ({
+      neynarUser: user,
+      isTracked: false
+    }));
   }
 );

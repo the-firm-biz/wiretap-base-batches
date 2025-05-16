@@ -21,6 +21,7 @@ export const tokens = pgTable(
     name: text('name').notNull(),
     symbol: text('symbol').notNull(),
     address: text('address').notNull(),
+    imageUrl: text('image_url'),
     score: real('score'),
     deploymentTransactionHash: text('deployment_transaction_hash').notNull(),
     /** Which token contract was used to deploy */
@@ -31,6 +32,7 @@ export const tokens = pgTable(
     accountEntityId: integer('account_entity_id')
       .notNull()
       .references(() => accountEntities.id),
+    creatorTokenIndex: integer('creator_token_index').notNull(),
     totalSupply: bigint('total_supply', { mode: 'number' }).notNull(),
     block: bigint('block', { mode: 'number' })
       .notNull()
@@ -38,7 +40,7 @@ export const tokens = pgTable(
     createdAt: timestamp('created_at').defaultNow().notNull()
   },
   (table) => [
-    index('tokens_block_idx').on(table.name),
+    index('tokens_account_entity_id_idx').on(table.accountEntityId),
     uniqueIndex('tokens_address_lower_unique').on(lower(table.address))
   ]
 );
