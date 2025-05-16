@@ -26,10 +26,10 @@ export function RecentActivityFeed({
     64 +
     // Wallet balance area
     196 +
-    // Footer
-    69 +
     // Recent activity text + top padding
-    68;
+    68 +
+    // Footer
+    69;
 
   return (
     <div>
