@@ -71,5 +71,5 @@ export async function executeBuy(
 
 function computeTokenPercentageBps(maxSpend: bigint, balance: bigint): number {
   const percentageBps = (maxSpend * BigInt(BPS_MULTIPLIER)) / balance;
-  return Math.min(Number(percentageBps), 100 * BPS_MULTIPLIER);
+  return Math.min(Number(percentageBps), BPS_MULTIPLIER);
 }
