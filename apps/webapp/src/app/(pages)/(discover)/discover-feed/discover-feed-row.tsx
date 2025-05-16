@@ -1,3 +1,4 @@
+import { formatDistanceToNowStrict } from 'date-fns';
 import AnimatedEllipsisText from '@/app/components/animated-ellipsis-text';
 import { ExternalImage } from '@/app/components/external-image';
 import { SpendAdjustDrawer } from '@/app/components/spend-adjust-drawer/spend-adjust-drawer';
@@ -12,6 +13,7 @@ import { useMutation } from '@tanstack/react-query';
 import { TokenWithCreatorMetadata } from '@wiretap/db';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { ClankerLogoIcon } from '@/app/components/icons/ClankerLogoIcon';
 
 export function DiscoverFeedRow({
   token,
@@ -174,14 +176,26 @@ export function DiscoverFeedRow({
           {actionButton()}
         </div>
         <div className="flex items-center gap-1">
-          {/* @todo Discover - style badge */}
-          <Badge>Launch #{creatorTokenIndex}</Badge>
+          {creatorTokenIndex + 1 === 1 ? (
+            <Badge
+              className={`bg-yellow-100 text-yellow-600 ${textStyles['code-01']}`}
+            >
+              🎉 Launch #{creatorTokenIndex + 1}
+            </Badge>
+          ) : (
+            <Badge
+              className={`bg-blue-100 text-blue-600 ${textStyles['code-01']}`}
+            >
+              Launch #{creatorTokenIndex + 1}
+            </Badge>
+          )}
           <span className={textStyles['label']}>on </span>
-          {/* @todo Discover - Clanker logo */}
+          <ClankerLogoIcon className="size-4" />
           <span className={textStyles['label-mid']}>Clanker</span>
-          {/* @todo Discover - Date/time since formatting */}
           <span className={textStyles['label']}>
-            {tokenCreatedAt.toLocaleString()}
+            {formatDistanceToNowStrict(tokenCreatedAt, {
+              addSuffix: true
+            })}
           </span>
         </div>
         <div className="flex flex-col rounded-md border border-border gap-4 p-[12px]">
