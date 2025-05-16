@@ -14,7 +14,8 @@ import { TRPCError } from '@trpc/server';
 
 const trackSchema = z.object({
   targetEvmAddress: z.string().nullish(),
-  targetNeynarUser: neynarUserSchema.nullish()
+  targetNeynarUser: neynarUserSchema.nullish(),
+  targetAccountEntityId: z.number().nullish()
 });
 
 const DEFAULT_MAX_SPEND_WEI = BigInt('10000000000000000'); // 0.01 ETH
@@ -29,24 +30,43 @@ export const trackTargetForAuthedAccount = privateProcedure
   .mutation(async ({ ctx, input }): Promise<AccountEntityTracker | null> => {
     const { db, wireTapAccountId } = ctx;
 
-    const { targetEvmAddress, targetNeynarUser } = input;
+    const { targetEvmAddress, targetNeynarUser, targetAccountEntityId } = input;
+
+    if (!targetEvmAddress && !targetNeynarUser && !targetAccountEntityId) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'No target identifier provided'
+      });
+    }
 
     const pooledDb = new PooledDbConnection({
       databaseUrl: serverEnv.DATABASE_URL
     });
 
     try {
-      const { accountEntityId: targetAccountEntityId } =
+      // We received targetAccountEntityId directly from client
+      if (targetAccountEntityId) {
+        const createdTracker = await createAccountEntityTracker(db, {
+          trackerWireTapAccountId: wireTapAccountId,
+          trackedAccountEntityId: targetAccountEntityId,
+          maxSpend: DEFAULT_MAX_SPEND_WEI
+        });
+        return createdTracker;
+      }
+
+      // Try to look up target in db via evmAddress or neynarUser
+
+      const { accountEntityId: foundTargetAccountEntityId } =
         await getExistingAccountInfo(
           db,
           targetEvmAddress as Address,
           targetNeynarUser
         );
 
-      if (targetAccountEntityId) {
+      if (foundTargetAccountEntityId) {
         const createdTracker = await createAccountEntityTracker(db, {
           trackerWireTapAccountId: wireTapAccountId,
-          trackedAccountEntityId: targetAccountEntityId,
+          trackedAccountEntityId: foundTargetAccountEntityId,
           maxSpend: DEFAULT_MAX_SPEND_WEI
         });
         return createdTracker;

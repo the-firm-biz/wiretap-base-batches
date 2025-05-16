@@ -15,6 +15,7 @@ export * from './get-farcaster-accounts.js';
 export * from './get-glider-portfolio-for-wire-tap-account.js';
 export * from './get-or-create-deployer-contract.js';
 export * from './get-or-create-token.js';
+export * from './get-tokens-with-creator-metadata.js';
 export * from './get-wallet.js';
 export * from './get-wallets.js';
 export * from './get-x-accounts.js';

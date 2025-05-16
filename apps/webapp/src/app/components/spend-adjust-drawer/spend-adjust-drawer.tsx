@@ -6,7 +6,7 @@ import { ExternalImage } from '../external-image';
 import { textStyles } from '../../styles/template-strings';
 import { TrashIcon } from '../icons/TrashIcon';
 import { TargetCrosshair } from '../icons/TargetCrosshair';
-import { TargetTrackingStatus, UITarget } from '../../utils/target/types';
+import { TargetTrackingStatus } from '../../utils/target/types';
 import {
   Drawer,
   DrawerContent,
@@ -17,7 +17,8 @@ import {
 import { SpendAdjustForm } from './spend-adjust-form';
 
 interface SpendAdjustDrawerProps {
-  target: UITarget;
+  targetLabel: string;
+  targetImage?: string;
   trigger: ReactNode;
   trackingStatus: TargetTrackingStatus;
   isControlledOpen: boolean;
@@ -25,7 +26,8 @@ interface SpendAdjustDrawerProps {
 }
 
 export const SpendAdjustDrawer = ({
-  target,
+  targetLabel,
+  targetImage,
   trigger,
   trackingStatus,
   isControlledOpen,
@@ -94,7 +96,7 @@ export const SpendAdjustDrawer = ({
       <DrawerContent>
         {/* Visually hidden title & description */}
         <DrawerTitle className="sr-only">
-          Adjust Max Spend for target {target.label}
+          Adjust Max Spend for target {targetLabel}
         </DrawerTitle>
         <DrawerDescription className="sr-only">
           Specify the amount that you would like to spend on purchase of tokens
@@ -105,13 +107,13 @@ export const SpendAdjustDrawer = ({
           <div className="relative flex items-center justify-center">
             <TargetCrosshair className="absolute w-10 h-10" />
             <ExternalImage
-              src={target.image}
-              fallbackSrc={'/user.png'}
-              alt={`${target.label}'s profile picture`}
-              className="absolute w-6 h-6 rounded-full border-1 border-border select-none"
+              src={targetImage}
+              fallbackSrc={'/user-dithered.png'}
+              alt={`${targetLabel}'s profile picture`}
+              className="absolute w-6 h-6 rounded-full border-1 border-border select-none object-cover"
             />
           </div>
-          <div className={textStyles.title4}>{target.label}</div>
+          <div className={textStyles.title4}>{targetLabel}</div>
           <div className="flex items-center justify-center">
             <button
               className="w-10 h-10 flex items-center justify-center cursor-pointer"

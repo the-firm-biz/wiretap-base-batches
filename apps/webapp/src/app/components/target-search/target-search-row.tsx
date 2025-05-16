@@ -98,7 +98,8 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
       const ethDisplayValue = formatUnits(trackingStatus.maxSpend, 18, 4);
       return (
         <SpendAdjustDrawer
-          target={target}
+          targetLabel={target.label}
+          targetImage={target.image}
           trigger={<Button variant="outline">{ethDisplayValue} ETH</Button>}
           trackingStatus={trackingStatus}
           isControlledOpen={isOpenSpendAdjustDrawer}
@@ -128,9 +129,9 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
     <div className="grid grid-cols-[40px_1fr_auto] items-center gap-3 p-2">
       <ExternalImage
         src={target.image}
-        fallbackSrc={'/user.png'}
+        fallbackSrc={'/user-dithered.png'}
         alt={`${target.label}'s profile picture`}
-        className="w-10 h-10 rounded-full border-1 border-border select-none"
+        className="w-10 h-10 rounded-full border-1 border-border select-none object-cover"
       />
       <div>
         <p className={textStyles['compact-emphasis']}>{target.label}</p>
