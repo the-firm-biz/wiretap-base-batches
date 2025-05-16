@@ -1,8 +1,8 @@
+import { ExternalImage } from '@/app/components/external-image';
 import { Badge } from '@/app/components/ui/badge';
 import { textStyles } from '@/app/styles/template-strings';
 import { formatAddress } from '@/app/utils/format/format-address';
 import { TokenWithCreatorMetadata } from '@wiretap/db';
-import Image from 'next/image';
 
 export function DiscoverFeedRow({
   token
@@ -26,8 +26,6 @@ export function DiscoverFeedRow({
     // deploymentContractAddress,
   } = token;
 
-  const hasTokenImage = tokenImageUrl !== null && tokenImageUrl !== '';
-
   const getDisplayName = () => {
     if (farcasterDisplayName) {
       return farcasterDisplayName;
@@ -44,14 +42,14 @@ export function DiscoverFeedRow({
 
   return (
     <div className="flex gap-3 p-2 w-full">
-      <div className="w-10 h-10 rounded-full border border-border overflow-hidden">
-        <Image
-          src={farcasterPfpUrl ?? '/user-dithered.png'}
-          alt={farcasterUsername ?? 'farcaster user profile picture'}
-          width={40}
-          height={40}
-        />
-      </div>
+      <ExternalImage
+        src={farcasterPfpUrl ?? undefined}
+        fallbackSrc="/user-dithered.png"
+        alt={farcasterUsername ?? 'farcaster user profile picture'}
+        width={40}
+        height={40}
+        className="w-10 h-10 rounded-full border-1 border-border select-none object-cover"
+      />
       <div className="flex flex-col gap-3 flex-1">
         <div className="flex space-between">
           <div className="flex gap-1 flex-col">
@@ -82,21 +80,18 @@ export function DiscoverFeedRow({
           </span>
         </div>
         <div className="flex flex-col rounded-md border border-border gap-4 p-[12px]">
-          <div className="flex gap-1 space-between w-full">
-            <div className="flex gap-2">
-              <div className="w-[32px] h-[32px] rounded-full overflow-hidden">
-                <Image
-                  // @todo Discover - token image fallback
-                  src={hasTokenImage ? tokenImageUrl : '/user-dithered.png'}
-                  alt={tokenSymbol}
-                  width={32}
-                  height={32}
-                />
-              </div>
-              <div className="flex flex-col flex-1">
-                <p className={textStyles['compact-emphasis']}>{tokenSymbol}</p>
-                <p className={textStyles['label']}>{tokenName}</p>
-              </div>
+          <div className="grid grid-cols-[32px_1fr_88px] gap-2 w-full">
+            <ExternalImage
+              src={tokenImageUrl ?? undefined}
+              fallbackSrc="/token-image-missing.svg"
+              alt={tokenSymbol}
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full select-none object-cover"
+            />
+            <div className="flex flex-col flex-1">
+              <p className={textStyles['compact-emphasis']}>{tokenSymbol}</p>
+              <p className={textStyles['label']}>{tokenName}</p>
             </div>
             <div className="flex gap-1">
               {/* @todo Discover - Base scan & dexscreener links */}

@@ -86,14 +86,14 @@ export function HeaderWalletButton() {
     }
 
     return (
-      <div className="rounded-full bg-background border border-border overflow-hidden">
-        <ExternalImage
-          src={avatarSrc}
-          alt={baseName || ensName || address}
-          width={32}
-          height={32}
-        />
-      </div>
+      <ExternalImage
+        src={avatarSrc}
+        fallbackSrc="/user-dithered.png"
+        alt={baseName || ensName || address}
+        width={32}
+        height={32}
+        className="rounded-full bg-background border-1 border-border select-none object-cover"
+      />
     );
   })();
 

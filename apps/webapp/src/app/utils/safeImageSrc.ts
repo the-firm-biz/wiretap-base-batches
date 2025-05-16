@@ -8,7 +8,7 @@ const imgQuickCache = new Map<string, string>();
  */
 export const safeImageSrc = (
   url?: string,
-  fallbackUrl: string = '/user.png'
+  fallbackUrl: string = '/user-dithered.png'
 ): Promise<string | undefined> | string => {
   if (!url) return fallbackUrl;
   const cachedValidSrc = imgQuickCache.get(url);

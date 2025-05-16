@@ -106,9 +106,9 @@ export const SpendAdjustDrawer = ({
             <TargetCrosshair className="absolute w-10 h-10" />
             <ExternalImage
               src={target.image}
-              fallbackSrc={'/user.png'}
+              fallbackSrc={'/user-dithered.png'}
               alt={`${target.label}'s profile picture`}
-              className="absolute w-6 h-6 rounded-full border-1 border-border select-none"
+              className="absolute w-6 h-6 rounded-full border-1 border-border select-none object-cover"
             />
           </div>
           <div className={textStyles.title4}>{target.label}</div>
