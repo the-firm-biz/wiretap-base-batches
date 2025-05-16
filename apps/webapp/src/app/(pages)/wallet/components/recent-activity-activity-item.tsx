@@ -51,16 +51,16 @@ export function RecentActivityActivityItem({
             <Image
               src={`/tokens/eth.png`}
               alt={activityItem.symbol}
-              width={40}
-              height={40}
+              width={32}
+              height={32}
             />
           ) : (
             <Image
               // @todo activity feed - replace with token placeholder image
               src={`/user-dithered.png`}
               alt={activityItem.symbol}
-              width={40}
-              height={40}
+              width={32}
+              height={32}
             />
           )}
           <div className="flex flex-col">

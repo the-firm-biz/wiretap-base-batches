@@ -3,14 +3,16 @@
 import { textStyles } from '@/app/styles/template-strings';
 import {
   GliderPortfolioActivity,
-  GliderPortfolioSwapsAndActivities
+  GliderPortfolioTrade,
+  GliderPortfolioTradeOrActivity
 } from '@/server/api/trpc-routers/glider-router/routes/get-glider-portfolio-analysis-data';
 import { RecentActivityActivityItem } from './recent-activity-activity-item';
 import useBannerStore from '@/app/zustand/banners';
 import { useShallow } from 'zustand/react/shallow';
 import { cn } from '@/app/utils/cn';
+import { RecentActivityTradeItem } from './recent-activity-trade-item';
 interface RecentActivityProps {
-  portfolioAnalysisData: GliderPortfolioSwapsAndActivities[];
+  portfolioAnalysisData: GliderPortfolioTradeOrActivity[];
 }
 
 export function RecentActivityFeed({
@@ -55,6 +57,14 @@ export function RecentActivityFeed({
               <RecentActivityActivityItem
                 key={activityItem.id}
                 activityItem={activityItem as GliderPortfolioActivity}
+              />
+            );
+          } else {
+            console.log('activityItem', activityItem);
+            return (
+              <RecentActivityTradeItem
+                key={activityItem.id}
+                tradeItem={activityItem as GliderPortfolioTrade}
               />
             );
           }
