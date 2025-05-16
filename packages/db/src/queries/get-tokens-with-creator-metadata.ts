@@ -42,7 +42,6 @@ interface GetTokensWithCreatorMetadataArgs {
   cursor?: TokenWithCreatorMetadataCursor;
 }
 
-// @todo discover - tokens are duplicated with this uquery
 export async function getTokensWithCreatorMetadata(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   { pageSize = 50, cursor }: GetTokensWithCreatorMetadataArgs
