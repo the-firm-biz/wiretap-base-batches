@@ -45,12 +45,7 @@ export function RecentActivityFeed({
       <p className={`${textStyles['compact-emphasis']} pb-4`}>
         Recent Activity
       </p>
-      <div
-        className={cn(getMaxHeight(), 'overflow-y-auto', 'pb-4')}
-        // style={{
-        //   maxHeight: `calc(100dvh-700px)`
-        // }}
-      >
+      <div className={cn(getMaxHeight(), 'overflow-y-auto pb-4')}>
         {portfolioAnalysisData.map((activityItem) => {
           if (
             activityItem.type === 'deposit' ||
