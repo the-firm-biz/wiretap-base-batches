@@ -1,9 +1,19 @@
-# Wiretap
+# WireTap
 
 > _"While our competitors are deploying today's strategies, we're already
 > frontrunning tomorrow's mistakes."_
 >
 > — Copyright © Franklin J. Merrimont, Founder & Chairman, The Firm
+
+---
+
+## Base Batches Judging Council,
+
+## The `main` branch is reserved for our submission to the Base Batches Global Innovation Sprint and will receive no new pushes after submission deadline 23:59 PST 5/16/25. The code on https://wiretap.thefirm.biz is deployed from `main`.
+
+## The WireTap team are continuing to work on the project, this will happen on `develop`
+
+---
 
 ### `/apps`
 
@@ -15,8 +25,6 @@
 
 - [db](packages/db/README.md)
 - [utils](packages/utils/README.md)
-
----
 
 ### Run shit
 
