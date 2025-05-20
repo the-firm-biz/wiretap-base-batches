@@ -132,10 +132,14 @@ export default function BigeonsBasementPage() {
           <Button variant="link">Link</Button>
         </div>
         <div className="flex gap-4 items-center flex-wrap">
-          <Badge>Default Badge</Badge>
-          <Badge variant="secondary">Secondary Badge</Badge>
-          <Badge variant="destructive">Destructive Badge</Badge>
-          <Badge variant="outline">Outline Badge</Badge>
+          <Badge>Default</Badge>
+          <Badge variant="secondary">Secondary</Badge>
+          <Badge variant="destructive">Destructive</Badge>
+          <Badge variant="outline">Outline</Badge>
+          <Badge color="blue">Blue</Badge>
+          <Badge color="red">Red</Badge>
+          <Badge color="yellow">Yellow</Badge>
+          <Badge color="green">Green</Badge>
         </div>
         <div className="flex gap-4 items-center flex-wrap">
           <Input placeholder="Placeholder"></Input>
@@ -186,11 +190,9 @@ export default function BigeonsBasementPage() {
             mode="color"
           />
         </div>
-
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <DitheredImage src="/banner-clanker.png" alt="Clanker" />
           <DitheredImage src="/banner-bankr.png" alt="Bankr" />
-
           {/* Example "coming soon" banner with blurry overlay */}
           <div className="relative">
             <DitheredImage src="/banner-bankr.png" alt="Bankr" />
@@ -207,7 +209,6 @@ export default function BigeonsBasementPage() {
               <Badge variant="secondary">Coming Soon</Badge>
             </div>
           </div>
-
           <DitheredImage src="/banner-zora.png" alt="Zora" />
         </div>
       </main>
