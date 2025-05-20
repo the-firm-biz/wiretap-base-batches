@@ -13,6 +13,13 @@ const RETRY_DELAY = 1000; // 1 second
 export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
   console.error('onError: watchContractEvent::', error);
 
+  if (!unwatch) {
+    console.error('onError:: Unwatch function not found!');
+    return;
+  }
+  // Clean up existing watcher
+  unwatch();
+
   if (retryCount < MAX_RETRIES) {
     retryCount++;
     console.log(
@@ -24,9 +31,6 @@ export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
       currentAttempt: retryCount,
       maxAttempts: MAX_RETRIES
     });
-
-    // Clean up existing watcher
-    if (unwatch) unwatch();
 
     // Retry after delay
     setTimeout(() => {
@@ -41,13 +45,11 @@ export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
       type: 'reconnectMaxAttempts',
       maxAttempts: MAX_RETRIES
     });
-
-    if (unwatch) unwatch();
     console.log('onError:: Shutting down event watcher...');
     process.exit(0);
   }
 }
 
-export function resetReconnectReties() {
+export function resetReconnectRetries() {
   retryCount = 0;
 }
