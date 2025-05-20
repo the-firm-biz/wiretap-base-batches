@@ -12,14 +12,14 @@ import {
 import { handleDelegatedClankerDeployer } from './handle-delegated-clanker-deployer.js';
 import { handleEOAMsgSender } from './handle-eoa-msg-sender.js';
 import { deconstructLog, type TokenCreatedLog } from './types/token-created.js';
-import { resetReconnectReties } from './on-error.js';
+import { resetReconnectRetries } from './on-error.js';
 import { sendSlackIndexerError } from './notifications/send-slack-indexer-error.js';
 import { getTransactionContext } from './get-transaction-context.js';
 
 export function onLogs(
   logs: WatchContractEventOnLogsParameter<ClankerAbi, 'TokenCreated', true>
 ) {
-  resetReconnectReties();
+  resetReconnectRetries();
   // @todo parallelize in case multiple logs are returned
   logs.forEach(async (log: TokenCreatedLog) => {
     const span = new Span(log.address);

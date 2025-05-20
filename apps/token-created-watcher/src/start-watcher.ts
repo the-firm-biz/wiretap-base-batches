@@ -3,9 +3,10 @@ import { onLogs } from './on-logs.js';
 import { onError } from './on-error.js';
 import { websocketPublicClient } from './rpc-clients.js';
 import { initPriceFeeds } from '@wiretap/utils/server';
+import type { WatchContractEventReturnType } from 'viem';
 
 export async function startTokenCreatedWatcher() {
-  let unwatch: (() => void) | null = null;
+  let unwatch: WatchContractEventReturnType | null = null;
 
   const startWatcher = () => {
     console.log('Listening for token events...');
