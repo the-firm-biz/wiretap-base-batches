@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "block": {
+        "hash": "0x7d1244b8fb174c7ef534b29ec8458071e40d5ecd6b6ce90aba0422499fca9817",
+        "number": "0x12661c1",
+        "transactions": [
+          {
+            "blockHash": "0x7d1244b8fb174c7ef534b29ec8458071e40d5ecd6b6ce90aba0422499fca9817",
+            "blockNumber": "0x12661c1",
+            "from": "0x52b86a86e4d764e8275391c436127e60340a0e6a",
+            "to": "0x00000000003b3cc22af3ae1eac0440bcee416b40",
+            "hash": "0xaef9c63106872237ef7b9efa5a622c3eaa54ea57cab01ab20597567a656ac83e"
+          }
+        ]
+      },
+      "receipts": [
+        {
+          "blockHash": "0x7d1244b8fb174c7ef534b29ec8458071e40d5ecd6b6ce90aba0422499fca9817",
+          "blockNumber": "0x12661c1",
+          "logs": [
+            {
+              "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+              "topics": [
+                "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925",
+                "0x00000000000000000000000000000000003b3cc22af3ae1eac0440bcee416b40",
+                "0x000000000000000000000000d51a44d3fae010294c616388b506acda1bfaae46"
+              ],
+              "data": "0x000000000000000000000000000000000000000000000006db49ec45bf138000",
+              "blockNumber": "0x12661c1"
+            }
+          ],
+          "status": "0x1",
+          "transactionHash": "0xaef9c63106872237ef7b9efa5a622c3eaa54ea57cab01ab20597567a656ac83e"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "batch_end_range": 19293282,
+    "batch_start_range": 19293282,
+    "dataset": "block_with_receipts",
+    "network": "ethereum-mainnet",
+    "stream_id": "f23eeacb-05b6-4159-a90d-5903dfe229dc"
+  }
+}
