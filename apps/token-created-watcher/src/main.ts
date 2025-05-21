@@ -1,9 +1,6 @@
-import { sendSlackSystemMessage } from './notifications/send-slack-system-message.js';
+import { sendSlackSystemMessage } from '@wiretap/utils/server';
+import { env } from './env.js';
 import { startTokenCreatedWatcher } from './start-watcher.js';
-
-sendSlackSystemMessage({
-  type: 'startup'
-});
 
 const unwatchEvents = await startTokenCreatedWatcher();
 
@@ -12,8 +9,14 @@ const cleanup = async (signal: string): Promise<void> => {
   try {
     unwatchEvents();
     await sendSlackSystemMessage({
-      type: 'shutdown',
-      signal
+      systemMessage: {
+        type: 'shutdown',
+        signal
+      },
+      flyAppName: process.env.FLY_APP_NAME,
+      flyMachineId: process.env.FLY_MACHINE_ID,
+      botToken: env.SLACK_INFRABOT_TOKEN,
+      channelId: env.INFRA_NOTIFICATIONS_CHANNEL_ID
     });
   } catch (error) {
     console.error('Error during shutdown', error);
