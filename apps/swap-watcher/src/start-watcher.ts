@@ -3,14 +3,25 @@ import { onLogs } from './on-logs.js';
 import { onError } from './on-error.js';
 import { websocketPublicClient } from './rpc-clients.js';
 import { startPoolsWatcher } from './pools.js';
-import { initPriceFeeds } from '@wiretap/utils/server';
+import { initPriceFeeds, sendSlackSystemMessage } from '@wiretap/utils/server';
 import { type WatchContractEventReturnType } from 'viem';
+import { env } from './env.js';
 
 export async function startSwapWatcher() {
   let unwatch: WatchContractEventReturnType | null = null;
 
   const startWatcher = () => {
     console.log('Listening for swap events...');
+
+    sendSlackSystemMessage({
+      systemMessage: {
+        type: 'startup'
+      },
+      flyAppName: process.env.FLY_APP_NAME,
+      flyMachineId: process.env.FLY_MACHINE_ID,
+      botToken: env.SLACK_INFRABOT_TOKEN,
+      channelId: env.INFRA_NOTIFICATIONS_CHANNEL_ID
+    });
 
     unwatch = websocketPublicClient.watchContractEvent({
       abi: UNISWAP_POOL_V3_ABI,

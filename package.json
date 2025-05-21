@@ -8,6 +8,7 @@
     "build": "turbo run build",
     "build:packages": "turbo run build --filter=@wiretap/db --filter=@wiretap/utils --filter=@wiretap/config --filter=@wiretap/redis",
     "dev": "turbo run build:packages && turbo run dev",
+    "dev:packages": "turbo run dev --filter=@wiretap/db --filter=@wiretap/utils --filter=@wiretap/config --filter=@wiretap/redis",
     "dev:watchers": "pnpm run build:packages &&  turbo run dev --filter=@wiretap/token-created-watcher --filter=@wiretap/swap-watcher --filter=@wiretap/config --filter=@wiretap/utils --filter=@wiretap/db --filter=@wiretap/redis",
     "dev:swap-watcher": "pnpm run build:packages && turbo run dev --filter=@wiretap/swap-watcher --filter=@wiretap/config --filter=@wiretap/utils --filter=@wiretap/db --filter=@wiretap/redis",
     "dev:token-created-watcher": "pnpm run build:packages && turbo run dev --filter=@wiretap/token-created-watcher --filter=@wiretap/config --filter=@wiretap/utils --filter=@wiretap/db --filter=@wiretap/redis",

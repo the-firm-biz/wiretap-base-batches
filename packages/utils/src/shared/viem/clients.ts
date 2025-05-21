@@ -22,7 +22,7 @@ export function createWebsocketPublicClient(
     transport: webSocket(
       `wss://base-mainnet.g.alchemy.com/v2/${opts.alchemyApiKey}`,
       {
-        keepAlive: { interval: 30_000 },
+        keepAlive: { interval: 10_000 },
         // You must define custom onError handling & retry logic when using this client.
         // Viem retrying the connection will lead to exponential growth of their keepAlive pings.
         reconnect: false,
