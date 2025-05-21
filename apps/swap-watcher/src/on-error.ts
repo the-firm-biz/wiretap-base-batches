@@ -11,7 +11,7 @@ let retryCount = 0;
 const MAX_RETRIES = 10;
 const RETRY_DELAY = 1000; // 1 second
 
-export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
+export async function onError({ error, startWatcher, unwatch }: OnErrorParams) {
   console.error('onError: watchContractEvent::', error);
 
   if (!unwatch) {
@@ -44,7 +44,12 @@ export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
       startWatcher();
     }, RETRY_DELAY * retryCount);
   } else {
-    sendSlackSystemMessage({
+    console.error(
+      'onError:: Max retry attempts reached. Manual intervention required.'
+    );
+    console.log('onError:: Shutting down event watcher...');
+
+    await sendSlackSystemMessage({
       systemMessage: {
         type: 'reconnectMaxAttempts',
         maxAttempts: MAX_RETRIES
@@ -54,11 +59,6 @@ export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
       botToken: env.SLACK_INFRABOT_TOKEN,
       channelId: env.INFRA_NOTIFICATIONS_CHANNEL_ID
     });
-
-    console.error(
-      'onError:: Max retry attempts reached. Manual intervention required.'
-    );
-    console.log('onError:: Shutting down event watcher...');
     process.exit(0);
   }
 }
