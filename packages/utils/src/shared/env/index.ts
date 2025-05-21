@@ -22,4 +22,5 @@ export const stringBool = z
   .string()
   .refine((val) => val === '1' || val === '0', {
     message: 'Must be "1" or "0"'
-  });
+  })
+  .transform((val) => val === '1');
