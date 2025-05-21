@@ -4,9 +4,10 @@ import { onError } from './on-error.js';
 import { websocketPublicClient } from './rpc-clients.js';
 import { startPoolsWatcher } from './pools.js';
 import { initPriceFeeds } from '@wiretap/utils/server';
+import { type WatchContractEventReturnType } from 'viem';
 
 export async function startSwapWatcher() {
-  let unwatch: (() => void) | null = null;
+  let unwatch: WatchContractEventReturnType | null = null;
 
   const startWatcher = () => {
     console.log('Listening for swap events...');
