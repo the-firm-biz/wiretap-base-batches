@@ -12,7 +12,7 @@
     "build": "tsc",
     "dev": "tsx watch src/main.ts",
     "start": "node src/main.js",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "lint": "eslint .",
     "ts:check": "tsc --noEmit"

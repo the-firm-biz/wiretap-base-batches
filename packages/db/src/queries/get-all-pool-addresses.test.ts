@@ -35,8 +35,7 @@ describe('getAllPoolAddresses', () => {
     }
   ] as const;
 
-  beforeEach(async () => {
-    await unsafe__clearDbTables(db);
+  const insertMock = async () => {
     const [testAccountEntity] = await db
       .insert(accountEntities)
       .values({
@@ -101,9 +100,14 @@ describe('getAllPoolAddresses', () => {
       { ...testPools[0], tokenId: token1!.id, currencyId: currency!.id },
       { ...testPools[1], tokenId: token2!.id, currencyId: currency!.id }
     ]);
+  }
+
+  beforeEach(async () => {
+    await unsafe__clearDbTables(db);
   });
 
   it('returns all pool addresses', async () => {
+    await insertMock();
     const addresses = await getAllPoolAddresses(db);
     expect(addresses).toHaveLength(testPools.length);
     expect(addresses).toEqual(
@@ -112,7 +116,6 @@ describe('getAllPoolAddresses', () => {
   });
 
   it('returns empty array if no pools exist', async () => {
-    await unsafe__clearDbTables(db);
     const addresses = await getAllPoolAddresses(db);
     expect(addresses).toEqual([]);
   });
