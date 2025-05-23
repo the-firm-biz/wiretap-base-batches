@@ -11,7 +11,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "types": [
-      "vitest/globals.js"
+      "vitest/globals"
     ]
   }
 }

@@ -1,19 +1,21 @@
-import {
-  commitTokenDetailsToDb,
-  type CommitTokenDetailsToDbResult
-} from './commit-token-details-to-db.js';
+import { commitTokenDetailsToDb, type CommitTokenDetailsToDbResult } from './commit-token-details-to-db.js';
 import * as dbModule from '@wiretap/db';
+import {
+  currencies,
+  type FarcasterAccount,
+  type GetAccountEntityResult,
+  type Pool,
+  type Token,
+  type Wallet,
+  type XAccount
+} from '@wiretap/db';
 import type { Address } from 'viem';
 import { env } from '../env.js';
 import type { TokenCreatedOnChainParams } from '../types/token-created.js';
 import type { NeynarUser } from '@wiretap/utils/server';
-import type {
-  FarcasterAccount,
-  GetAccountEntityResult,
-  Wallet,
-  XAccount
-} from '@wiretap/db';
 import { TokenIndexerError } from '../errors.js';
+import { CLANKER_3_1_UNISWAP_FEE_BPS } from '@wiretap/config';
+import { expect } from 'vitest';
 
 const spyEndPoolConnection = vi.spyOn(
   dbModule.PooledDbConnection.prototype,
@@ -135,6 +137,14 @@ describe('commitTokenDetailsToDb', () => {
   describe('pool db connection', () => {
     beforeEach(async () => {
       await dbModule.unsafe__clearDbTables(db);
+
+      await db.insert(currencies).values({
+        address: testTokenCreatedData.poolContext.pairedAddress,
+        name: testTokenCreatedData.tokenName,
+        symbol: testTokenCreatedData.symbol,
+        decimals: 18
+      });
+
       spyEndPoolConnection.mockClear();
     });
 
@@ -170,6 +180,12 @@ describe('commitTokenDetailsToDb', () => {
 
     beforeAll(async () => {
       await dbModule.unsafe__clearDbTables(db);
+      await db.insert(currencies).values({
+        address: testTokenCreatedData.poolContext.pairedAddress,
+        name: testTokenCreatedData.tokenName,
+        symbol: testTokenCreatedData.symbol,
+        decimals: 18
+      });
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
         tokenCreatorAddress: testTokenCreatedData.msgSender,
@@ -199,8 +215,23 @@ describe('commitTokenDetailsToDb', () => {
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
           accountEntityId: result.accountEntityId,
-          score: null
-        },
+          score: null,
+          imageUrl: null,
+          totalSupply: testTokenCreatedData.totalSupply,
+          creatorTokenIndex: 0
+        } as Token,
+        tokenPool: {
+          address: testTokenCreatedData.poolContext.pairedAddress,
+          athMcapUsd: 10000000000000,
+          createdAt: expect.any(Date),
+          currencyId: expect.any(Number),
+          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
+          id: expect.any(Number),
+          isPrimary: true,
+          startingMcapUsd: 10000000000000,
+          tokenId: result.token.id,
+          updatedAt: null
+        } as Pool,
         deployerContract: {
           id: expect.any(Number),
           createdAt: expect.any(Date),
@@ -260,8 +291,11 @@ describe('commitTokenDetailsToDb', () => {
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
         accountEntityId: result.accountEntityId,
-        score: null
-      });
+        score: null,
+        imageUrl: null,
+        totalSupply: testTokenCreatedData.totalSupply,
+        creatorTokenIndex: 0
+      } as Token);
     });
   });
 
@@ -271,6 +305,12 @@ describe('commitTokenDetailsToDb', () => {
 
     beforeAll(async () => {
       await dbModule.unsafe__clearDbTables(db);
+      await db.insert(currencies).values({
+        address: testTokenCreatedData.poolContext.pairedAddress,
+        name: testTokenCreatedData.tokenName,
+        symbol: testTokenCreatedData.symbol,
+        decimals: 18
+      });
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
         tokenCreatorAddress: testTokenCreatedData.msgSender,
@@ -301,8 +341,23 @@ describe('commitTokenDetailsToDb', () => {
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
           accountEntityId: result.accountEntityId,
-          score: null
-        },
+          score: null,
+          totalSupply: testTokenCreatedData.totalSupply,
+          creatorTokenIndex: 0,
+          imageUrl: null
+        } as Token,
+        tokenPool: {
+          address: testTokenCreatedData.poolContext.pairedAddress,
+          athMcapUsd: 10000000000000,
+          createdAt: expect.any(Date),
+          currencyId: expect.any(Number),
+          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
+          id: expect.any(Number),
+          isPrimary: true,
+          startingMcapUsd: 10000000000000,
+          tokenId: result.token.id,
+          updatedAt: null
+        } as Pool,
         deployerContract: {
           id: expect.any(Number),
           createdAt: expect.any(Date),
@@ -323,8 +378,11 @@ describe('commitTokenDetailsToDb', () => {
             createdAt: expect.any(Date),
             fid: testNeynarUser.fid,
             username: testNeynarUser.username,
-            accountEntityId: result.accountEntityId
-          }
+            accountEntityId: result.accountEntityId,
+            displayName: null,
+            followerCount: testNeynarUser.follower_count,
+            pfpUrl: null
+          } as FarcasterAccount
         ]),
         xAccounts: expect.arrayContaining([
           {
@@ -390,7 +448,10 @@ describe('commitTokenDetailsToDb', () => {
         createdAt: expect.any(Date),
         fid: testNeynarUser.fid,
         username: testNeynarUser.username,
-        accountEntityId: result.accountEntityId
+        accountEntityId: result.accountEntityId,
+        displayName: null,
+        followerCount: 100,
+        pfpUrl: null
       });
     });
 
@@ -428,8 +489,11 @@ describe('commitTokenDetailsToDb', () => {
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
         accountEntityId: result.accountEntityId,
-        score: null
-      });
+        score: null,
+        imageUrl: null,
+        totalSupply: testTokenCreatedData.totalSupply,
+        creatorTokenIndex: 0
+      } as Token);
     });
   });
 
@@ -443,6 +507,12 @@ describe('commitTokenDetailsToDb', () => {
       await dbModule.unsafe__clearDbTables(db);
       const dbPool = new dbModule.PooledDbConnection({
         databaseUrl: env.DATABASE_URL
+      });
+      await dbPool.db.insert(currencies).values({
+        address: testTokenCreatedData.poolContext.pairedAddress,
+        name: testTokenCreatedData.tokenName,
+        symbol: testTokenCreatedData.symbol,
+        decimals: 18
       });
       const { accountEntity, wallets } = await dbModule.createAccountEntity(
         dbPool.db,
@@ -486,8 +556,23 @@ describe('commitTokenDetailsToDb', () => {
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
           accountEntityId: result.accountEntityId,
-          score: null
-        },
+          score: null,
+          creatorTokenIndex: 0,
+          imageUrl: null,
+          totalSupply: testTokenCreatedData.totalSupply
+        } as Token,
+        tokenPool: {
+          address: testTokenCreatedData.poolContext.pairedAddress,
+          athMcapUsd: 10000000000000,
+          createdAt: expect.any(Date),
+          currencyId: expect.any(Number),
+          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
+          id: expect.any(Number),
+          isPrimary: true,
+          startingMcapUsd: 10000000000000,
+          tokenId: result.token.id,
+          updatedAt: null
+        } as Pool,
         deployerContract: {
           id: expect.any(Number),
           createdAt: expect.any(Date),
@@ -530,8 +615,11 @@ describe('commitTokenDetailsToDb', () => {
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
         accountEntityId: existingAccountEntityId,
-        score: null
-      });
+        score: null,
+        imageUrl: null,
+        creatorTokenIndex: 0,
+        totalSupply: testTokenCreatedData.totalSupply
+      } as Token);
     });
   });
 
@@ -546,6 +634,14 @@ describe('commitTokenDetailsToDb', () => {
       const dbPool = new dbModule.PooledDbConnection({
         databaseUrl: env.DATABASE_URL
       });
+
+      await dbPool.db.insert(currencies).values({
+        address: testTokenCreatedData.poolContext.pairedAddress,
+        name: testTokenCreatedData.tokenName,
+        symbol: testTokenCreatedData.symbol,
+        decimals: 18
+      });
+
       const { accountEntity, wallets } = await dbModule.createAccountEntity(
         dbPool.db,
         {
@@ -589,8 +685,23 @@ describe('commitTokenDetailsToDb', () => {
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
           accountEntityId: result.accountEntityId,
-          score: null
-        },
+          score: null,
+          imageUrl: null,
+          totalSupply: testTokenCreatedData.totalSupply,
+          creatorTokenIndex: 0
+        } as Token,
+        tokenPool: {
+          address: testTokenCreatedData.poolContext.pairedAddress,
+          athMcapUsd: 10000000000000,
+          createdAt: expect.any(Date),
+          currencyId: expect.any(Number),
+          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
+          id: expect.any(Number),
+          isPrimary: true,
+          startingMcapUsd: 10000000000000,
+          tokenId: result.token.id,
+          updatedAt: null
+        } as Pool,
         deployerContract: {
           id: expect.any(Number),
           createdAt: expect.any(Date),
@@ -619,8 +730,11 @@ describe('commitTokenDetailsToDb', () => {
             createdAt: expect.any(Date),
             fid: testNeynarUser.fid,
             username: testNeynarUser.username,
-            accountEntityId: result.accountEntityId
-          }
+            accountEntityId: result.accountEntityId,
+            displayName: null,
+            followerCount: testNeynarUser.follower_count,
+            pfpUrl: null
+          } as FarcasterAccount
         ]),
         xAccounts: expect.arrayContaining([
           {
@@ -677,8 +791,11 @@ describe('commitTokenDetailsToDb', () => {
         createdAt: expect.any(Date),
         fid: testNeynarUser.fid,
         username: testNeynarUser.username,
-        accountEntityId: existingAccountEntityId
-      });
+        accountEntityId: existingAccountEntityId,
+        displayName: null,
+        followerCount: 100,
+        pfpUrl: null
+      } as FarcasterAccount);
     });
 
     it('should create new x account in DB', () => {
@@ -715,8 +832,11 @@ describe('commitTokenDetailsToDb', () => {
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
         accountEntityId: existingAccountEntityId,
-        score: null
-      });
+        score: null,
+        creatorTokenIndex: 0,
+        imageUrl: null,
+        totalSupply: testTokenCreatedData.totalSupply
+      } as Token);
     });
   });
 
@@ -730,6 +850,12 @@ describe('commitTokenDetailsToDb', () => {
       await dbModule.unsafe__clearDbTables(db);
       const dbPool = new dbModule.PooledDbConnection({
         databaseUrl: env.DATABASE_URL
+      });
+      await dbPool.db.insert(currencies).values({
+        address: testTokenCreatedData.poolContext.pairedAddress,
+        name: testTokenCreatedData.tokenName,
+        symbol: testTokenCreatedData.symbol,
+        decimals: 18
       });
       const { accountEntity, farcasterAccount } =
         await dbModule.createAccountEntity(dbPool.db, {
@@ -777,8 +903,23 @@ describe('commitTokenDetailsToDb', () => {
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
           accountEntityId: result.accountEntityId,
-          score: null
-        },
+          score: null,
+          imageUrl: null,
+          totalSupply: testTokenCreatedData.totalSupply,
+          creatorTokenIndex: 0
+        } as Token,
+        tokenPool: {
+          address: testTokenCreatedData.poolContext.pairedAddress,
+          athMcapUsd: 10000000000000,
+          createdAt: expect.any(Date),
+          currencyId: expect.any(Number),
+          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
+          id: expect.any(Number),
+          isPrimary: true,
+          startingMcapUsd: 10000000000000,
+          tokenId: result.token.id,
+          updatedAt: null
+        } as Pool,
         deployerContract: {
           id: expect.any(Number),
           createdAt: expect.any(Date),
@@ -903,8 +1044,11 @@ describe('commitTokenDetailsToDb', () => {
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
         accountEntityId: existingAccountEntityId,
-        score: null
-      });
+        score: null,
+        creatorTokenIndex: 0,
+        imageUrl: null,
+        totalSupply: testTokenCreatedData.totalSupply
+      } as Token);
     });
   });
 
@@ -919,6 +1063,12 @@ describe('commitTokenDetailsToDb', () => {
       await dbModule.unsafe__clearDbTables(db);
       const dbPool = new dbModule.PooledDbConnection({
         databaseUrl: env.DATABASE_URL
+      });
+      await dbPool.db.insert(currencies).values({
+        address: testTokenCreatedData.poolContext.pairedAddress,
+        name: testTokenCreatedData.tokenName,
+        symbol: testTokenCreatedData.symbol,
+        decimals: 18
       });
       const { accountEntity, wallets, farcasterAccount } =
         await dbModule.createAccountEntity(dbPool.db, {
@@ -972,13 +1122,28 @@ describe('commitTokenDetailsToDb', () => {
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
           accountEntityId: result.accountEntityId,
-          score: null
-        },
+          score: null,
+          creatorTokenIndex: 0,
+          imageUrl: null,
+          totalSupply: testTokenCreatedData.totalSupply
+        } as Token,
         deployerContract: {
           id: expect.any(Number),
           createdAt: expect.any(Date),
           address: testTokenCreatedData.deployerContractAddress
         },
+        tokenPool: {
+          address: testTokenCreatedData.poolContext.pairedAddress,
+          athMcapUsd: 10000000000000,
+          createdAt: expect.any(Date),
+          currencyId: expect.any(Number),
+          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
+          id: expect.any(Number),
+          isPrimary: true,
+          startingMcapUsd: 10000000000000,
+          tokenId: result.token.id,
+          updatedAt: null
+        } as Pool,
         wallets: expect.arrayContaining([
           existingWallet,
           {
@@ -1086,8 +1251,11 @@ describe('commitTokenDetailsToDb', () => {
         block: BLOCK_NUMBER,
         deploymentContractId: result.deployerContract.id,
         accountEntityId: existingAccountEntityId,
-        score: null
-      });
+        score: null,
+        creatorTokenIndex: 0,
+        imageUrl: null,
+        totalSupply: testTokenCreatedData.totalSupply
+      } as Token);
     });
   });
 
@@ -1105,6 +1273,12 @@ describe('commitTokenDetailsToDb', () => {
       // and same JOHNY_SECONDARY_ETH_WALLET being present in anotherNeynarUser verified wallets list
       const dbPool = new dbModule.PooledDbConnection({
         databaseUrl: env.DATABASE_URL
+      });
+      await dbPool.db.insert(currencies).values({
+        address: testTokenCreatedData.poolContext.pairedAddress,
+        name: testTokenCreatedData.tokenName,
+        symbol: testTokenCreatedData.symbol,
+        decimals: 18
       });
       const { accountEntity, wallets, xAccounts, farcasterAccount } =
         await dbModule.createAccountEntity(dbPool.db, {
@@ -1164,8 +1338,11 @@ describe('commitTokenDetailsToDb', () => {
             createdAt: expect.any(Date),
             fid: anotherNeynarUser.fid,
             username: anotherNeynarUser.username,
-            accountEntityId: existingAccountEntityId
-          }
+            accountEntityId: existingAccountEntityId,
+            displayName: null,
+            followerCount: testNeynarUser.follower_count,
+            pfpUrl: null
+          } as FarcasterAccount
         ])
       );
     });
