@@ -1,11 +1,5 @@
 import { NeonHttpDatabase } from 'drizzle-orm/neon-http';
-import {
-  farcasterAccounts,
-  accountEntities,
-  wallets,
-  xAccounts,
-  wireTapAccounts
-} from '../schema/accounts/index.js';
+import { accountEntities, farcasterAccounts, wallets, wireTapAccounts, xAccounts } from '../schema/accounts/index.js';
 import { contracts } from '../schema/contracts.js';
 import { tokens } from '../schema/tokens.js';
 import { blocks } from '../schema/blocks.js';
