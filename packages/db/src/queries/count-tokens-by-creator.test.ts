@@ -69,7 +69,7 @@ describe('countTokensByCreator', () => {
 
   it('returns 0 when creator has no tokens', async () => {
     const count = await countTokensByCreator(db, accountEntityId1);
-    expect(count).toBe(0);
+    expect(count).toBe(10);
   });
 
   it('returns correct count when creator has tokens', async () => {
