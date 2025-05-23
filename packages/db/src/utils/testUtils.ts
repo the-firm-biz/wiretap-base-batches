@@ -1,5 +1,11 @@
 import { NeonHttpDatabase } from 'drizzle-orm/neon-http';
-import { accountEntities, farcasterAccounts, wallets, wireTapAccounts, xAccounts } from '../schema/accounts/index.js';
+import {
+  accountEntities,
+  farcasterAccounts,
+  wallets,
+  wireTapAccounts,
+  xAccounts
+} from '../schema/accounts/index.js';
 import { contracts } from '../schema/contracts.js';
 import { tokens } from '../schema/tokens.js';
 import { blocks } from '../schema/blocks.js';
@@ -16,19 +22,21 @@ import { currencies } from '../schema/currencies.js';
  * Deletes all rows from the database
  */
 export const unsafe__clearDbTables = async (db: NeonHttpDatabase) => {
-  await db.delete(pools);
-  await db.delete(tokens);
-  await db.delete(accountEntityTrackers);
-  await db.delete(gliderPortfolios);
-  await db.delete(wallets);
-  await db.delete(farcasterAccounts);
-  await db.delete(xAccounts);
-  await db.delete(blocks);
-  await db.delete(wireTapSessionKeys);
-  await db.delete(wireTapAccounts);
+  await db.batch([
+    db.delete(pools),
+    db.delete(tokens),
+    db.delete(accountEntityTrackers),
+    db.delete(gliderPortfolios),
+    db.delete(wallets),
+    db.delete(farcasterAccounts),
+    db.delete(xAccounts),
+    db.delete(blocks),
+    db.delete(wireTapSessionKeys),
+    db.delete(wireTapAccounts),
 
-  await db.delete(contracts);
-  await db.delete(accountEntities);
-  await db.delete(verificationSources);
-  await db.delete(currencies);
+    db.delete(contracts),
+    db.delete(accountEntities),
+    db.delete(verificationSources),
+    db.delete(currencies)
+  ]);
 };
