@@ -50,7 +50,9 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
         toast(
           <div className="flex w-full justify-between items-center">
             <div className="flex flex-col gap-1">
-              <div className={textStyles['compact-emphasis']}>Now Tracking</div>
+              <div className={textStyles['compact-emphasis']}>
+                Now Monitoring
+              </div>
               <div className={textStyles.label}>
                 Auto-buy set to{' '}
                 <span className={textStyles['label-emphasis']}>
@@ -73,7 +75,7 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
           <div className="flex w-full justify-between items-center">
             <div className="flex flex-col gap-1">
               <div className={textStyles['compact-emphasis']}>
-                Failed to track {target.label}
+                Failed to monitor {target.label}
               </div>
               <div className={textStyles.label}>Please try again</div>
             </div>
@@ -121,9 +123,9 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
     return (
       <Button disabled={isConfirmingTrack} onClick={onTrackClick}>
         {isConfirmingTrack ? (
-          <AnimatedEllipsisText>Track</AnimatedEllipsisText>
+          <AnimatedEllipsisText>Monitor</AnimatedEllipsisText>
         ) : (
-          'Track'
+          'Monitor'
         )}
       </Button>
     );
