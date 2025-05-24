@@ -128,7 +128,7 @@ export const trackTargetForAuthedAccount = privateProcedure
       if (alreadyTracking) {
         throw new TRPCError({
           code: e.code || 'INTERNAL_SERVER_ERROR',
-          message: 'Already tracking'
+          message: 'Already monitoring'
         });
       }
       throw new TRPCError({

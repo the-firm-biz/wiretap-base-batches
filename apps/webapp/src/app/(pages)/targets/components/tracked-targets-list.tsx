@@ -60,10 +60,10 @@ export const TrackedTargetsList = ({
         </div>
         <div className="flex flex-col items-center gap-2">
           <p className={`${textStyles['title3']} text-center`}>
-            You&apos;re not tracking anyone
+            You&apos;re not monitoring anyone
           </p>
           <p className={`${textStyles['compact']} text-center`}>
-            Start tracking profiles for token launches to auto-buy
+            Start monitoring profiles for token launches to auto-buy
           </p>
         </div>
       </div>

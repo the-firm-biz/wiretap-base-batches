@@ -119,7 +119,7 @@ export function ConnectedWalletGate({
         </div>
         <div className="mt-4 mb-4">
           <p className={`${textStyles['compact']} mb-2`}>
-            TRACKING TOKEN LAUNCHES ON
+            MONITORING TOKEN LAUNCHES ON
           </p>
           <SupportedProtocolsCarousel />
         </div>

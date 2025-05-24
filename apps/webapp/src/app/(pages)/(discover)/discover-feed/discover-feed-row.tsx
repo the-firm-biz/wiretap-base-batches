@@ -74,7 +74,9 @@ export function DiscoverFeedRow({
         toast(
           <div className="flex w-full justify-between items-center">
             <div className="flex flex-col gap-1">
-              <div className={textStyles['compact-emphasis']}>Now Tracking</div>
+              <div className={textStyles['compact-emphasis']}>
+                Now Monitoring
+              </div>
               <div className={textStyles.label}>
                 Auto-buy set to{' '}
                 <span className={textStyles['label-emphasis']}>
@@ -97,7 +99,7 @@ export function DiscoverFeedRow({
           <div className="flex w-full justify-between items-center">
             <div className="flex flex-col gap-1">
               <div className={textStyles['compact-emphasis']}>
-                Failed to track {getDisplayName()}
+                Failed to monitor {getDisplayName()}
               </div>
               <div className={textStyles.label}>Please try again</div>
             </div>
@@ -148,9 +150,9 @@ export function DiscoverFeedRow({
     return (
       <Button size="sm" disabled={isConfirmingTrack} onClick={onTrackClick}>
         {isConfirmingTrack ? (
-          <AnimatedEllipsisText>Track</AnimatedEllipsisText>
+          <AnimatedEllipsisText>Monitor</AnimatedEllipsisText>
         ) : (
-          'Track'
+          'Monitor'
         )}
       </Button>
     );
