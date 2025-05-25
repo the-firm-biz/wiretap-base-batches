@@ -6,7 +6,6 @@ on:
       - opened
       - reopened
       - synchronize
-      - closed
     paths:
       - packages/db/**
       - apps/token-created-watcher/**
