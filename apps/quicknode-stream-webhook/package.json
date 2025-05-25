@@ -1,23 +1,24 @@
 {
-  "name": "quicknode-stream-webhook",
+  "name": "@wiretap/quicknode-stream-webhook",
   "version": "0.1.0",
-  "description": "Webhook server for QuickNode Streams",
-  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "ts-node src/main.ts",
+    "dev": "tsx watch src/main.ts",
     "build": "tsc",
     "start": "node dist/main.js",
     "test": "vitest run",
     "test:webhook": "ts-node src/test-webhook.ts"
   },
   "dependencies": {
+    "@hono/node-server": "^1.14.2",
     "@wiretap/config": "workspace:*",
-    "@wiretap/utils": "workspace:*"
+    "@wiretap/utils": "workspace:*",
+    "hono": "^4.7.10",
+    "viem": "^2.29.2"
   },
   "devDependencies": {
     "@types/node": "^18.16.0",
-    "ts-node": "^10.9.1",
+    "@wiretap/typescript-config": "workspace:*",
     "typescript": "^5.8.3",
     "vitest": "^0.34.6"
   }

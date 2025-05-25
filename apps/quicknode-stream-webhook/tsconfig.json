@@ -1,14 +1,8 @@
 {
+  "extends": "@wiretap/typescript-config/no-dom-library-config.json",
+  "include": ["src", "*.ts"],
+  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "esModuleInterop": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
-    "rootDir": "./src"
-  },
-  "include": ["./src/**/*"]
+    "outDir": "./dist"
+  }
 }
