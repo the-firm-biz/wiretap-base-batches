@@ -1,7 +1,21 @@
 import { HermesClient } from '@pythnetwork/hermes-client';
 import { ETH_USD_PRICE_ID } from '@wiretap/config';
+import { logger } from '../../shared/index.js';
+
+const RETRY_DELAY = 10000;
+const CONNECTION_ATTEMPT_TIMEOUT = 1000 * 30;
 
 const connection = new HermesClient('https://hermes.pyth.network');
+
+interface ConnectionState {
+  isConnected: boolean;
+  isConnecting: boolean;
+  retryCount: number;
+}
+
+type PriceUpdatesStream = Awaited<
+  ReturnType<typeof connection.getPriceUpdatesStream>
+>;
 
 const SUPPORTED_CURRENCIES = ['eth_usd'] as const;
 type SupportedCurrency = (typeof SUPPORTED_CURRENCIES)[number];
@@ -44,49 +58,104 @@ function processUpdate(priceUpdate: PriceUpdate) {
   };
 }
 
+let priceUpdatesStream: PriceUpdatesStream | null = null;
+const close = () => {
+  if (priceUpdatesStream) {
+    priceUpdatesStream.close();
+  }
+};
+
+const connectionState: ConnectionState = {
+  isConnected: false,
+  isConnecting: false,
+  retryCount: 0
+};
+
+function updateConnectionState(
+  update: Partial<ConnectionState>,
+  isConnectionAttempt = false
+) {
+  Object.assign(connectionState, update);
+
+  if (isConnectionAttempt) {
+    connectionState.retryCount++;
+  }
+}
+
 export async function initPriceFeeds() {
-  console.log('Initializing price feeds...');
-  const priceIds = SUPPORTED_CURRENCIES.map(
-    (currency) => priceFeeds[currency].id
-  );
+  if (connectionState.isConnecting || connectionState.isConnected) {
+    return close;
+  }
 
-  const priceUpdatesStream = await connection.getPriceUpdatesStream(priceIds, {
-    benchmarksOnly: true
-  });
+  try {
+    updateConnectionState({ isConnecting: true, isConnected: false }, true);
 
-  priceUpdatesStream.onmessage = (event) => {
-    try {
-      const priceUpdates = JSON.parse(event.data).parsed as PriceUpdate[];
-
-      Object.values(priceFeeds).forEach((priceFeed) => {
-        const priceUpdate = priceUpdates.find((update) =>
-          update.id.includes(priceFeed.id)
-        );
-
-        if (!priceUpdate) {
-          return;
-        }
-
-        priceFeeds[priceFeed.name].price = processUpdate(priceUpdate);
-      });
-    } catch (error) {
-      console.error('Error parsing price update:', error, event.data);
+    if (connectionState.retryCount > 1) {
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+      logger.info(`Reconnecting... attempt #${connectionState.retryCount}`);
+    } else {
+      logger.info('Initializing price feeds...');
     }
-  };
 
-  priceUpdatesStream.onerror = (error) => {
-    console.error('Error receiving updates:', error);
-    priceUpdatesStream.close();
+    if (priceUpdatesStream) {
+      priceUpdatesStream.close();
+    }
 
-    console.log('Reconnecting to price feeds...');
-    initPriceFeeds();
-  };
+    const priceIds = SUPPORTED_CURRENCIES.map(
+      (currency) => priceFeeds[currency].id
+    );
 
-  console.log('Price feeds initialized');
+    priceUpdatesStream = await connection.getPriceUpdatesStream(priceIds, {
+      benchmarksOnly: true
+    });
 
-  return () => {
-    priceUpdatesStream.close();
-  };
+    priceUpdatesStream.onopen = () => {
+      logger.info('Price feeds initialized');
+      updateConnectionState({ isConnected: true, isConnecting: false });
+    };
+
+    priceUpdatesStream.onmessage = (event) => {
+      try {
+        const priceUpdates = JSON.parse(event.data).parsed as PriceUpdate[];
+
+        Object.values(priceFeeds).forEach((priceFeed) => {
+          const priceUpdate = priceUpdates.find((update) =>
+            update.id.includes(priceFeed.id)
+          );
+
+          if (priceUpdate) {
+            priceFeeds[priceFeed.name].price = processUpdate(priceUpdate);
+          }
+        });
+      } catch (error) {
+        logger.error(`Error parsing price update`, error, event);
+      }
+    };
+
+    priceUpdatesStream.onerror = (error) => {
+      logger.error('Error receiving updates:', error);
+      updateConnectionState({ isConnected: false, isConnecting: false });
+
+      if (priceUpdatesStream) {
+        priceUpdatesStream.close();
+      }
+
+      logger.info('Reconnecting to price feeds...');
+      initPriceFeeds();
+    };
+
+    setTimeout(() => {
+      if (!connectionState.isConnected && connectionState.isConnecting) {
+        updateConnectionState({ isConnecting: false });
+        throw new Error('Price feeds connection attempt timed out');
+      }
+    }, CONNECTION_ATTEMPT_TIMEOUT);
+
+    return close;
+  } catch (error) {
+    logger.error('Error initializing price feeds:', error);
+    return initPriceFeeds();
+  }
 }
 
 export async function fetchLatest(currency: SupportedCurrency): Promise<Price> {
@@ -110,12 +179,12 @@ export async function fetchLatest(currency: SupportedCurrency): Promise<Price> {
   };
 
   if (!priceFeed.price) {
-    console.warn(`Price update for ${currency} not found. Fetching...`);
+    logger.warn(`Price update for ${currency} not found. Fetching...`);
     return await fetchUpdate();
   }
 
   if (priceFeed.price.lastUpdated.getTime() < Date.now() - 1000 * 60) {
-    console.error(`Price update for ${currency} is stale. Fetching...`);
+    logger.error(`Price update for ${currency} is stale. Fetching...`);
     return await fetchUpdate();
   }
 
