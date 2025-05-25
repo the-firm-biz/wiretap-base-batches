@@ -5,6 +5,7 @@ let redis: Redis;
 
 export interface RedisOpts {
   redisUrl: string;
+  unsecure?: boolean;
 }
 
 export function getRedis(opts: RedisOpts) {
@@ -15,7 +16,7 @@ export function getRedis(opts: RedisOpts) {
   let tls: ConnectionOptions | undefined = {
     rejectUnauthorized: true
   }
-  if (opts.redisUrl.startsWith('redis://')) {
+  if (opts.unsecure) {
     console.warn('Redis connection connection is not using TLS');
     tls = undefined;
   }

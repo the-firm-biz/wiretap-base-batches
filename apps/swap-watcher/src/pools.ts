@@ -32,7 +32,7 @@ async function persistPools(): Promise<void> {
  * Start listening for new pool additions via Redis
  */
 export const startPoolsWatcher = async (): Promise<() => Promise<void>> => {
-  let redis = getRedis({ redisUrl: env.REDIS_URL });
+  let redis = getRedis({ redisUrl: env.REDIS_URL, unsecure: env.REDIS_UNSECURE });
   let isSubscribed = false;
   let isClosed = false;
 
@@ -64,7 +64,7 @@ export const startPoolsWatcher = async (): Promise<() => Promise<void>> => {
 
     try {
       console.log('Attempting to reconnect to Redis');
-      redis = getRedis({ redisUrl: env.REDIS_URL });
+      redis = getRedis({ redisUrl: env.REDIS_URL, unsecure: env.REDIS_UNSECURE });
 
       await subscribe();
     } catch (err) {

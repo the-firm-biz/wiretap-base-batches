@@ -64,7 +64,7 @@ export const commitTokenDetailsToDb = async ({
   imageUrl
 }: CommitTokenDetailsToDbParams): Promise<CommitTokenDetailsToDbResult> => {
   const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
-  const redis = getRedis({ redisUrl: env.REDIS_URL });
+  const redis = getRedis({ redisUrl: env.REDIS_URL, unsecure: env.REDIS_UNSECURE });
 
   try {
     return await dbPool.db.transaction(async (tx) => {

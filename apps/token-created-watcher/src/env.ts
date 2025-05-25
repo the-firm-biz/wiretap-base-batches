@@ -14,7 +14,8 @@ const envSchema = z.object({
   DATABASE_URL: z.string(),
   GLIDER_API_KEY: z.string(),
   IS_SLACK_NOTIFICATION_ENABLED: stringBool,
-  REDIS_URL: z.string()
+  REDIS_URL: z.string(),
+  REDIS_UNSECURE: stringBool.default("0")
 });
 
 export type Env = z.infer<typeof envSchema>;
