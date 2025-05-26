@@ -1,19 +1,20 @@
 import { singletonDb } from '../client.js';
 import { env } from '../env.js';
 import {
-  farcasterAccounts,
+  blocks,
   accountEntities,
+  contracts,
+  farcasterAccounts,
   type NewFarcasterAccount,
   type NewWallet,
   type NewXAccount,
+  type NewToken,
+  tokens,
   wallets,
   xAccounts
-} from '../schema/accounts/index.js';
+} from '../schema/index.js';
 import { unsafe__clearDbTables } from '../utils/testUtils.js';
 import { getAccountEntity } from './get-account-entity.js';
-import { tokens, type NewToken } from '../schema/tokens.js';
-import { contracts } from '../schema/contracts.js';
-import { blocks } from '../schema/blocks.js';
 
 describe('getAccountEntity', () => {
   const db = singletonDb({
@@ -134,6 +135,7 @@ describe('getAccountEntity', () => {
         {
           id: expect.any(Number),
           createdAt: expect.any(Date),
+          imageUrl: null,
           ...newToken
         }
       ])

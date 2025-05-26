@@ -1,0 +1,53 @@
+name: Run tests
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    paths:
+      - packages/db/**
+      - apps/token-created-watcher/**
+      - apps/swap-watcher/**
+  push:
+    branches: ['main', 'develop']
+
+jobs:
+  tests:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_CACHE: remote:rw
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.8.1
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build all dependency packages but not the website
+        run: pnpm build:packages && pnpm turbo build --filter=@wiretap/token-created-watcher --filter=@wiretap/swap-watcher
+
+      - name: Start DB in docker and push migrations
+        run: pnpm run test-db:start && pnpm run test-db:migration
+
+      - name: Testing
+        run: pnpm turbo run test
+
+      - name: Stop docker
+        run: pnpm run test-db:stop

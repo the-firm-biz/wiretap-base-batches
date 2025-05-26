@@ -1,11 +1,14 @@
 import { singletonDb } from '../client.js';
-import { type NewToken, tokens } from '../schema/tokens.js';
-import { accountEntities } from '../schema/accounts/index.js';
-import { contracts } from '../schema/contracts.js';
+import {
+  type NewToken,
+  tokens,
+  accountEntities,
+  contracts,
+  blocks
+} from '../schema/index.js';
 import { env } from '../env.js';
 import { getOrCreateToken } from './get-or-create-token.js';
 import { unsafe__clearDbTables } from '../utils/testUtils.js';
-import { blocks } from '../schema/blocks.js';
 
 const newToken: NewToken = {
   block: 0,
@@ -18,6 +21,7 @@ const newToken: NewToken = {
   accountEntityId: 1,
   score: 0.999,
   totalSupply: 100_000_000_000,
+  imageUrl: 'http://image.url',
   creatorTokenIndex: 1
 };
 

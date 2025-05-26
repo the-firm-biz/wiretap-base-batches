@@ -1,4 +1,5 @@
 import { Redis } from 'ioredis';
+import { type ConnectionOptions } from 'tls';
 
 let redis: Redis;
 
@@ -11,14 +12,16 @@ export function getRedis(opts: RedisOpts) {
     return redis;
   }
 
-  let rejectUnauthorized = true;
+  let tls: ConnectionOptions | undefined = {
+    rejectUnauthorized: true
+  }
   if (opts.redisUrl.startsWith('redis://')) {
     console.warn('Redis connection connection is not using TLS');
-    rejectUnauthorized = false;
+    tls = undefined;
   }
 
   redis = new Redis(opts.redisUrl, {
-    tls: { rejectUnauthorized }
+    tls
   });
 
   redis.on('error', (err: Error) => {
