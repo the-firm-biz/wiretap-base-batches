@@ -85,7 +85,7 @@ export function WalletNotice({ isLoadingParentQueries }: WalletNoticeProps) {
 
     return (
       <AnimatedEllipsisText className={`${textStyles['title3']}`}>
-        Tracking in Progress
+        Monitoring in Progress
       </AnimatedEllipsisText>
     );
   };
