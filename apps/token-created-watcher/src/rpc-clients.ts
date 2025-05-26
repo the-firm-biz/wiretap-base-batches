@@ -10,10 +10,10 @@ export const websocketPublicClient: PublicClient<
   WebSocketTransport,
   typeof base
 > = createWebsocketPublicClient({
-  alchemyApiKey: env.SERVER_ALCHEMY_API_KEY
+  transportUrl: `https://base-mainnet.g.alchemy.com/v2/${env.SERVER_ALCHEMY_API_KEY}`
 });
 
 export const httpPublicClient: PublicClient<HttpTransport, typeof base> =
   createHttpPublicClient({
-    alchemyApiKey: env.SERVER_ALCHEMY_API_KEY
+    transportUrl: `https://base-mainnet.g.alchemy.com/v2/${env.SERVER_ALCHEMY_API_KEY}`
   });
