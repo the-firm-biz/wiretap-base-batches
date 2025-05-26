@@ -30,9 +30,9 @@ export function RecentActivityActivityItem({
     <div className="flex flex-col gap-2">
       <div className="flex flex-row items-center gap-2 pt-2">
         {activityItem.type === 'deposit' ? (
-          <Badge className="bg-blue-200 text-blue-500">Deposit</Badge>
+          <Badge color="blue">Deposit</Badge>
         ) : (
-          <Badge className="bg-red-200 text-red-500">Withdraw</Badge>
+          <Badge color="red">Withdraw</Badge>
         )}
         <p className={`${textStyles['label']}`}>
           {formatDistanceToNowStrict(activityItem.timestamp, {

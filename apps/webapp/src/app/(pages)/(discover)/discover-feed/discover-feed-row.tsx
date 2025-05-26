@@ -192,17 +192,9 @@ export function DiscoverFeedRow({
         </div>
         <div className="flex items-center gap-1">
           {creatorTokenIndex + 1 === 1 ? (
-            <Badge
-              className={`bg-first-token-badge text-first-token-badge-foreground ${textStyles['code-01']}`}
-            >
-              🎉 Launch #{creatorTokenIndex + 1}
-            </Badge>
+            <Badge color="yellow">🎉 Launch #{creatorTokenIndex + 1}</Badge>
           ) : (
-            <Badge
-              className={`bg-token-badge text-token-badge-foreground ${textStyles['code-01']}`}
-            >
-              Launch #{creatorTokenIndex + 1}
-            </Badge>
+            <Badge color="blue">Launch #{creatorTokenIndex + 1}</Badge>
           )}
           <span className={textStyles['label']}>on </span>
           <ClankerLogoIcon className="size-4" />

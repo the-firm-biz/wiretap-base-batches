@@ -8,19 +8,13 @@ import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { cn } from '@/app/utils/cn';
 import DitheredImage from '../../components/dithered-image';
-import DitheredAnimation from '../../components/dithered-animation';
 import ReelToReelAnimation from './animated-reel-to-reel';
 import { PixelFirework } from '../../components/pixel-firework-animation';
 
 export default function BigeonsBasementPage() {
   return (
-    <div
-      className={cn(
-        'grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-dvh p-8 pb-20 gap-16 sm:p-20',
-        textStyles.body
-      )}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+    <div className={cn('flex flex-col gap-16', textStyles.body)}>
+      <main className="flex flex-col gap-[32px] items-center sm:items-start">
         <ReelToReelAnimation />
         <PixelFirework options={{ scalar: 0.5, particleCount: 200 }} />
         {/* Logo test area */}
@@ -59,42 +53,12 @@ export default function BigeonsBasementPage() {
           />
         </div>
 
-        {/* Start of dithered animation section */}
-        <div className="relative w-full min-h-[400px] rounded-lg border border-border overflow-hidden">
-          <DitheredAnimation
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 0,
-              pointerEvents: 'none'
-            }}
-          />
-          <div className="relative z-10 p-4 w-2/3">
-            <p className={cn(textStyles['body'], 'inline bg-background')}>
-              Automatically snap up new tokens from social accounts you
-              follow...
-            </p>
-            <br />
-            <br />
-            <p
-              className={cn(
-                textStyles['body-emphasis'],
-                'inline bg-background'
-              )}
-            >
-              ...before regular schmucks even know they&apos;ve launched.
-            </p>
-          </div>
-          <div className="flex p-4 w-full mt-4">
-            <Button size="lg">Initiate Protocol</Button>
-          </div>
-        </div>
-
         <div className="flex gap-4 items-center flex-col sm:flex-row p-4 bg-[url(/patterns/warning-pattern.png)] [image-rendering:pixelated]">
           <Button variant="secondary">
             ! Warning! Button in striped area! !
           </Button>
         </div>
+
         <p className={textStyles['compact']}>
           Compact Compact Compact Compact Compact{' '}
         </p>
@@ -132,10 +96,14 @@ export default function BigeonsBasementPage() {
           <Button variant="link">Link</Button>
         </div>
         <div className="flex gap-4 items-center flex-wrap">
-          <Badge>Default Badge</Badge>
-          <Badge variant="secondary">Secondary Badge</Badge>
-          <Badge variant="destructive">Destructive Badge</Badge>
-          <Badge variant="outline">Outline Badge</Badge>
+          <Badge>Default</Badge>
+          <Badge variant="secondary">Secondary</Badge>
+          <Badge variant="destructive">Destructive</Badge>
+          <Badge variant="outline">Outline</Badge>
+          <Badge color="blue">Blue</Badge>
+          <Badge color="red">Red</Badge>
+          <Badge color="yellow">Yellow</Badge>
+          <Badge color="green">Green</Badge>
         </div>
         <div className="flex gap-4 items-center flex-wrap">
           <Input placeholder="Placeholder"></Input>
@@ -189,7 +157,6 @@ export default function BigeonsBasementPage() {
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <DitheredImage src="/banner-clanker.png" alt="Clanker" />
-          <DitheredImage src="/banner-bankr.png" alt="Bankr" />
 
           {/* Example "coming soon" banner with blurry overlay */}
           <div className="relative">
@@ -207,11 +174,9 @@ export default function BigeonsBasementPage() {
               <Badge variant="secondary">Coming Soon</Badge>
             </div>
           </div>
-
-          <DitheredImage src="/banner-zora.png" alt="Zora" />
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
+      <footer className="flex gap-[24px] flex-wrap items-center justify-center">
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
           href="https://thefirm.biz"

@@ -40,7 +40,7 @@ export function RecentActivityTradeItem({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row items-center gap-2 pt-2">
-        <Badge className="bg-green-200 text-green-500">Buy</Badge>
+        <Badge color="green">Buy</Badge>
         <p className={`${textStyles['label']}`}>
           {formatDistanceToNowStrict(timestamp, {
             addSuffix: true
