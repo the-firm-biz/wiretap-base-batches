@@ -1,53 +1,57 @@
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { parseAndValidateQuicknodeWebhookPayload } from './parse-and-validate-payload.js';
+import { getTransactionsForBlockNumber } from '@wiretap/utils/server';
+import { env } from '../env.js';
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 8080;
 const app = new Hono();
 
 app.post('/webhook', async (c) => {
-  console.log('webhook called');
+  console.time('TOTAL');
 
+  console.time('webhook-parse-and-validate');
   const parsedContext = await parseAndValidateQuicknodeWebhookPayload(c);
+  console.timeEnd('webhook-parse-and-validate');
 
-  // const body = await c.req.text();
+  if (!parsedContext.success) {
+    return parsedContext.response;
+  }
 
-  // console.log('Received webhook. Request details:');
-  // console.log(
-  //   'Headers:',
-  //   JSON.stringify(Object.fromEntries(c.req.raw.headers.entries()), null, 2),
-  // );
+  const block = parsedContext.webhookPayload;
 
-  // try {
-  //   const jsonData = JSON.parse(body);
-  //   console.log('Parsed JSON data:');
-  //   console.log(JSON.stringify(jsonData, null, 2));
+  if (!block) {
+    return c.json({ error: 'No block found' }, 404);
+  }
 
-  //   // Here you would process TokenCreated events from the data
-  //   if (jsonData.data) {
-  //     for (const block of jsonData.data) {
-  //       for (const receipt of block.receipts || []) {
-  //         for (const log of receipt.logs || []) {
-  //           // Check if this is a TokenCreated event from your contract
-  //           // Process accordingly
-  //           console.log('Processing log:', log);
-  //         }
-  //       }
-  //     }
-  //   }
-  // } catch (error: any) {
-  //   console.log('Error parsing JSON:', error.message);
-  //   console.log('Raw body:', body);
-  // }
+  try {
+    console.time('fetch-blocks');
+    // @todo - pass transactions to next function
+    await getTransactionsForBlockNumber(block.number, env.RPC_TRANSPORT_URL);
+    console.timeEnd('fetch-blocks');
 
-  return c.text('Webhook received');
+    console.log('current time   |', new Date().toISOString());
+    console.log('blockTime      |', new Date(block?.timestamp * 1000).toISOString());
+  } catch (error) {
+    console.error('Error fetching transactions for block:', error);
+    return c.json(
+      {
+        error: 'Error fetching transactions for block',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      500,
+    );
+  }
+
+  console.timeEnd('TOTAL');
+  return c.json({ message: 'Webhook received', success: true });
 });
 
 // Default 404 for all other routes
 app.notFound((c) => c.text('404 Not Found', 404));
 
-console.log(`QuickNode Streams webhook server running on port ${PORT}`);
+console.log(`quicknode-stream-webhook server running on port ${PORT}`);
 serve({
   fetch: app.fetch,
-  port: Number(PORT),
+  port: PORT,
 });

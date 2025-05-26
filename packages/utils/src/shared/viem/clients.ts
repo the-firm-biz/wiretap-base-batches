@@ -47,3 +47,22 @@ export function createHttpPublicClient(
 }
 
 export type ViemClient = HttpViemClient | WebSocketViemClient;
+
+// @todo Migrate other client to use transportUrl opts
+export interface QuicknodeHttpClientOptions {
+  transportUrl: string;
+}
+let clientInstance: HttpViemClient | undefined;
+
+export function createQuicknodeHttpClient(
+  opts: QuicknodeHttpClientOptions
+): HttpViemClient {
+  if (!clientInstance) {
+    clientInstance = viemCreatePublicClient({
+      chain: base,
+      transport: http(opts.transportUrl)
+    });
+  }
+
+  return clientInstance;
+}

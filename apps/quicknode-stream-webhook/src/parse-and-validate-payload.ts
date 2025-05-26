@@ -1,19 +1,24 @@
-import { Context } from 'hono';
-import { gunzipSync } from 'node:zlib';
-import { Block } from 'viem';
+import type { Context } from 'hono';
 
 /**
- * @note all block string values are hex encoded
+ * @note webhook receives a single block, ran through a Quicknode Stream payload filter to only return the block number and timestamp
  */
 interface WebhookPayload {
-  data: Block[];
+  /** unix timestamp */
+  timestamp: number;
+  /** block number */
+  number: number;
 }
 
-interface ParsedAndValidatedResponse {
-  success: boolean;
-  webhookPayload: WebhookPayload;
-  chainId: number;
-}
+type ParsedAndValidatedResponse =
+  | {
+      success: false;
+      response: Response;
+    }
+  | {
+      success: true;
+      webhookPayload: WebhookPayload;
+    };
 
 /**
  * Parses and validates a Quicknode webhook payload
@@ -25,38 +30,16 @@ interface ParsedAndValidatedResponse {
 export async function parseAndValidateQuicknodeWebhookPayload(
   c: Context,
 ): Promise<ParsedAndValidatedResponse> {
-  const chainId = parseInt(c.req.param('Chain-Id'));
-  const contentEncoding = c.req.header('Content-Encoding');
-
   let webhookPayload: WebhookPayload;
 
-  // Handle gzipped content
-  if (contentEncoding === 'gzip') {
-    try {
-      const buffer = await c.req.raw.arrayBuffer();
-      const decompressedBuffer = await gunzipSync(buffer);
-      const decompressedString = new TextDecoder().decode(decompressedBuffer);
-      webhookPayload = JSON.parse(decompressedString);
-    } catch (error) {
-      console.error('Error decompressing or parsing data:', error);
-      return {
-        success: false,
-        response: c.json(
-          { error: 'Failed to decompress or parse request data' },
-          400,
-        ),
-      };
-    }
-  } else {
-    try {
-      webhookPayload = await c.req.json();
-    } catch (error) {
-      console.error('Error parsing JSON data:', error);
-      return {
-        success: false,
-        response: c.json({ error: 'Failed to parse request data' }, 400),
-      };
-    }
+  try {
+    webhookPayload = await c.req.json();
+  } catch (error) {
+    console.error('Error parsing JSON data:', error);
+    return {
+      success: false,
+      response: c.json({ error: 'Failed to parse request data' }, 400),
+    };
   }
 
   // Handle Quicknode PING/PONG test requests
@@ -74,7 +57,7 @@ export async function parseAndValidateQuicknodeWebhookPayload(
   }
 
   // Validate block number is present
-  if (!webhookPayload.data.some((block: any) => block.number)) {
+  if (!webhookPayload.number) {
     return {
       success: false,
       response: c.json({ error: 'Missing block number' }, 400),
@@ -85,6 +68,5 @@ export async function parseAndValidateQuicknodeWebhookPayload(
   return {
     success: true,
     webhookPayload,
-    chainId,
   };
 }
