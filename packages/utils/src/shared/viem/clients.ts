@@ -48,7 +48,7 @@ export function createHttpPublicClient(
 
 export type ViemClient = HttpViemClient | WebSocketViemClient;
 
-// @todo Migrate other client to use transportUrl opts
+// @todo Migrate to this pattern using transportUrl rather than a termplate string with alchemy hardcoded
 export interface QuicknodeHttpClientOptions {
   transportUrl: string;
 }
