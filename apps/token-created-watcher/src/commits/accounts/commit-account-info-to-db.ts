@@ -8,7 +8,7 @@ import {
 import type { Address } from 'viem';
 import type { NeynarUser } from '@wiretap/utils/server';
 import { getXAccountsFromNeynarUser } from './get-x-accounts-from-neynar-user.js';
-import { getListOfWallets } from './get-list-of-wallets.js';
+import { getListOfWalletAddresses } from './get-list-of-wallet-addresses.js';
 import { getExistingAccountInfo } from './get-existing-account-info.js';
 import { updateExistingAccountInfo } from './update-existing-account-info.js';
 
@@ -31,15 +31,11 @@ export const commitAccountInfoToDb = async (
   poolDb: ServerlessDb,
   { tokenCreatorAddress, neynarUser }: CommitAccountInfoToDbParams
 ): Promise<CommitAccountInfoToDbResult> => {
-  const {
-    existingWallets,
-    existingXAccounts,
-    existingFarcasterAccount,
-    accountEntityId
-  } = await getExistingAccountInfo(poolDb, { tokenCreatorAddress, neynarUser });
-
   if (!accountEntityId) {
-    const allWallets = getListOfWallets(tokenCreatorAddress, neynarUser);
+    const allWallets = getListOfWalletAddresses(
+      tokenCreatorAddress,
+      neynarUser
+    );
     const newXAccounts = getXAccountsFromNeynarUser(neynarUser);
 
     const { accountEntity, wallets, farcasterAccount, xAccounts } =

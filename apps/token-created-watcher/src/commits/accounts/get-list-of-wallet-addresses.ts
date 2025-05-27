@@ -3,8 +3,8 @@ import { isAddressEqual } from '@wiretap/utils/shared';
 import type { Address } from 'viem';
 
 /** Returns the list of all wallets to be checked or created */
-export const getListOfWallets = (
-  tokenCreatorAddress?: Address,
+export const getListOfWalletAddresses = (
+  tokenCreatorAddress: Address | null,
   neynarUser?: NeynarUser
 ): Address[] => {
   if (!tokenCreatorAddress && !neynarUser) {

@@ -7,7 +7,7 @@ import { createFarcasterAccount } from '@wiretap/db';
 import type { ServerlessDb } from '@wiretap/db';
 import type { NeynarUser } from '@wiretap/utils/server';
 import type { Address } from 'viem';
-import { getListOfWallets } from './get-list-of-wallets.js';
+import { getListOfWalletAddresses } from './get-list-of-wallet-addresses.js';
 import { isAddressEqual } from '@wiretap/utils/shared';
 import { getXAccountsFromNeynarUser } from './get-x-accounts-from-neynar-user.js';
 
@@ -62,7 +62,7 @@ export const updateExistingAccountInfo = async (
   }
 
   // Create wallets if they don't exist
-  const allWallets = getListOfWallets(tokenCreatorAddress, neynarUser);
+  const allWallets = getListOfWalletAddresses(tokenCreatorAddress, neynarUser);
   const newWallets = allWallets.filter(
     (wallet) => !existingWallets.some((w) => isAddressEqual(w.address, wallet))
   );

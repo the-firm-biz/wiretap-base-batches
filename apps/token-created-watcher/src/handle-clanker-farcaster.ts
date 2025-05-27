@@ -6,7 +6,7 @@ import {
   type NeynarCastWithInteractionsAndConversations
 } from '@wiretap/utils/server';
 import { env } from './env.js';
-import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user.js';
+import { getAccountEntityIdWithNeynarUserAndAddress } from './get-account-entity-id-with-neynar-user-and-address.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import {
   validateAuthorFid,
@@ -67,7 +67,7 @@ export async function handleClankerFarcaster(
 
     const createdDbRows = await trace(
       () =>
-        handleTokenWithFarcasterUser({
+        getAccountEntityIdWithNeynarUserAndAddress({
           tokenCreatedData,
           tokenCreatorAddress,
           neynarUser,
@@ -75,7 +75,7 @@ export async function handleClankerFarcaster(
           transactionArgs
         }),
       {
-        name: 'handleTokenWithFarcasterUser',
+        name: 'getAccountEntityIdWithNeynarUserAndAddress',
         parentSpan
       }
     );

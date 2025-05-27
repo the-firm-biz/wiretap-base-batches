@@ -4,10 +4,13 @@ import {
 } from '@wiretap/utils/server';
 import { env } from './env.js';
 import { commitTokenDetailsToDb } from './commits/commit-token-details-to-db.js';
-import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user.js';
+import { getAccountEntityIdWithNeynarUserAndAddress } from './get-account-entity-id-with-neynar-user-and-address.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { sendSlackMessage } from './notifications/send-slack-message.js';
-import { getTokenScore } from './token-score/get-token-score.js';
+import {
+  getTokenScore,
+  type TokenScoreDetails
+} from './token-score/get-token-score.js';
 import type { DeployTokenArgs } from './get-transaction-context.js';
 import { buyToken } from './token-buyer/index.js';
 
@@ -28,7 +31,11 @@ export async function handleEOAMsgSender(
   ]);
 
   let createdDbRows = undefined;
+  let accountEntityId = undefined;
+  let tokenScoreDetails: TokenScoreDetails | null = null;
+
   if (!userResponse || userResponse.length === 0) {
+    // @todo jeff migrate to fetch account entity id for address
     createdDbRows = await commitTokenDetailsToDb({
       tokenCreatedData,
       tokenCreatorAddress: tokenCreatedData.msgSender,
@@ -38,19 +45,22 @@ export async function handleEOAMsgSender(
   } else {
     // Since we've checked userResponse is not empty, we can safely assert this is defined
     const neynarUser = userResponse[0]!;
-    const tokenScoreDetails = await getTokenScore(neynarUser);
-    createdDbRows = await handleTokenWithFarcasterUser({
-      tokenCreatedData,
-      tokenCreatorAddress: tokenCreatedData.msgSender,
+    accountEntityId = await getAccountEntityIdWithNeynarUserAndAddress({
       neynarUser,
-      tokenScoreDetails,
-      transactionArgs
+      tokenCreatorAddress: tokenCreatedData.msgSender
     });
   }
 
-  // TODO: try to call before const createdDbRows
+  // @todo jeff insert token using accountEntityId
+
+  // @todo jeff: migrate to use accountEntityId
   buyToken(tokenCreatedData.tokenAddress, tokenCreatedData.poolContext.address);
 
+  if (userResponse[0]) {
+    tokenScoreDetails = await getTokenScore(userResponse[0]);
+  }
+
+  // @todo jeff create tokens and get data for logging
   sendSlackMessage({
     tokenAddress: createdDbRows.token.address,
     transactionHash: createdDbRows.token.deploymentTransactionHash,
@@ -64,7 +74,7 @@ export async function handleEOAMsgSender(
         : undefined
     },
     source: 'handle-eoa-msg-sender',
-    tokenScoreDetails: null,
+    tokenScoreDetails,
     transactionArgs
   });
 }

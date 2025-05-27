@@ -3,7 +3,7 @@ import type { ServerlessDb } from '@wiretap/db';
 import type { XAccount, Wallet, FarcasterAccount } from '@wiretap/db';
 import type { NeynarUser } from '@wiretap/utils/server';
 import type { Address } from 'viem';
-import { getListOfWallets } from './get-list-of-wallets.js';
+import { getListOfWalletAddresses } from './get-list-of-wallet-addresses.js';
 import { getXAccountsFromNeynarUser } from './get-x-accounts-from-neynar-user.js';
 import { TokenIndexerError } from '../../errors.js';
 
@@ -26,7 +26,7 @@ export const getExistingAccountInfo = async (
   poolDb: ServerlessDb,
   { tokenCreatorAddress, neynarUser }: GetExistingAccountInfoParams
 ): Promise<GetExistingAccountInfoResult> => {
-  const allWallets = getListOfWallets(tokenCreatorAddress, neynarUser);
+  const allWallets = getListOfWalletAddresses(tokenCreatorAddress, neynarUser);
 
   const existingWallets = await getWallets(poolDb, allWallets);
   const existingFarcasterAccount = neynarUser
