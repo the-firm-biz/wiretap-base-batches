@@ -11,11 +11,11 @@ export const getListOfWallets = (
     return [];
   }
 
-  if (!neynarUser && tokenCreatorAddress) {
-    return [tokenCreatorAddress];
-  }
+  const allWallets = tokenCreatorAddress ? [tokenCreatorAddress] : [];
 
-  const allWallets = [tokenCreatorAddress];
+  if (!neynarUser) {
+    return allWallets;
+  }
 
   const neynarEthWallets = neynarUser.verified_addresses.eth_addresses;
   return neynarEthWallets.reduce((acc, cur) => {

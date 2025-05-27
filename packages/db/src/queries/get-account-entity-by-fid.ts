@@ -14,22 +14,14 @@ export async function getAccountEntityByFid(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   fid: number
 ): Promise<AccountEntity | undefined> {
-  const selectedAccountEntity = await db
-    .select({
-      accountEntity: accountEntities
-    })
-    .from(farcasterAccounts)
-    .leftJoin(
-      accountEntities,
-      eq(farcasterAccounts.accountEntityId, accountEntities.id)
+  const [accountEntity] = await db
+    .select()
+    .from(accountEntities)
+    .innerJoin(
+      farcasterAccounts,
+      eq(accountEntities.id, farcasterAccounts.accountEntityId)
     )
     .where(eq(farcasterAccounts.fid, fid));
 
-  const accountEntityForFid = selectedAccountEntity[0];
-
-  if (!accountEntityForFid?.accountEntity) {
-    return undefined;
-  }
-
-  return accountEntityForFid.accountEntity;
+  return accountEntity?.account_entities;
 }

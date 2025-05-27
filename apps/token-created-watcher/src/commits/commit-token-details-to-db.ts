@@ -2,22 +2,16 @@ import { env } from '../env.js';
 import {
   type Contract,
   createBlock,
-  type FarcasterAccount,
   getCurrency,
   getOrCreateDeployerContract,
   getOrCreatePool,
   getOrCreateToken,
   PooledDbConnection,
   type Token,
-  type Wallet,
-  type XAccount,
   type Pool,
   countTokensByCreator
 } from '@wiretap/db';
 import type { TokenCreatedOnChainParams } from '../types/token-created.js';
-import type { Address } from 'viem';
-import type { NeynarUser } from '@wiretap/utils/server';
-import { commitAccountInfoToDb } from './accounts/commit-account-info-to-db.js';
 import type { MinimalBlock } from '../types/block.js';
 import { getRedis } from '@wiretap/redis';
 import {
@@ -30,24 +24,19 @@ export type CommitTokenDetailsToDbParams = {
   tokenCreatedData: TokenCreatedOnChainParams;
   tokenScore: number | null;
   imageUrl?: string;
-} & (
-  | { tokenCreatorAddress: Address; neynarUser?: NeynarUser }
-  | { tokenCreatorAddress: null; neynarUser: NeynarUser }
-);
+  accountEntityId: number;
+};
 
 export type CommitTokenDetailsToDbResult = {
   block: MinimalBlock;
   accountEntityId: number;
   token: Token;
   deployerContract: Contract;
-  wallets: Wallet[];
-  farcasterAccounts: FarcasterAccount[];
-  xAccounts: XAccount[];
   tokenPool: Pool;
 };
 
 /**
- * Saves token details to the DB together with account info related to the token creator
+ * Saves token details to the DB
  */
 export const commitTokenDetailsToDb = async ({
   tokenCreatedData: {
@@ -59,8 +48,7 @@ export const commitTokenDetailsToDb = async ({
     block,
     poolContext
   },
-  tokenCreatorAddress,
-  neynarUser,
+  accountEntityId,
   tokenScore,
   imageUrl
 }: CommitTokenDetailsToDbParams): Promise<CommitTokenDetailsToDbResult> => {
@@ -72,12 +60,6 @@ export const commitTokenDetailsToDb = async ({
       const deployerContract = await getOrCreateDeployerContract(tx, {
         address: deployerContractAddress
       });
-
-      const { accountEntityId, wallets, farcasterAccounts, xAccounts } =
-        await commitAccountInfoToDb(tx, {
-          tokenCreatorAddress,
-          neynarUser
-        });
 
       await createBlock(tx, {
         number: block.number,
@@ -125,9 +107,6 @@ export const commitTokenDetailsToDb = async ({
         accountEntityId,
         token: createdToken,
         deployerContract,
-        wallets,
-        farcasterAccounts,
-        xAccounts,
         tokenPool
       };
     });

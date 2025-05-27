@@ -10,23 +10,15 @@ import {
   type AccountEntity
 } from '../schema/accounts/index.js';
 
-export async function getAccountEntityByWallet(
+export async function getAccountEntityByWalletAddress(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   walletAddress: string
 ): Promise<AccountEntity | undefined> {
-  const selectedAccountEntity = await db
-    .select({
-      accountEntity: accountEntities
-    })
+  const [accountEntity] = await db
+    .select()
     .from(accountEntities)
-    .leftJoin(wallets, eq(wallets.accountEntityId, accountEntities.id))
+    .innerJoin(wallets, eq(accountEntities.id, wallets.accountEntityId))
     .where(eq(wallets.address, walletAddress));
 
-  const accountEntityForWallet = selectedAccountEntity[0];
-
-  if (!accountEntityForWallet) {
-    return undefined;
-  }
-
-  return accountEntityForWallet.accountEntity;
+  return accountEntity?.account_entities;
 }

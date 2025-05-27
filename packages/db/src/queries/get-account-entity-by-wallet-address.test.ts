@@ -1,21 +1,18 @@
 import { singletonDb } from '../client.js';
 import { env } from '../env.js';
-import {
-  accountEntities,
-  farcasterAccounts,
-  type NewFarcasterAccount
-} from '../schema/index.js';
+import { accountEntities, wallets, type NewWallet } from '../schema/index.js';
 import { unsafe__clearDbTables } from '../utils/testUtils.js';
 import { getAccountEntityByFid } from './get-account-entity-by-fid.js';
+import { getAccountEntityByWalletAddress } from './get-account-entity-by-wallet-address.js';
 
-describe('getAccountEntityByFid', () => {
+describe('getAccountEntityByWalletAddress', () => {
   const db = singletonDb({
     databaseUrl: env.DATABASE_URL
   });
 
   const testAccountEntityLabel = 'Test Entity';
   let testAccountEntityId: number;
-  let newFarcasterAccount: NewFarcasterAccount;
+  let newWallet: NewWallet;
 
   beforeEach(async () => {
     await unsafe__clearDbTables(db);
@@ -26,19 +23,18 @@ describe('getAccountEntityByFid', () => {
       })
       .returning();
     testAccountEntityId = testAccountEntity!.id;
-    newFarcasterAccount = {
-      fid: 12345,
-      username: 'farcaster-test-username',
-      displayName: 'Farcaster Test Display Name',
-      pfpUrl: 'https://example.com/pfp.png',
-      followerCount: 1000,
+    newWallet = {
+      address: '0x1234567890123456789012345678901234567890',
       accountEntityId: testAccountEntity!.id
     };
-    await db.insert(farcasterAccounts).values(newFarcasterAccount);
+    await db.insert(wallets).values(newWallet);
   });
 
   it('returns AccountEntity if it exists', async () => {
-    const response = await getAccountEntityByFid(db, newFarcasterAccount.fid);
+    const response = await getAccountEntityByWalletAddress(
+      db,
+      newWallet.address
+    );
     expect(response).toStrictEqual({
       createdAt: expect.any(Date),
       id: testAccountEntityId,
