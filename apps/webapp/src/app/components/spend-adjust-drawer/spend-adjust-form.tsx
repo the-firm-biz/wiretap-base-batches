@@ -225,7 +225,7 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
         </div>
         <div className="flex flex-col pb-4">
           <Button type="submit" disabled={hasError || isDisabledForm}>
-            Confirm Quantity
+            Confirm Max Spend
           </Button>
         </div>
       </form>
