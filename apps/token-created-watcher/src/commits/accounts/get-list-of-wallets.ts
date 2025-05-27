@@ -1,0 +1,27 @@
+import type { NeynarUser } from '@wiretap/utils/server';
+import { isAddressEqual } from '@wiretap/utils/shared';
+import type { Address } from 'viem';
+
+/** Returns the list of all wallets to be checked or created */
+export const getListOfWallets = (
+  tokenCreatorAddress?: Address,
+  neynarUser?: NeynarUser
+): Address[] => {
+  if (!tokenCreatorAddress && !neynarUser) {
+    return [];
+  }
+
+  if (!neynarUser && tokenCreatorAddress) {
+    return [tokenCreatorAddress];
+  }
+
+  const allWallets = [tokenCreatorAddress];
+
+  const neynarEthWallets = neynarUser.verified_addresses.eth_addresses;
+  return neynarEthWallets.reduce((acc, cur) => {
+    if (!acc.some((w) => isAddressEqual(w, cur))) {
+      acc.push(cur as Address);
+    }
+    return acc;
+  }, allWallets);
+};

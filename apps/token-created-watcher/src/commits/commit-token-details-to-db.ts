@@ -17,7 +17,7 @@ import {
 import type { TokenCreatedOnChainParams } from '../types/token-created.js';
 import type { Address } from 'viem';
 import type { NeynarUser } from '@wiretap/utils/server';
-import { commitAccountInfoToDb } from './commit-account-info-to-db.js';
+import { commitAccountInfoToDb } from './accounts/commit-account-info-to-db.js';
 import type { MinimalBlock } from '../types/block.js';
 import { getRedis } from '@wiretap/redis';
 import {
@@ -28,11 +28,12 @@ import {
 
 export type CommitTokenDetailsToDbParams = {
   tokenCreatedData: TokenCreatedOnChainParams;
-  tokenCreatorAddress: Address;
   tokenScore: number | null;
-  neynarUser?: NeynarUser;
   imageUrl?: string;
-};
+} & (
+  | { tokenCreatorAddress: Address; neynarUser?: NeynarUser }
+  | { tokenCreatorAddress: null; neynarUser: NeynarUser }
+);
 
 export type CommitTokenDetailsToDbResult = {
   block: MinimalBlock;

@@ -60,27 +60,20 @@ export async function handleClankerFarcaster(
     : null;
 
   if (castAndConversations && isValidCast && neynarUser) {
-    const tokenCreatorAddress = neynarUser.verified_addresses.primary
-      .eth_address as Address;
-    if (!tokenCreatorAddress) {
-      throw new TokenIndexerError(
-        'neynarUser without verified primary address',
-        'handleClankerFarcaster',
-        {
-          neynarUser: neynarUser,
-          cast: clankerFarcasterArgs.messageId
-        }
-      );
-    }
+    const primaryAddress = neynarUser.verified_addresses.primary?.eth_address;
+    const otherAddresses = neynarUser.verified_addresses.eth_addresses;
+    const tokenCreatorAddress = (primaryAddress ||
+      otherAddresses[0]) as Address | null;
+
     const createdDbRows = await trace(
       () =>
-        handleTokenWithFarcasterUser(
+        handleTokenWithFarcasterUser({
           tokenCreatedData,
           tokenCreatorAddress,
           neynarUser,
           tokenScoreDetails,
           transactionArgs
-        ),
+        }),
       {
         name: 'handleTokenWithFarcasterUser',
         parentSpan
@@ -88,7 +81,10 @@ export async function handleClankerFarcaster(
     );
 
     // TODO: try to call before const createdDbRows
-    buyToken(tokenCreatedData.tokenAddress, tokenCreatedData.poolContext.address);
+    buyToken(
+      tokenCreatedData.tokenAddress,
+      tokenCreatedData.poolContext.address
+    );
 
     latencyMs =
       createdDbRows && tokenCreatedData.block.timestamp

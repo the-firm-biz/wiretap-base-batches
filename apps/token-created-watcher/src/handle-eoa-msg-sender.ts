@@ -39,13 +39,13 @@ export async function handleEOAMsgSender(
     // Since we've checked userResponse is not empty, we can safely assert this is defined
     const neynarUser = userResponse[0]!;
     const tokenScoreDetails = await getTokenScore(neynarUser);
-    createdDbRows = await handleTokenWithFarcasterUser(
+    createdDbRows = await handleTokenWithFarcasterUser({
       tokenCreatedData,
-      tokenCreatedData.msgSender,
+      tokenCreatorAddress: tokenCreatedData.msgSender,
       neynarUser,
       tokenScoreDetails,
       transactionArgs
-    );
+    });
   }
 
   // TODO: try to call before const createdDbRows
