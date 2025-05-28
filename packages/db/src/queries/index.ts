@@ -13,6 +13,7 @@ export * from './get-account-entity-trackers-for-wiretap-account.js';
 export * from './get-block-by-number.js';
 export * from './get-farcaster-account.js';
 export * from './get-farcaster-accounts.js';
+export * from './get-farcaster-accounts-by-account-entity-id.js';
 export * from './get-glider-portfolio-for-wire-tap-account.js';
 export * from './get-or-create-deployer-contract.js';
 export * from './get-token-by-address.js';

@@ -5,7 +5,6 @@ import {
   createAccountEntity
 } from '@wiretap/db';
 import { env } from '../../env.js';
-import { TokenIndexerError } from '../../errors.js';
 
 interface GetAccountEntityIdForAddressParams {
   tokenCreatorAddress: Address;
@@ -26,19 +25,6 @@ export async function getAccountEntityIdForAddress({
       const accountEntityIdsForAddresses = accountEntitiesForAddresses?.map(
         (accountEntity) => accountEntity.id
       );
-
-      if (
-        accountEntityIdsForAddresses &&
-        accountEntityIdsForAddresses.length > 1
-      ) {
-        throw new TokenIndexerError(
-          'multiple accountEntityIds detected',
-          'getAccountEntityIdForAddress',
-          {
-            walletAddresses: [tokenCreatorAddress]
-          }
-        );
-      }
 
       const accountEntityId = accountEntityIdsForAddresses?.[0];
 
