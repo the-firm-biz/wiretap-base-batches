@@ -62,7 +62,8 @@
       "cache": false
     },
     "test": {
-      "dependsOn": ["^build", "^test"]
+      "dependsOn": ["@wiretap/vitest-config#build", "^build", "^test"],
+      "outputs": ["coverage.json"]
     },
     "test:watch": {
       "cache": false,

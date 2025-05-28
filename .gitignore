@@ -5,3 +5,7 @@ dist
 .turbo
 tsconfig.tsbuildinfo
 .cursor
+
+# testing
+**/coverage
+coverage.json
