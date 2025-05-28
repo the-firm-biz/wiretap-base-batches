@@ -24,10 +24,10 @@ type SlackMessageDetails = {
     neynarUserExists: boolean;
   };
   tracing?: {
-    latencyMs?: number;
+    latencyMs: number | null;
     span?: Span;
   };
-  tokenScoreDetails?: TokenScoreDetails;
+  tokenScoreDetails: TokenScoreDetails | null;
   transactionArgs: DeployTokenArgs;
 };
 

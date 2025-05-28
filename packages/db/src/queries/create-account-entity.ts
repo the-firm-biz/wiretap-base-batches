@@ -59,7 +59,7 @@ export async function createAccountEntity(
       );
     }
 
-    const response: createAccountEntityResponse = {
+    const response: CreateAccountEntityResponse = {
       accountEntity: createdAccountEntity,
       wallets: [],
       xAccounts: []

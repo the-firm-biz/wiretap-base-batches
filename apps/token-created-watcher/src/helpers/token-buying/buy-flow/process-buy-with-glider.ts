@@ -3,7 +3,7 @@ import {
   singletonDb,
   type TokenBuyerPortfolio
 } from '@wiretap/db';
-import { env } from '../../env.js';
+import { env } from '../../../env.js';
 import { updatePortfolioAssetsRatio } from './update-portfolio-assets-ratio.js';
 import { createPortfolioRebalance } from './create-portfolio-rebalance.js';
 import { triggerPortfolioRebalance } from './trigger-portfolio-rebalance.js';
@@ -11,7 +11,7 @@ import { monitorRebalance } from './monitor-rebalance.js';
 import { withdrawTokenFromPortfolio } from './withdraw-token-from-portfolio.js';
 import { type Address, erc20Abi } from 'viem';
 import { callWithBackOff, RebalancesLogLabel } from '@wiretap/utils/server';
-import { httpPublicClient } from '../../rpc-clients.js';
+import { httpPublicClient } from '../../../rpc-clients.js';
 import { executeBuyOnUniswap } from './execute-buy-on-uniswap.js';
 import { CURRENCY_ADDRESSES } from '@wiretap/config';
 import { bigIntReplacer } from '@wiretap/utils/shared';

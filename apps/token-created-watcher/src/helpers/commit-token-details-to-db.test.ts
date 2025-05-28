@@ -1,6 +1,10 @@
-import { commitTokenDetailsToDb, type CommitTokenDetailsToDbResult } from './commit-token-details-to-db.js';
+import {
+  commitTokenDetailsToDb,
+  type CommitTokenDetailsToDbResult
+} from './commit-token-details-to-db.js';
 import * as dbModule from '@wiretap/db';
 import {
+  accountEntities,
   currencies,
   type FarcasterAccount,
   type GetAccountEntityResult,
@@ -129,6 +133,9 @@ const anotherNeynarUser: NeynarUser = {
   ]
 };
 
+const testAccountEntityLabel = 'Test Entity';
+let testAccountEntityId: number;
+
 describe('commitTokenDetailsToDb', () => {
   const db = dbModule.singletonDb({
     databaseUrl: env.DATABASE_URL
@@ -145,6 +152,14 @@ describe('commitTokenDetailsToDb', () => {
         decimals: 18
       });
 
+      const [testAccountEntity] = await db
+        .insert(accountEntities)
+        .values({
+          label: testAccountEntityLabel
+        })
+        .returning();
+      testAccountEntityId = testAccountEntity!.id;
+
       spyEndPoolConnection.mockClear();
     });
 
@@ -152,7 +167,7 @@ describe('commitTokenDetailsToDb', () => {
       await expect(
         commitTokenDetailsToDb({
           tokenCreatedData: testTokenCreatedData,
-          tokenCreatorAddress: testTokenCreatedData.msgSender,
+          accountEntityId: testAccountEntityId,
           tokenScore: null
         })
       ).resolves.not.toThrow();
@@ -166,7 +181,7 @@ describe('commitTokenDetailsToDb', () => {
             ...testTokenCreatedData,
             deployerContractAddress: null as unknown as Address // trigger random error
           },
-          tokenCreatorAddress: testTokenCreatedData.msgSender,
+          accountEntityId: testAccountEntityId,
           tokenScore: null
         })
       ).rejects.toThrowError('Cannot read properties of null');
@@ -188,7 +203,7 @@ describe('commitTokenDetailsToDb', () => {
       });
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
-        tokenCreatorAddress: testTokenCreatedData.msgSender,
+        accountEntityId: testAccountEntityId,
         tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
@@ -198,7 +213,6 @@ describe('commitTokenDetailsToDb', () => {
     });
 
     it('should return created DB objects', () => {
-      expect(result.wallets.length).toBe(1);
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
@@ -313,8 +327,7 @@ describe('commitTokenDetailsToDb', () => {
       });
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
-        tokenCreatorAddress: testTokenCreatedData.msgSender,
-        neynarUser: testNeynarUser,
+        accountEntityId: testAccountEntityId,
         tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
@@ -324,7 +337,6 @@ describe('commitTokenDetailsToDb', () => {
     });
 
     it('should return created DB objects', () => {
-      expect(result.wallets.length).toBe(3);
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
@@ -529,7 +541,7 @@ describe('commitTokenDetailsToDb', () => {
       await dbPool.endPoolConnection();
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
-        tokenCreatorAddress: testTokenCreatedData.msgSender,
+        accountEntityId: testAccountEntityId,
         tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
@@ -539,7 +551,6 @@ describe('commitTokenDetailsToDb', () => {
     });
 
     it('should return DB objects (existing and created) related to existing account entity', () => {
-      expect(result.wallets.length).toBe(1);
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
@@ -657,8 +668,7 @@ describe('commitTokenDetailsToDb', () => {
       await dbPool.endPoolConnection();
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
-        tokenCreatorAddress: testTokenCreatedData.msgSender,
-        neynarUser: testNeynarUser,
+        accountEntityId: testAccountEntityId,
         tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
@@ -668,7 +678,6 @@ describe('commitTokenDetailsToDb', () => {
     });
 
     it('should return DB objects (existing and created) related to existing account entity', () => {
-      expect(result.wallets.length).toBe(3);
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
@@ -875,8 +884,7 @@ describe('commitTokenDetailsToDb', () => {
       await dbPool.endPoolConnection();
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
-        tokenCreatorAddress: testTokenCreatedData.msgSender,
-        neynarUser: testNeynarUser,
+        accountEntityId: testAccountEntityId,
         tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
@@ -886,7 +894,6 @@ describe('commitTokenDetailsToDb', () => {
     });
 
     it('should return DB objects (existing and created) related to existing account entity', () => {
-      expect(result.wallets.length).toBe(3);
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
@@ -974,7 +981,7 @@ describe('commitTokenDetailsToDb', () => {
       );
     });
 
-    it('should create new wallets in DB (tokenCreatorAddress + neynar verified addresses)', () => {
+    it('should create new wallets in DB (accountEntityId + neynar verified addresses)', () => {
       expect(accountEntityDbRows?.wallets.length).toBe(3);
       expect(accountEntityDbRows?.wallets).toStrictEqual(
         expect.arrayContaining([
@@ -1094,8 +1101,7 @@ describe('commitTokenDetailsToDb', () => {
       await dbPool.endPoolConnection();
       result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
-        tokenCreatorAddress: testTokenCreatedData.msgSender,
-        neynarUser: testNeynarUser,
+        accountEntityId: testAccountEntityId,
         tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
@@ -1105,7 +1111,6 @@ describe('commitTokenDetailsToDb', () => {
     });
 
     it('should return DB objects (existing and created) related to existing account entity', () => {
-      expect(result.wallets.length).toBe(3);
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
@@ -1318,8 +1323,7 @@ describe('commitTokenDetailsToDb', () => {
           ...testTokenCreatedData,
           msgSender: JOHNY_SECRET_ETH_WALLET
         },
-        tokenCreatorAddress: JOHNY_SECRET_ETH_WALLET,
-        neynarUser: anotherNeynarUser,
+        accountEntityId: testAccountEntityId,
         tokenScore: null
       });
       accountEntityDbRows = await dbModule.getAccountEntity(
@@ -1406,8 +1410,7 @@ describe('commitTokenDetailsToDb', () => {
       try {
         await commitTokenDetailsToDb({
           tokenCreatedData: testTokenCreatedData,
-          tokenCreatorAddress: testTokenCreatedData.msgSender,
-          neynarUser: testNeynarUser,
+          accountEntityId: testAccountEntityId,
           tokenScore: null
         });
         throw new Error('expected to throw but did not');
@@ -1447,8 +1450,7 @@ describe('commitTokenDetailsToDb', () => {
       await expect(
         commitTokenDetailsToDb({
           tokenCreatedData: testTokenCreatedData,
-          tokenCreatorAddress: testTokenCreatedData.msgSender,
-          neynarUser: testNeynarUser,
+          accountEntityId: testAccountEntityId,
           tokenScore: null
         })
       ).rejects.toThrow(TokenIndexerError);

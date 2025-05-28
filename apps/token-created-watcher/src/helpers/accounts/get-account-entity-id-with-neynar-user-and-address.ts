@@ -8,8 +8,8 @@ import {
   createAccountEntity
 } from '@wiretap/db';
 import { env } from '../../env.js';
-import { getListOfWalletAddresses } from '../../commits/accounts/get-list-of-wallet-addresses.js';
-import { getXAccountsFromNeynarUser } from '../../commits/accounts/get-x-accounts-from-neynar-user.js';
+import { getListOfWalletAddresses } from './get-list-of-wallet-addresses.js';
+import { getXAccountsFromNeynarUser } from './get-x-accounts-from-neynar-user.js';
 import { TokenIndexerError } from '../../errors.js';
 
 interface GetAccountEntityIdWithNeynarUserAndAddressParams {

@@ -1,6 +1,6 @@
-import { env } from '../../env.js';
 import type { Address } from 'viem';
-import type {SuccessAware} from "./types.js";
+import { env } from '../../../env.js';
+import type { SuccessAware } from './types.js';
 
 type TxPayload = {
   to: Address;
@@ -9,13 +9,13 @@ type TxPayload = {
 };
 
 export type ExecuteTransactionResponse = SuccessAware & {
-    data: {
-        executionId: string
-        simulation: {
-            success: boolean;
-        }
-    }
-}
+  data: {
+    executionId: string;
+    simulation: {
+      success: boolean;
+    };
+  };
+};
 
 export async function executeCustomTransactionOnGlider(
   portfolioId: string,
@@ -38,5 +38,5 @@ export async function executeCustomTransactionOnGlider(
     }
   );
 
-  return await result.json() as ExecuteTransactionResponse;
+  return (await result.json()) as ExecuteTransactionResponse;
 }

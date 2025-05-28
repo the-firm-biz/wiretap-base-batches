@@ -1,6 +1,6 @@
 import { getSingletonNeynarClient } from '@wiretap/utils/server';
 import { env } from './env.js';
-import { getAccountEntityIdWithNeynarUserAndAddress } from './helpers/get-account-entity/get-account-entity-id-with-neynar-user-and-address.js';
+import { getAccountEntityIdWithNeynarUserAndAddress } from './helpers/accounts/get-account-entity-id-with-neynar-user-and-address.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import type { Address } from 'viem';
 import { sendSlackMessage } from './helpers/notifications/send-slack-message.js';
@@ -10,8 +10,8 @@ import {
 } from './helpers/token-score/get-token-score.js';
 import type { DeployTokenArgs } from './helpers/get-transaction-context.js';
 import { type Context, trace } from '@wiretap/utils/shared';
-import { buyToken } from './helpers/token-buyer/index.js';
-import { commitTokenDetailsToDb } from './commits/commit-token-details-to-db.js';
+import { buyToken } from './helpers/token-buying/index.js';
+import { commitTokenDetailsToDb } from './helpers/commit-token-details-to-db.js';
 import { lookupAndValidateCastConversationWithBackoff } from './helpers/cast-validation/lookup-and-validate-cast-conversation-with-backoff.js';
 
 export interface HandleClankerFarcasterArgs {
@@ -19,6 +19,9 @@ export interface HandleClankerFarcasterArgs {
   messageId: string;
 }
 
+/**
+ * Called when we expect a Clanker token has been deployed by @ing Clanker on Farcaster.
+ */
 export async function handleClankerFarcaster(
   tokenCreatedData: TokenCreatedOnChainParams,
   clankerFarcasterArgs: HandleClankerFarcasterArgs,
@@ -45,8 +48,8 @@ export async function handleClankerFarcaster(
 
   const neynarUser = castAndConversations?.author;
 
-  let latencyMs: number | undefined = undefined;
-  let tokenScoreDetails: TokenScoreDetails | undefined = undefined;
+  let latencyMs: number | null = null;
+  let tokenScoreDetails: TokenScoreDetails | null = null;
 
   if (castAndConversations && isValidCast && neynarUser) {
     const primaryAddress = neynarUser.verified_addresses.primary?.eth_address;
@@ -84,7 +87,7 @@ export async function handleClankerFarcaster(
         commitTokenDetailsToDb({
           tokenCreatedData,
           accountEntityId,
-          tokenScore: tokenScoreDetails.tokenScore,
+          tokenScore: tokenScoreDetails?.tokenScore ?? null,
           imageUrl: transactionArgs?.tokenConfig?.image
         }),
       {
@@ -103,7 +106,7 @@ export async function handleClankerFarcaster(
       createdDbRows && tokenCreatedData.block.timestamp
         ? createdDbRows.token.createdAt.getTime() -
           tokenCreatedData.block.timestamp?.getTime()
-        : undefined;
+        : null;
   }
 
   sendSlackMessage({

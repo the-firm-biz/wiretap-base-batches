@@ -1,6 +1,6 @@
 import { handleNotifySlack } from '@wiretap/utils/server';
-import { TokenIndexerError } from '../errors.js';
-import { env } from '../env.js';
+import { TokenIndexerError } from '../../errors.js';
+import { env } from '../../env.js';
 import { bigIntReplacer } from '@wiretap/utils/shared';
 
 const divider = '='.repeat(56);

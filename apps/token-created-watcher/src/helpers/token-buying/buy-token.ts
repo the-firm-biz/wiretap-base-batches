@@ -1,6 +1,6 @@
 import type { Address } from 'viem';
 import { loadTokenBuyerPortfolios, singletonDb } from '@wiretap/db';
-import { env } from '../env.js';
+import { env } from '../../env.js';
 import { executeBuy } from './execute-buy.js';
 
 export async function buyToken(tokenAddress: Address, poolAddress: Address) {

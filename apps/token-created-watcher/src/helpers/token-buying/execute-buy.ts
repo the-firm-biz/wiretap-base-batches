@@ -1,7 +1,7 @@
 import type { TokenBuyerPortfolio } from '@wiretap/db';
 import { callWithBackOff } from '@wiretap/utils/server';
 import { MIN_TRADE_THRESHOLD_WEI } from '@wiretap/config';
-import { httpPublicClient } from '../rpc-clients.js';
+import { httpPublicClient } from '../../rpc-clients.js';
 import { type Address, formatEther, parseEther } from 'viem';
 import { bigIntReplacer } from '@wiretap/utils/shared';
 import { processBuyWithGlider } from './buy-flow/process-buy-with-glider.js';

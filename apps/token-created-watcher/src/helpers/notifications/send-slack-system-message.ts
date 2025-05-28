@@ -1,5 +1,5 @@
 import { handleNotifySlack } from '@wiretap/utils/server';
-import { env } from '../env.js';
+import { env } from '../../env.js';
 
 type SlackStartupMessage = {
   type: 'startup';

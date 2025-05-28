@@ -1,5 +1,5 @@
 import type { Address } from 'viem';
-import { env } from '../../env.js';
+import { env } from '../../../env.js';
 import type { SuccessAware } from './types.js';
 
 export type UpdatePortfolioParams = {
@@ -24,7 +24,7 @@ export async function updateGliderPortfolio({
   const weightings = [100];
 
   if (tokenPercentageBps > 0 && tokenAddress) {
-    const tokenPercentage = tokenPercentageBps / 100
+    const tokenPercentage = tokenPercentageBps / 100;
     assets.push({
       blockType: 'asset',
       assetId: tokenAddress
@@ -54,5 +54,5 @@ export async function updateGliderPortfolio({
       })
     }
   );
-  return await response.json() as SuccessAware;
+  return (await response.json()) as SuccessAware;
 }

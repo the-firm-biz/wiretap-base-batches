@@ -1,7 +1,7 @@
 import { type Address, erc20Abi } from 'viem';
-import { env } from '../../env.js';
-import { httpPublicClient } from '../../rpc-clients.js';
-import type {SuccessAware} from "./types.js";
+import { env } from '../../../env.js';
+import { httpPublicClient } from '../../../rpc-clients.js';
+import type { SuccessAware } from './types.js';
 
 export async function triggerTokenWithdrawalFromGliderPortfolio(
   portfolioId: string,
@@ -35,5 +35,5 @@ export async function triggerTokenWithdrawalFromGliderPortfolio(
       })
     }
   );
-  return await result.json() as SuccessAware;
+  return (await result.json()) as SuccessAware;
 }

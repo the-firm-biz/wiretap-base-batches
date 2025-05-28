@@ -3,15 +3,16 @@ import {
   getSingletonNeynarClient
 } from '@wiretap/utils/server';
 import { env } from './env.js';
-import { commitTokenDetailsToDb } from './commits/commit-token-details-to-db.js';
-import { getAccountEntityIdWithNeynarUserAndAddress } from './helpers/get-account-entity/get-account-entity-id-with-neynar-user-and-address.js';
+import { commitTokenDetailsToDb } from './helpers/commit-token-details-to-db.js';
+import { getAccountEntityIdWithNeynarUserAndAddress } from './helpers/accounts/get-account-entity-id-with-neynar-user-and-address.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
 import { sendSlackMessage } from './helpers/notifications/send-slack-message.js';
 import { getTokenScore } from './helpers/token-score/get-token-score.js';
 import type { DeployTokenArgs } from './helpers/get-transaction-context.js';
-import { buyToken } from './helpers/token-buyer/index.js';
-import { getAccountEntityIdForAddress } from './helpers/get-account-entity/get-account-entity-id-for-address.js';
+import { buyToken } from './helpers/token-buying/index.js';
+import { getAccountEntityIdForAddress } from './helpers/accounts/get-account-entity-id-for-address.js';
 
+/** Called when the msgSender of the Clanker TokenCreated event is an EOA. */
 export async function handleEOAMsgSender(
   tokenCreatedData: TokenCreatedOnChainParams,
   transactionArgs: DeployTokenArgs
@@ -71,6 +72,11 @@ export async function handleEOAMsgSender(
   // @todo jeff: migrate to use accountEntityId and call sooner
   buyToken(tokenCreatedData.tokenAddress, tokenCreatedData.poolContext.address);
 
+  const latencyMs = tokenCreatedData.block.timestamp
+    ? createdDbRows.token.createdAt.getTime() -
+      tokenCreatedData.block.timestamp?.getTime()
+    : null;
+
   sendSlackMessage({
     tokenAddress: createdDbRows.token.address,
     transactionHash: createdDbRows.token.deploymentTransactionHash,
@@ -78,10 +84,7 @@ export async function handleEOAMsgSender(
     tokenSymbol: createdDbRows.token.symbol,
     deployerContractAddress: createdDbRows.deployerContract.address,
     tracing: {
-      latencyMs: tokenCreatedData.block.timestamp
-        ? createdDbRows.token.createdAt.getTime() -
-          tokenCreatedData.block.timestamp?.getTime()
-        : undefined
+      latencyMs
     },
     source: 'handle-eoa-msg-sender',
     tokenScoreDetails,

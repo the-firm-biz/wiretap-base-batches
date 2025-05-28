@@ -5,6 +5,7 @@ import { getTokenContext } from './helpers/get-token-context.js';
 import { bigIntReplacer, type Context, trace } from '@wiretap/utils/shared';
 import type { DeployTokenArgs } from './helpers/get-transaction-context.js';
 
+/** Called when any DELEGATED_CLANKER_DEPLOYER_ADDRESSES is the msgSender of the Clanker TokenCreated event. */
 export async function handleDelegatedClankerDeployer(
   tokenCreatedData: TokenCreatedOnChainParams,
   transactionArgs: DeployTokenArgs,
