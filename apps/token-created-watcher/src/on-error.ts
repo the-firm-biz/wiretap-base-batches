@@ -1,4 +1,5 @@
-import { sendSlackSystemMessage } from './notifications/send-slack-system-message.js';
+import { sendSlackSystemMessage } from '@wiretap/utils/server';
+import { env } from './env.js';
 
 interface OnErrorParams {
   error: Error;
@@ -7,10 +8,10 @@ interface OnErrorParams {
 }
 
 let retryCount = 0;
-const MAX_RETRIES = 5;
+const MAX_RETRIES = 10;
 const RETRY_DELAY = 1000; // 1 second
 
-export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
+export async function onError({ error, startWatcher, unwatch }: OnErrorParams) {
   console.error('onError: watchContractEvent::', error);
 
   if (!unwatch) {
@@ -27,9 +28,15 @@ export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
     );
 
     sendSlackSystemMessage({
-      type: 'reconnectAttempt',
-      currentAttempt: retryCount,
-      maxAttempts: MAX_RETRIES
+      systemMessage: {
+        type: 'reconnectAttempt',
+        currentAttempt: retryCount,
+        maxAttempts: MAX_RETRIES
+      },
+      flyAppName: process.env.FLY_APP_NAME,
+      flyMachineId: process.env.FLY_MACHINE_ID,
+      botToken: env.SLACK_INFRABOT_TOKEN,
+      channelId: env.INFRA_NOTIFICATIONS_CHANNEL_ID
     });
 
     // Retry after delay
@@ -40,12 +47,18 @@ export function onError({ error, startWatcher, unwatch }: OnErrorParams) {
     console.error(
       'onError:: Max retry attempts reached. Manual intervention required.'
     );
-
-    sendSlackSystemMessage({
-      type: 'reconnectMaxAttempts',
-      maxAttempts: MAX_RETRIES
-    });
     console.log('onError:: Shutting down event watcher...');
+
+    await sendSlackSystemMessage({
+      systemMessage: {
+        type: 'reconnectMaxAttempts',
+        maxAttempts: MAX_RETRIES
+      },
+      flyAppName: process.env.FLY_APP_NAME,
+      flyMachineId: process.env.FLY_MACHINE_ID,
+      botToken: env.SLACK_INFRABOT_TOKEN,
+      channelId: env.INFRA_NOTIFICATIONS_CHANNEL_ID
+    });
     process.exit(0);
   }
 }
