@@ -185,6 +185,7 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
                 <Button
                   type="button"
                   variant="outline"
+                  size="sm"
                   className="flex-1"
                   onClick={() => field.onChange(0.01)}
                 >
@@ -193,6 +194,7 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
                 <Button
                   type="button"
                   variant="outline"
+                  size="sm"
                   className="flex-1"
                   onClick={() => field.onChange(0.05)}
                 >
@@ -201,6 +203,7 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
                 <Button
                   type="button"
                   variant="outline"
+                  size="sm"
                   className="flex-1"
                   onClick={() => field.onChange(0.1)}
                 >
@@ -209,6 +212,7 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
                 <Button
                   type="button"
                   variant="outline"
+                  size="sm"
                   className="flex-1"
                   onClick={() => field.onChange(0.2)}
                 >
@@ -225,7 +229,7 @@ export const SpendAdjustForm: React.FC<SpendAdjustFormProps> = ({
         </div>
         <div className="flex flex-col pb-4">
           <Button type="submit" disabled={hasError || isDisabledForm}>
-            Confirm Quantity
+            Confirm Max Spend
           </Button>
         </div>
       </form>
