@@ -225,10 +225,15 @@ describe('getAccountEntityIdWithNeynarUserAndAddress', () => {
       ).rejects.toThrow(TokenIndexerError);
     });
 
-    it('should throw TokenIndexerError if different account entity exists for X account already', async () => {
+    it('should throw TokenIndexerError if different account entity exists for X accounts already', async () => {
       // Create first account entity with user's X account
       await dbModule.createAccountEntity(dbPool.db, {
         newXAccounts: [{ username: JOHNY_FIRST_X_ACCOUNT, xid: 'test-xid-1' }]
+      });
+
+      // Create second account entity with user's X account
+      await dbModule.createAccountEntity(dbPool.db, {
+        newXAccounts: [{ username: JOHNY_SECOND_X_ACCOUNT, xid: 'test-xid-2' }]
       });
 
       await expect(
