@@ -14,6 +14,10 @@ jobs:
       }}
     name: "Deploy ${{ github.ref_name == 'main' && 'production' || 'staging' }} token-created-watcher app"
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_CACHE: remote:rw
     concurrency: deploy-group # optional: ensure only one action runs at a time
     steps:
       - uses: actions/checkout@v4

@@ -22,6 +22,11 @@ jobs:
         github.event.action == 'reopened'
       )
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_CACHE: remote:rw
+
     steps:
       - name: Get branch name
         id: branch_name
