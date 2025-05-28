@@ -38,7 +38,7 @@ function AddFrameMenuItem() {
         className="w-full justify-start gap-2 px-2 py-1.5 h-auto"
         onClick={async () => await addFrame()}
       >
-        <FarcasterIcon className="w-4 h-4" /> Add Frame
+        <FarcasterIcon /> Add Frame
       </Button>
     </DropdownMenuItem>
   );
@@ -67,7 +67,7 @@ export function Header({
               variant="outline"
               size="sm"
             >
-              <FarcasterIcon className="w-4 h-4" /> Add Frame
+              <FarcasterIcon /> Add Frame
             </Button>
           )}
           <HeaderWalletButton />
@@ -87,7 +87,7 @@ export function Header({
                 >
                   Get Our Next Release Early
                   <ExternalLinkIcon
-                    className="w-4 h-4 opacity-70"
+                    className="opacity-70"
                     style={{ color: 'currentColor' }}
                   />
                 </a>

@@ -25,7 +25,7 @@ export const TargetSearchRowSkeleton = () => {
         <Skeleton className="w-36 h-4 rounded-md" />
         <Skeleton className="w-28 h-3 rounded-md" />
       </div>
-      <Skeleton className="w-19 h-10" />
+      <Skeleton className="w-19 h-8" />
     </div>
   );
 };
