@@ -7,10 +7,10 @@ import {
   getXAccounts,
   createAccountEntity
 } from '@wiretap/db';
-import { env } from './env.js';
-import { getListOfWalletAddresses } from './commits/accounts/get-list-of-wallet-addresses.js';
-import { getXAccountsFromNeynarUser } from './commits/accounts/get-x-accounts-from-neynar-user.js';
-import { TokenIndexerError } from './errors.js';
+import { env } from '../../env.js';
+import { getListOfWalletAddresses } from '../../commits/accounts/get-list-of-wallet-addresses.js';
+import { getXAccountsFromNeynarUser } from '../../commits/accounts/get-x-accounts-from-neynar-user.js';
+import { TokenIndexerError } from '../../errors.js';
 
 interface GetAccountEntityIdWithNeynarUserAndAddressParams {
   neynarUser: NeynarUser;
@@ -75,6 +75,7 @@ export async function getAccountEntityIdWithNeynarUserAndAddress({
       const accountEntityId = uniqueAccountEntityIds.values().next().value;
 
       /** If no account entities found, create a new one */
+      // @todo jeff - when handling merging account entities, this potentially needs moving into a separate function
       if (!accountEntityId) {
         const { accountEntity } = await createAccountEntity(tx, {
           newWallets: allWalletsAddresses.map((wallet) => ({

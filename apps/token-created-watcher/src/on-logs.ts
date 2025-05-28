@@ -14,7 +14,7 @@ import { handleEOAMsgSender } from './handle-eoa-msg-sender.js';
 import { deconstructLog, type TokenCreatedLog } from './types/token-created.js';
 import { resetReconnectRetries } from './on-error.js';
 import { sendSlackIndexerError } from './notifications/send-slack-indexer-error.js';
-import { getTransactionContext } from './get-transaction-context.js';
+import { getTransactionContext } from './helpers/get-transaction-context.js';
 
 export function onLogs(
   logs: WatchContractEventOnLogsParameter<ClankerAbi, 'TokenCreated', true>

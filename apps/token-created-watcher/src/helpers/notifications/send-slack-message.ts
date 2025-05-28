@@ -1,6 +1,6 @@
 import { handleNotifySlack, type NeynarUser } from '@wiretap/utils/server';
 import { getTokenContext } from '../get-token-context.js';
-import { env } from '../env.js';
+import { env } from '../../env.js';
 import {
   CLANKER_3_1_ADDRESS,
   DELEGATED_CLANKER_DEPLOYER_ADDRESSES
@@ -27,7 +27,7 @@ type SlackMessageDetails = {
     latencyMs?: number;
     span?: Span;
   };
-  tokenScoreDetails: TokenScoreDetails | null;
+  tokenScoreDetails?: TokenScoreDetails;
   transactionArgs: DeployTokenArgs;
 };
 
@@ -290,15 +290,19 @@ ${slackLink('globe_with_meridians', `https://www.clanker.world/clanker/${tokenAd
         ) +
         '\n```';
 
-      await postSnippet({
-        snippetContent: tracingText,
-        filename: 'tracing.json',
-        filetype: 'json',
-        message: 'Attaching tracing:'
-      }, {
-        slackToken: env.SLACK_ESPIONAGEBOT_TOKEN,
-        slackChannelId: env.WIRETAP_NOTIFICATIONS_CHANNEL_ID
-      }, slackPostMessageResponse.ts)
+      await postSnippet(
+        {
+          snippetContent: tracingText,
+          filename: 'tracing.json',
+          filetype: 'json',
+          message: 'Attaching tracing:'
+        },
+        {
+          slackToken: env.SLACK_ESPIONAGEBOT_TOKEN,
+          slackChannelId: env.WIRETAP_NOTIFICATIONS_CHANNEL_ID
+        },
+        slackPostMessageResponse.ts
+      );
     }
   }
 };

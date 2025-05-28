@@ -1,4 +1,4 @@
-import { type ParsedTokenContext } from './types/index.js';
+import { type ParsedTokenContext } from '../types/index.js';
 import type { DeployTokenArgs } from './get-transaction-context.js';
 
 export const getTokenContext = (

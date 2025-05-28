@@ -1,24 +1,18 @@
-import {
-  callWithBackOff,
-  getSingletonNeynarClient,
-  lookupCastConversation,
-  type NeynarAPIClient,
-  type NeynarCastWithInteractionsAndConversations
-} from '@wiretap/utils/server';
+import { getSingletonNeynarClient } from '@wiretap/utils/server';
 import { env } from './env.js';
-import { getAccountEntityIdWithNeynarUserAndAddress } from './get-account-entity-id-with-neynar-user-and-address.js';
+import { getAccountEntityIdWithNeynarUserAndAddress } from './helpers/get-account-entity/get-account-entity-id-with-neynar-user-and-address.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
-import {
-  validateAuthorFid,
-  validateDirectReplies
-} from './handle-clanker-farcaster-validation.js';
 import type { Address } from 'viem';
-import { sendSlackMessage } from './notifications/send-slack-message.js';
-import { getTokenScore } from './token-score/get-token-score.js';
-import type { DeployTokenArgs } from './get-transaction-context.js';
-import { TokenIndexerError } from './errors.js';
+import { sendSlackMessage } from './helpers/notifications/send-slack-message.js';
+import {
+  getTokenScore,
+  type TokenScoreDetails
+} from './helpers/token-score/get-token-score.js';
+import type { DeployTokenArgs } from './helpers/get-transaction-context.js';
 import { type Context, trace } from '@wiretap/utils/shared';
-import { buyToken } from './token-buyer/index.js';
+import { buyToken } from './helpers/token-buyer/index.js';
+import { commitTokenDetailsToDb } from './commits/commit-token-details-to-db.js';
+import { lookupAndValidateCastConversationWithBackoff } from './helpers/cast-validation/lookup-and-validate-cast-conversation-with-backoff.js';
 
 export interface HandleClankerFarcasterArgs {
   fid: number;
@@ -52,12 +46,7 @@ export async function handleClankerFarcaster(
   const neynarUser = castAndConversations?.author;
 
   let latencyMs: number | undefined = undefined;
-  const tokenScoreDetails = neynarUser
-    ? await trace(() => getTokenScore(neynarUser), {
-        name: 'getTokenScore',
-        parentSpan
-      })
-    : null;
+  let tokenScoreDetails: TokenScoreDetails | undefined = undefined;
 
   if (castAndConversations && isValidCast && neynarUser) {
     const primaryAddress = neynarUser.verified_addresses.primary?.eth_address;
@@ -65,14 +54,11 @@ export async function handleClankerFarcaster(
     const tokenCreatorAddress = (primaryAddress ||
       otherAddresses[0]) as Address | null;
 
-    const createdDbRows = await trace(
+    const accountEntityId = await trace(
       () =>
         getAccountEntityIdWithNeynarUserAndAddress({
-          tokenCreatedData,
           tokenCreatorAddress,
-          neynarUser,
-          tokenScoreDetails,
-          transactionArgs
+          neynarUser
         }),
       {
         name: 'getAccountEntityIdWithNeynarUserAndAddress',
@@ -80,7 +66,34 @@ export async function handleClankerFarcaster(
       }
     );
 
-    // TODO: try to call before const createdDbRows
+    tokenScoreDetails = await trace(
+      () =>
+        getTokenScore({
+          accountEntityId,
+          neynarUserScore: neynarUser?.experimental?.neynar_user_score,
+          neynarUserFollowersCount: neynarUser?.follower_count
+        }),
+      {
+        name: 'getTokenScore',
+        parentSpan
+      }
+    );
+
+    const createdDbRows = await trace(
+      () =>
+        commitTokenDetailsToDb({
+          tokenCreatedData,
+          accountEntityId,
+          tokenScore: tokenScoreDetails.tokenScore,
+          imageUrl: transactionArgs?.tokenConfig?.image
+        }),
+      {
+        name: 'commitTokenDetailsToDb',
+        parentSpan
+      }
+    );
+
+    // @todo jeff: migrate to use accountEntityId and call sooner
     buyToken(
       tokenCreatedData.tokenAddress,
       tokenCreatedData.poolContext.address
@@ -113,68 +126,4 @@ export async function handleClankerFarcaster(
     tokenScoreDetails,
     transactionArgs
   });
-}
-
-type CastWithValidation = {
-  castAndConversations: NeynarCastWithInteractionsAndConversations | undefined;
-  isValidCast: boolean;
-};
-
-async function lookupAndValidateCastConversationWithBackoff(
-  neynarClient: NeynarAPIClient,
-  tokenCreatedData: TokenCreatedOnChainParams,
-  clankerFarcasterArgs: HandleClankerFarcasterArgs,
-  { tracing }: Context
-): Promise<CastWithValidation> {
-  const { messageId: castHash } = clankerFarcasterArgs;
-
-  const castWithValidation = await callWithBackOff(
-    async () => {
-      const castAndConversations = await lookupCastConversation(
-        neynarClient,
-        castHash
-      );
-
-      if (!castAndConversations) {
-        throw new Error('No Cast was fetched');
-      }
-
-      const isFidValid = validateAuthorFid(
-        castAndConversations,
-        clankerFarcasterArgs,
-        tokenCreatedData
-      );
-      if (!isFidValid) {
-        // no need to retry as fid validation went wrong
-        return { castAndConversations, isValidCast: false };
-      }
-
-      const areDirectRepliesValid = validateDirectReplies(
-        castAndConversations,
-        clankerFarcasterArgs,
-        tokenCreatedData
-      );
-      if (!areDirectRepliesValid) {
-        // cause retry to cover cases when direct reply is delayed
-        throw new Error('Cast Direct Reply validation failed, try again');
-      }
-
-      return { castAndConversations, isValidCast: true };
-    },
-    {
-      startingDelay: 500,
-      timeMultiple: 1.3
-    },
-    {
-      name: 'lookupAndValidateCastConversation',
-      tracing
-    }
-  );
-
-  return (
-    castWithValidation ?? {
-      castAndConversations: undefined,
-      isValidCast: false
-    }
-  );
 }

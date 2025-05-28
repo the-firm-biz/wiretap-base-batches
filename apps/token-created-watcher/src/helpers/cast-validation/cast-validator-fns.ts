@@ -1,14 +1,7 @@
 import type { NeynarCastWithInteractionsAndConversations } from '@wiretap/utils/server';
-import type { HandleClankerFarcasterArgs } from './handle-clanker-farcaster.js';
-import type { TokenCreatedOnChainParams } from './types/token-created.js';
-
-export const CLANKER_TOKENBOT_FID = 874542;
-
-export type validateCastFn = (
-  cast: NeynarCastWithInteractionsAndConversations,
-  args: HandleClankerFarcasterArgs,
-  tokenCreatedData: TokenCreatedOnChainParams
-) => boolean;
+import { CLANKER_TOKENBOT_FID } from '@wiretap/config';
+import type { HandleClankerFarcasterArgs } from '../../handle-clanker-farcaster.js';
+import type { TokenCreatedOnChainParams } from '../../types/token-created.js';
 
 export function validateAuthorFid(
   cast: NeynarCastWithInteractionsAndConversations,

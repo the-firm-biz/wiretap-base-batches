@@ -1,9 +1,9 @@
-import { getTokenDeploymentSource } from './get-token-deployment-source.js';
+import { getTokenDeploymentSource } from './helpers/get-token-deployment-source.js';
 import { handleClankerFarcaster } from './handle-clanker-farcaster.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
-import { getTokenContext } from './get-token-context.js';
+import { getTokenContext } from './helpers/get-token-context.js';
 import { bigIntReplacer, type Context, trace } from '@wiretap/utils/shared';
-import type { DeployTokenArgs } from './get-transaction-context.js';
+import type { DeployTokenArgs } from './helpers/get-transaction-context.js';
 
 export async function handleDelegatedClankerDeployer(
   tokenCreatedData: TokenCreatedOnChainParams,
@@ -26,7 +26,7 @@ export async function handleDelegatedClankerDeployer(
             messageId: tokenContext.messageId
           },
           transactionArgs,
-          { tracing: { parentSpan: contextSpan } },
+          { tracing: { parentSpan: contextSpan } }
         ),
       {
         name: 'handleClankerFarcaster',

@@ -1,4 +1,4 @@
-import { type ParsedTokenContext } from './types/index.js';
+import { type ParsedTokenContext } from '../types/index.js';
 
 interface TokenContextParams {
   tokenContextInterface: ParsedTokenContext['interface'];

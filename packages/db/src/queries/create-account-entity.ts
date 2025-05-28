@@ -25,7 +25,7 @@ type createAccountEntityInput = {
   label?: string;
 };
 
-export type createAccountEntityResponse = {
+export type CreateAccountEntityResponse = {
   accountEntity: AccountEntity;
   wallets: Wallet[];
   farcasterAccount?: FarcasterAccount;
@@ -46,7 +46,7 @@ export async function createAccountEntity(
     newWireTapAccount,
     label
   }: createAccountEntityInput
-): Promise<createAccountEntityResponse> {
+): Promise<CreateAccountEntityResponse> {
   const txResponse = await db.transaction(async (tx) => {
     const [createdAccountEntity] = await tx
       .insert(accountEntities)

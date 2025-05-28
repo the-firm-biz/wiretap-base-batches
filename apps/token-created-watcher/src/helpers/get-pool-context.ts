@@ -9,7 +9,7 @@ import {
   UNISWAP_V3_ADDRESSES
 } from '@wiretap/config';
 import { callWithBackOff, fetchLatest } from '@wiretap/utils/server';
-import { httpPublicClient } from './rpc-clients.js';
+import { httpPublicClient } from '../rpc-clients.js';
 import type { Context } from '@wiretap/utils/shared';
 
 export interface PoolContext {
