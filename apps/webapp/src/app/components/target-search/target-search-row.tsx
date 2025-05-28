@@ -25,7 +25,7 @@ export const TargetSearchRowSkeleton = () => {
         <Skeleton className="w-36 h-4 rounded-md" />
         <Skeleton className="w-28 h-3 rounded-md" />
       </div>
-      <Skeleton className="w-19 h-10" />
+      <Skeleton className="w-19 h-8" />
     </div>
   );
 };
@@ -106,7 +106,11 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
         <SpendAdjustDrawer
           targetLabel={target.label}
           targetImage={target.image}
-          trigger={<Button variant="outline">{ethDisplayValue} ETH</Button>}
+          trigger={
+            <Button variant="outline" size="sm">
+              {ethDisplayValue} ETH
+            </Button>
+          }
           trackingStatus={trackingStatus}
           isControlledOpen={isOpenSpendAdjustDrawer}
           onOpenChange={setIsOpenSpendAdjustDrawer}
@@ -115,13 +119,13 @@ export const TargetSearchRow: React.FC<TargetSearchRowProps> = ({
     }
     if (trackingStatus.isLoading) {
       return (
-        <Button disabled variant="default">
+        <Button disabled variant="default" size="sm">
           <AnimatedEllipsisText></AnimatedEllipsisText>
         </Button>
       );
     }
     return (
-      <Button disabled={isConfirmingTrack} onClick={onTrackClick}>
+      <Button disabled={isConfirmingTrack} size="sm" onClick={onTrackClick}>
         {isConfirmingTrack ? (
           <AnimatedEllipsisText>Monitor</AnimatedEllipsisText>
         ) : (

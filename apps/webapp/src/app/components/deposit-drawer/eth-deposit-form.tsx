@@ -150,6 +150,7 @@ export function EthDepositForm({
                   <Button
                     type="button"
                     variant="outline"
+                    size="sm"
                     className="flex-1"
                     onClick={() => field.onChange(getPercentOfMaxDeposit(25))}
                   >
@@ -158,6 +159,7 @@ export function EthDepositForm({
                   <Button
                     type="button"
                     variant="outline"
+                    size="sm"
                     className="flex-1"
                     onClick={() => field.onChange(getPercentOfMaxDeposit(50))}
                   >
@@ -166,6 +168,7 @@ export function EthDepositForm({
                   <Button
                     type="button"
                     variant="outline"
+                    size="sm"
                     className="flex-1"
                     onClick={() => field.onChange(getPercentOfMaxDeposit(75))}
                   >
@@ -175,6 +178,7 @@ export function EthDepositForm({
                     type="button"
                     variant="outline"
                     className="flex-1"
+                    size="sm"
                     onClick={() => {
                       const maxEth =
                         maxDepositAmount - TRANSFER_GAS_ESTIMATE_ETH;

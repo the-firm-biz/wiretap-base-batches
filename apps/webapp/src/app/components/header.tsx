@@ -38,7 +38,7 @@ function AddFrameMenuItem() {
         className="w-full justify-start gap-2 px-2 py-1.5 h-auto"
         onClick={async () => await addFrame()}
       >
-        <FarcasterIcon className="w-4 h-4" /> Add Frame
+        <FarcasterIcon /> Add Frame
       </Button>
     </DropdownMenuItem>
   );
@@ -66,16 +66,15 @@ export function Header({
               onClick={async () => await addFrame()}
               variant="outline"
               size="sm"
-              className="h-[32px]"
             >
-              <FarcasterIcon className="w-4 h-4" /> Add Frame
+              <FarcasterIcon /> Add Frame
             </Button>
           )}
           <HeaderWalletButton />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" size="icon" aria-label="Open menu">
-                <MenuIcon className="w-5 h-5" />
+              <Button variant="secondary" size="iconSm" aria-label="Open menu">
+                <MenuIcon />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -88,7 +87,7 @@ export function Header({
                 >
                   Get Our Next Release Early
                   <ExternalLinkIcon
-                    className="w-4 h-4 opacity-70"
+                    className="opacity-70"
                     style={{ color: 'currentColor' }}
                   />
                 </a>

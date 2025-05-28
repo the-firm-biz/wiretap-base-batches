@@ -222,25 +222,23 @@ export function DiscoverFeedRow({
             <div className="flex gap-1 justify-self-end">
               <a
                 className={cn(
-                  buttonVariants({ variant: 'outline', size: 'icon' }),
-                  'w-10'
+                  buttonVariants({ variant: 'outline', size: 'iconSm' })
                 )}
                 href={getClankerWorldUrl(tokenAddress)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <GlobeIcon className="size-4" />
+                <GlobeIcon />
               </a>
               <a
                 className={cn(
-                  buttonVariants({ variant: 'outline', size: 'icon' }),
-                  'w-10'
+                  buttonVariants({ variant: 'outline', size: 'iconSm' })
                 )}
                 href={getDexScreenerUrl(tokenAddress)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <DexScreenerLogoIcon className="size-4" />
+                <DexScreenerLogoIcon />
               </a>
             </div>
           </div>
