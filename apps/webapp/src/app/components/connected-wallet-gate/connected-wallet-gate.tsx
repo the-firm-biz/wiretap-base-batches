@@ -74,7 +74,7 @@ export function ConnectedWalletGate({
           <div>
             {hasMinikitContext && !hasAddedFrame && (
               <Button onClick={async () => await addFrame()} variant="outline">
-                <FarcasterIcon className="w-4 h-4" /> Add Frame
+                <FarcasterIcon /> Add Frame
               </Button>
             )}
           </div>
