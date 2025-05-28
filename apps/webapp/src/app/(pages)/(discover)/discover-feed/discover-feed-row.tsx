@@ -228,7 +228,7 @@ export function DiscoverFeedRow({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <GlobeIcon className="size-4" />
+                <GlobeIcon />
               </a>
               <a
                 className={cn(
@@ -238,7 +238,7 @@ export function DiscoverFeedRow({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <DexScreenerLogoIcon className="size-4" />
+                <DexScreenerLogoIcon />
               </a>
             </div>
           </div>

@@ -66,7 +66,6 @@ export function Header({
               onClick={async () => await addFrame()}
               variant="outline"
               size="sm"
-              className="h-[32px]"
             >
               <FarcasterIcon className="w-4 h-4" /> Add Frame
             </Button>
@@ -74,8 +73,8 @@ export function Header({
           <HeaderWalletButton />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" size="icon" aria-label="Open menu">
-                <MenuIcon className="w-5 h-5" />
+              <Button variant="secondary" size="iconSm" aria-label="Open menu">
+                <MenuIcon />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

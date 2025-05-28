@@ -25,7 +25,7 @@ export function PaletteSwitcher() {
       aria-label="Toggle interface theme"
     >
       Interface Theme
-      <Icon className="w-4 h-4 opacity-70 ml-auto" />
+      <Icon className="opacity-70 ml-auto" />
     </DropdownMenuItem>
   );
 }
