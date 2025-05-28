@@ -6,6 +6,7 @@ import * as dbModule from '@wiretap/db';
 import {
   accountEntities,
   currencies,
+  tokens,
   type FarcasterAccount,
   type GetAccountEntityResult,
   type Pool,
@@ -17,7 +18,6 @@ import type { Address } from 'viem';
 import { env } from '../env.js';
 import type { TokenCreatedOnChainParams } from '../types/token-created.js';
 import type { NeynarUser } from '@wiretap/utils/server';
-import { TokenIndexerError } from '../errors.js';
 import { CLANKER_3_1_UNISWAP_FEE_BPS } from '@wiretap/config';
 import { expect } from 'vitest';
 
@@ -159,7 +159,6 @@ describe('commitTokenDetailsToDb', () => {
         })
         .returning();
       testAccountEntityId = testAccountEntity!.id;
-
       spyEndPoolConnection.mockClear();
     });
 
@@ -190,9 +189,6 @@ describe('commitTokenDetailsToDb', () => {
   });
 
   describe('new token creator, no neynar user', () => {
-    let result: CommitTokenDetailsToDbResult;
-    let accountEntityDbRows: GetAccountEntityResult | undefined;
-
     beforeAll(async () => {
       await dbModule.unsafe__clearDbTables(db);
       await db.insert(currencies).values({
@@ -201,24 +197,27 @@ describe('commitTokenDetailsToDb', () => {
         symbol: testTokenCreatedData.symbol,
         decimals: 18
       });
-      result = await commitTokenDetailsToDb({
+      const [testAccountEntity] = await db
+        .insert(accountEntities)
+        .values({
+          label: testAccountEntityLabel
+        })
+        .returning();
+      testAccountEntityId = testAccountEntity!.id;
+    });
+
+    it('should return created DB objects', async () => {
+      const result = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
         accountEntityId: testAccountEntityId,
         tokenScore: null
       });
-      accountEntityDbRows = await dbModule.getAccountEntity(
-        db,
-        result.accountEntityId
-      );
-    });
 
-    it('should return created DB objects', () => {
       expect(result).toStrictEqual({
         block: {
           number: BLOCK_NUMBER,
           timestamp: BLOCK_TIMESTAMP
         },
-        accountEntityId: expect.any(Number),
         token: {
           id: expect.any(Number),
           createdAt: expect.any(Date),
@@ -228,7 +227,7 @@ describe('commitTokenDetailsToDb', () => {
           deploymentTransactionHash: testTokenCreatedData.transactionHash,
           block: BLOCK_NUMBER,
           deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId,
+          accountEntityId: testAccountEntityId,
           score: null,
           imageUrl: null,
           totalSupply: testTokenCreatedData.totalSupply,
@@ -250,52 +249,18 @@ describe('commitTokenDetailsToDb', () => {
           id: expect.any(Number),
           createdAt: expect.any(Date),
           address: testTokenCreatedData.deployerContractAddress
-        },
-        wallets: expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: testTokenCreatedData.msgSender,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          }
-        ]),
-        farcasterAccounts: [],
-        xAccounts: []
+        }
       });
     });
 
-    it('should create new account in DB', () => {
-      expect(accountEntityDbRows).toBeDefined();
-      expect(accountEntityDbRows?.accountEntity).toStrictEqual({
-        id: result.accountEntityId,
-        createdAt: expect.any(Date),
-        label: null
+    it('should create new token in DB', async () => {
+      const result = await commitTokenDetailsToDb({
+        tokenCreatedData: testTokenCreatedData,
+        accountEntityId: testAccountEntityId,
+        tokenScore: null
       });
-    });
-
-    it('should create new wallet in DB', () => {
-      expect(accountEntityDbRows?.wallets.length).toBe(1);
-      expect(accountEntityDbRows?.wallets[0]).toStrictEqual({
-        id: expect.any(Number),
-        createdAt: expect.any(Date),
-        address: testTokenCreatedData.msgSender,
-        verificationSourceId: null,
-        accountEntityId: result.accountEntityId
-      });
-    });
-
-    it('should NOT create new farcaster account in DB', () => {
-      expect(accountEntityDbRows?.farcasterAccounts.length).toBe(0);
-    });
-
-    it('should NOT create new x account in DB', () => {
-      expect(accountEntityDbRows?.xAccounts.length).toBe(0);
-    });
-
-    it('should create new token in DB', () => {
-      expect(accountEntityDbRows?.tokens.length).toBe(1);
-      expect(accountEntityDbRows?.tokens[0]).toStrictEqual({
+      const token = await dbModule.getOrCreateToken(db, result.token);
+      expect(token).toStrictEqual({
         id: expect.any(Number),
         createdAt: expect.any(Date),
         name: testTokenCreatedData.tokenName,
@@ -303,8 +268,8 @@ describe('commitTokenDetailsToDb', () => {
         address: testTokenCreatedData.tokenAddress,
         deploymentTransactionHash: testTokenCreatedData.transactionHash,
         block: BLOCK_NUMBER,
-        deploymentContractId: result.deployerContract.id,
-        accountEntityId: result.accountEntityId,
+        deploymentContractId: result.deploymentContractId,
+        accountEntityId: testAccountEntityId,
         score: null,
         imageUrl: null,
         totalSupply: testTokenCreatedData.totalSupply,
@@ -1381,86 +1346,6 @@ describe('commitTokenDetailsToDb', () => {
           }
         ])
       );
-    });
-  });
-
-  describe('error handling', () => {
-    beforeEach(async () => {
-      await dbModule.unsafe__clearDbTables(db);
-    });
-
-    it('throws TokenIndexerError when there are conflicting accountEntityIds', async () => {
-      const dbPool = new dbModule.PooledDbConnection({
-        databaseUrl: env.DATABASE_URL
-      });
-      await dbModule.createAccountEntity(dbPool.db, {
-        newWallets: [
-          {
-            address: JOHNY_PRIMARY_ETH_WALLET
-          }
-        ]
-      });
-      await dbModule.createAccountEntity(dbPool.db, {
-        newFarcasterAccount: {
-          fid: testNeynarUser.fid,
-          username: testNeynarUser.username
-        }
-      });
-      await dbPool.endPoolConnection();
-      try {
-        await commitTokenDetailsToDb({
-          tokenCreatedData: testTokenCreatedData,
-          accountEntityId: testAccountEntityId,
-          tokenScore: null
-        });
-        throw new Error('expected to throw but did not');
-      } catch (error) {
-        expect(error).toBeInstanceOf(TokenIndexerError);
-        if (error instanceof TokenIndexerError) {
-          expect(error.message).toBe('conflicting accountEntityIds detected');
-          expect(error.details).toStrictEqual({
-            wallets: expect.any(Array),
-            xAccounts: expect.any(Array),
-            farcasterAccount: expect.any(Object)
-          });
-        } else {
-          throw new Error('thrown error is not a TokenIndexerError');
-        }
-      }
-    });
-
-    it('does not create DB rows if transaction fails', async () => {
-      const dbPool = new dbModule.PooledDbConnection({
-        databaseUrl: env.DATABASE_URL
-      });
-      await dbModule.createAccountEntity(dbPool.db, {
-        newWallets: [
-          {
-            address: JOHNY_PRIMARY_ETH_WALLET
-          }
-        ]
-      });
-      await dbModule.createAccountEntity(dbPool.db, {
-        newFarcasterAccount: {
-          fid: testNeynarUser.fid,
-          username: testNeynarUser.username
-        }
-      });
-      await dbPool.endPoolConnection();
-      await expect(
-        commitTokenDetailsToDb({
-          tokenCreatedData: testTokenCreatedData,
-          accountEntityId: testAccountEntityId,
-          tokenScore: null
-        })
-      ).rejects.toThrow(TokenIndexerError);
-
-      // getOrCreateDeployerContract is called before TokenIndexerError is thrown, we expect it to do nothing since tx failed
-      const contractInDb = await dbModule.getDeployerContract(
-        db,
-        DEPLOYER_CONTRACT_ADDRESS
-      );
-      expect(contractInDb).toBeUndefined();
     });
   });
 });

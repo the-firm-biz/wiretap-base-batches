@@ -29,7 +29,6 @@ export type CommitTokenDetailsToDbParams = {
 
 export type CommitTokenDetailsToDbResult = {
   block: MinimalBlock;
-  accountEntityId: number;
   token: Token;
   deployerContract: Contract;
   tokenPool: Pool;
@@ -104,7 +103,6 @@ export const commitTokenDetailsToDb = async ({
 
       return {
         block,
-        accountEntityId,
         token: createdToken,
         deployerContract,
         tokenPool
