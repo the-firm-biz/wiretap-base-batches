@@ -8,4 +8,4 @@ tsconfig.tsbuildinfo
 
 # testing
 **/coverage
-coverage.json
+**/coverage.json
