@@ -1,4 +1,4 @@
-import { tokens, type NewToken, type Token } from '../schema/tokens.js';
+import { tokens, type Token } from '../schema/tokens.js';
 import { lowerEq } from '../utils/pg-helpers.js';
 import type {
   ServerlessDbTransaction,
@@ -6,14 +6,14 @@ import type {
   ServerlessDb
 } from '../client.js';
 
-export async function getToken(
+export async function getTokenByAddress(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
-  newToken: NewToken
+  tokenAddress: string
 ): Promise<Token | null> {
   const [existingToken] = await db
     .select()
     .from(tokens)
-    .where(lowerEq(tokens.address, newToken.address));
+    .where(lowerEq(tokens.address, tokenAddress));
 
   if (!existingToken) {
     return null;

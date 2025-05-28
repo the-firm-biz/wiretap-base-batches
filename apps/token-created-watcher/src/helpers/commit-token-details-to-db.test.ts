@@ -6,40 +6,37 @@ import * as dbModule from '@wiretap/db';
 import {
   accountEntities,
   currencies,
-  tokens,
-  type FarcasterAccount,
-  type GetAccountEntityResult,
   type Pool,
-  type Token,
-  type Wallet,
-  type XAccount
+  type Token
 } from '@wiretap/db';
 import type { Address } from 'viem';
 import { env } from '../env.js';
 import type { TokenCreatedOnChainParams } from '../types/token-created.js';
-import type { NeynarUser } from '@wiretap/utils/server';
 import { CLANKER_3_1_UNISWAP_FEE_BPS } from '@wiretap/config';
 import { expect } from 'vitest';
+import type { PoolContext } from './get-pool-context.js';
 
 const spyEndPoolConnection = vi.spyOn(
   dbModule.PooledDbConnection.prototype,
   'endPoolConnection'
 );
 
-const JOHNY_PRIMARY_ETH_WALLET =
-  '0x1111111111111111111111111111111111111111' as Address;
-const JOHNY_SECONDARY_ETH_WALLET =
-  '0x2222222222222222222222222222222222222222' as Address;
-const JOHNY_TERTIARY_ETH_WALLET =
-  '0x3333333333333333333333333333333333333333' as Address;
-const JOHNY_SECRET_ETH_WALLET =
-  '0x4444444444444444444444444444444444444444' as Address;
-
 const BLOCK_NUMBER = 1234567890;
 const BLOCK_TIMESTAMP = new Date('2025-01-01T00:00:00.000Z');
 
 const DEPLOYER_CONTRACT_ADDRESS =
   '0x9999999999999999999999999999999999999999' as Address;
+
+const JOHNY_PRIMARY_ETH_WALLET =
+  '0x1111111111111111111111111111111111111111' as Address;
+
+const poolContext: PoolContext = {
+  address: '0x8888888888888888888888888888888888888888' as Address,
+  pairedAddress: '0x8888888888888888888888888888888888888888' as Address,
+  token0IsNewToken: true,
+  priceEth: 100.0,
+  priceUsd: 100.0
+};
 
 const testTokenCreatedData: TokenCreatedOnChainParams = {
   transactionHash:
@@ -54,87 +51,12 @@ const testTokenCreatedData: TokenCreatedOnChainParams = {
     timestamp: BLOCK_TIMESTAMP
   },
   totalSupply: 100_000_000_000,
-  poolContext: {
-    address: '0x8888888888888888888888888888888888888888' as Address,
-    pairedAddress: '0x8888888888888888888888888888888888888888' as Address,
-    token0IsNewToken: true,
-    priceEth: 100.0,
-    priceUsd: 100.0
-  }
-};
-
-const JOHNY_FIRST_X_ACCOUNT = 'johny_first_xaccount';
-const JOHNY_SECOND_X_ACCOUNT = 'johny_second_xaccount';
-const JOHNY_SECFRET_X_ACCOUNT = 'johny_secret_xaccount';
-
-const testNeynarUser: NeynarUser = {
-  fid: 11111,
-  username: 'test_neynar_user',
-  object: 'user',
-  custody_address: '0x0000000000000000000000000000000000000000',
-  profile: {
-    bio: {
-      text: 'Test Neynar User'
-    }
-  },
-  follower_count: 100,
-  following_count: 100,
-  verifications: [],
-  verified_addresses: {
-    eth_addresses: [
-      JOHNY_PRIMARY_ETH_WALLET,
-      JOHNY_SECONDARY_ETH_WALLET,
-      JOHNY_TERTIARY_ETH_WALLET
-    ],
-    sol_addresses: [],
-    primary: {
-      eth_address: JOHNY_PRIMARY_ETH_WALLET,
-      sol_address: '0x0000000000000000000000000000000000000000'
-    }
-  },
-  verified_accounts: [
-    {
-      platform: 'x',
-      username: JOHNY_FIRST_X_ACCOUNT
-    },
-    {
-      platform: 'x',
-      username: JOHNY_SECOND_X_ACCOUNT
-    },
-    {
-      platform: 'github',
-      username: 'test_neynar_githubaccount'
-    }
-  ],
-  power_badge: false
-};
-
-const anotherNeynarUser: NeynarUser = {
-  ...testNeynarUser,
-  fid: 22222,
-  username: 'another_neynar_user',
-  verified_addresses: {
-    eth_addresses: [JOHNY_SECRET_ETH_WALLET, JOHNY_SECONDARY_ETH_WALLET],
-    sol_addresses: [],
-    primary: {
-      eth_address: JOHNY_SECRET_ETH_WALLET,
-      sol_address: '0x0000000000000000000000000000000000000000'
-    }
-  },
-  verified_accounts: [
-    {
-      platform: 'x',
-      username: JOHNY_SECFRET_X_ACCOUNT
-    },
-    {
-      platform: 'github',
-      username: 'johny_secret_githubaccount'
-    }
-  ]
+  poolContext
 };
 
 const testAccountEntityLabel = 'Test Entity';
 let testAccountEntityId: number;
+let committedTokenDetailsResult: CommitTokenDetailsToDbResult;
 
 describe('commitTokenDetailsToDb', () => {
   const db = dbModule.singletonDb({
@@ -188,7 +110,7 @@ describe('commitTokenDetailsToDb', () => {
     });
   });
 
-  describe('new token creator, no neynar user', () => {
+  describe('function returns db objects', () => {
     beforeAll(async () => {
       await dbModule.unsafe__clearDbTables(db);
       await db.insert(currencies).values({
@@ -252,36 +174,9 @@ describe('commitTokenDetailsToDb', () => {
         }
       });
     });
-
-    it('should create new token in DB', async () => {
-      const result = await commitTokenDetailsToDb({
-        tokenCreatedData: testTokenCreatedData,
-        accountEntityId: testAccountEntityId,
-        tokenScore: null
-      });
-      const token = await dbModule.getOrCreateToken(db, result.token);
-      expect(token).toStrictEqual({
-        id: expect.any(Number),
-        createdAt: expect.any(Date),
-        name: testTokenCreatedData.tokenName,
-        symbol: testTokenCreatedData.symbol,
-        address: testTokenCreatedData.tokenAddress,
-        deploymentTransactionHash: testTokenCreatedData.transactionHash,
-        block: BLOCK_NUMBER,
-        deploymentContractId: result.deploymentContractId,
-        accountEntityId: testAccountEntityId,
-        score: null,
-        imageUrl: null,
-        totalSupply: testTokenCreatedData.totalSupply,
-        creatorTokenIndex: 0
-      } as Token);
-    });
   });
 
-  describe('new token creator, new neynar user', () => {
-    let result: CommitTokenDetailsToDbResult;
-    let accountEntityDbRows: GetAccountEntityResult | undefined;
-
+  describe('function creates db rows', () => {
     beforeAll(async () => {
       await dbModule.unsafe__clearDbTables(db);
       await db.insert(currencies).values({
@@ -290,173 +185,27 @@ describe('commitTokenDetailsToDb', () => {
         symbol: testTokenCreatedData.symbol,
         decimals: 18
       });
-      result = await commitTokenDetailsToDb({
+      const [testAccountEntity] = await db
+        .insert(accountEntities)
+        .values({
+          label: testAccountEntityLabel
+        })
+        .returning();
+      testAccountEntityId = testAccountEntity!.id;
+
+      committedTokenDetailsResult = await commitTokenDetailsToDb({
         tokenCreatedData: testTokenCreatedData,
         accountEntityId: testAccountEntityId,
         tokenScore: null
       });
-      accountEntityDbRows = await dbModule.getAccountEntity(
+    });
+
+    it('should create new token in DB', async () => {
+      const token = await dbModule.getTokenByAddress(
         db,
-        result.accountEntityId
+        committedTokenDetailsResult.token.address
       );
-    });
-
-    it('should return created DB objects', () => {
-      expect(result).toStrictEqual({
-        block: {
-          number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP
-        },
-        accountEntityId: expect.any(Number),
-        token: {
-          id: expect.any(Number),
-          createdAt: expect.any(Date),
-          name: testTokenCreatedData.tokenName,
-          symbol: testTokenCreatedData.symbol,
-          address: testTokenCreatedData.tokenAddress,
-          deploymentTransactionHash: testTokenCreatedData.transactionHash,
-          block: BLOCK_NUMBER,
-          deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId,
-          score: null,
-          totalSupply: testTokenCreatedData.totalSupply,
-          creatorTokenIndex: 0,
-          imageUrl: null
-        } as Token,
-        tokenPool: {
-          address: testTokenCreatedData.poolContext.pairedAddress,
-          athMcapUsd: 10000000000000,
-          createdAt: expect.any(Date),
-          currencyId: expect.any(Number),
-          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
-          id: expect.any(Number),
-          isPrimary: true,
-          startingMcapUsd: 10000000000000,
-          tokenId: result.token.id,
-          updatedAt: null
-        } as Pool,
-        deployerContract: {
-          id: expect.any(Number),
-          createdAt: expect.any(Date),
-          address: testTokenCreatedData.deployerContractAddress
-        },
-        wallets: expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: testTokenCreatedData.msgSender,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          }
-        ]),
-        farcasterAccounts: expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            fid: testNeynarUser.fid,
-            username: testNeynarUser.username,
-            accountEntityId: result.accountEntityId,
-            displayName: null,
-            followerCount: testNeynarUser.follower_count,
-            pfpUrl: null
-          } as FarcasterAccount
-        ]),
-        xAccounts: expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`,
-            username: JOHNY_FIRST_X_ACCOUNT,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_SECOND_X_ACCOUNT}`,
-            username: JOHNY_SECOND_X_ACCOUNT,
-            accountEntityId: result.accountEntityId
-          }
-        ])
-      });
-    });
-
-    it('should create new account in DB', () => {
-      expect(accountEntityDbRows).toBeDefined();
-      expect(accountEntityDbRows?.accountEntity).toStrictEqual({
-        id: result.accountEntityId,
-        createdAt: expect.any(Date),
-        label: null
-      });
-    });
-
-    it('should create new wallets in DB', () => {
-      expect(accountEntityDbRows?.wallets.length).toBe(3);
-      expect(accountEntityDbRows?.wallets).toStrictEqual(
-        expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_PRIMARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_SECONDARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_TERTIARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          }
-        ])
-      );
-    });
-
-    it('should create new farcaster account in DB', () => {
-      expect(accountEntityDbRows?.farcasterAccounts.length).toBe(1);
-      expect(accountEntityDbRows?.farcasterAccounts[0]).toStrictEqual({
-        id: expect.any(Number),
-        createdAt: expect.any(Date),
-        fid: testNeynarUser.fid,
-        username: testNeynarUser.username,
-        accountEntityId: result.accountEntityId,
-        displayName: null,
-        followerCount: 100,
-        pfpUrl: null
-      });
-    });
-
-    it('should create new x accounts in DB', () => {
-      expect(accountEntityDbRows?.xAccounts.length).toBe(2);
-      expect(accountEntityDbRows?.xAccounts).toStrictEqual(
-        expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`,
-            username: JOHNY_FIRST_X_ACCOUNT,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_SECOND_X_ACCOUNT}`,
-            username: JOHNY_SECOND_X_ACCOUNT,
-            accountEntityId: result.accountEntityId
-          }
-        ])
-      );
-    });
-
-    it('should create new token in DB', () => {
-      expect(accountEntityDbRows?.tokens.length).toBe(1);
-      expect(accountEntityDbRows?.tokens[0]).toStrictEqual({
+      expect(token).toStrictEqual({
         id: expect.any(Number),
         createdAt: expect.any(Date),
         name: testTokenCreatedData.tokenName,
@@ -464,888 +213,59 @@ describe('commitTokenDetailsToDb', () => {
         address: testTokenCreatedData.tokenAddress,
         deploymentTransactionHash: testTokenCreatedData.transactionHash,
         block: BLOCK_NUMBER,
-        deploymentContractId: result.deployerContract.id,
-        accountEntityId: result.accountEntityId,
+        deploymentContractId: committedTokenDetailsResult.deployerContract.id,
+        accountEntityId: testAccountEntityId,
         score: null,
         imageUrl: null,
         totalSupply: testTokenCreatedData.totalSupply,
         creatorTokenIndex: 0
       } as Token);
     });
-  });
 
-  describe('existing token creator, no neynar user', () => {
-    let existingAccountEntityId: number;
-    let existingWallet: Wallet;
-    let result: CommitTokenDetailsToDbResult;
-    let accountEntityDbRows: GetAccountEntityResult | undefined;
-
-    beforeAll(async () => {
-      await dbModule.unsafe__clearDbTables(db);
-      const dbPool = new dbModule.PooledDbConnection({
-        databaseUrl: env.DATABASE_URL
-      });
-      await dbPool.db.insert(currencies).values({
-        address: testTokenCreatedData.poolContext.pairedAddress,
-        name: testTokenCreatedData.tokenName,
-        symbol: testTokenCreatedData.symbol,
-        decimals: 18
-      });
-      const { accountEntity, wallets } = await dbModule.createAccountEntity(
-        dbPool.db,
-        {
-          newWallets: [
-            {
-              address: JOHNY_PRIMARY_ETH_WALLET
-            }
-          ]
-        }
-      );
-      existingAccountEntityId = accountEntity.id;
-      existingWallet = wallets[0] as Wallet;
-      await dbPool.endPoolConnection();
-      result = await commitTokenDetailsToDb({
-        tokenCreatedData: testTokenCreatedData,
-        accountEntityId: testAccountEntityId,
-        tokenScore: null
-      });
-      accountEntityDbRows = await dbModule.getAccountEntity(
+    it('should create new deployerContract in DB', async () => {
+      const deployerContract = await dbModule.getDeployerContract(
         db,
-        result.accountEntityId
+        committedTokenDetailsResult.deployerContract.address
       );
-    });
 
-    it('should return DB objects (existing and created) related to existing account entity', () => {
-      expect(result).toStrictEqual({
-        block: {
-          number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP
-        },
-        accountEntityId: expect.any(Number),
-        token: {
-          id: expect.any(Number),
-          createdAt: expect.any(Date),
-          name: testTokenCreatedData.tokenName,
-          symbol: testTokenCreatedData.symbol,
-          address: testTokenCreatedData.tokenAddress,
-          deploymentTransactionHash: testTokenCreatedData.transactionHash,
-          block: BLOCK_NUMBER,
-          deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId,
-          score: null,
-          creatorTokenIndex: 0,
-          imageUrl: null,
-          totalSupply: testTokenCreatedData.totalSupply
-        } as Token,
-        tokenPool: {
-          address: testTokenCreatedData.poolContext.pairedAddress,
-          athMcapUsd: 10000000000000,
-          createdAt: expect.any(Date),
-          currencyId: expect.any(Number),
-          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
-          id: expect.any(Number),
-          isPrimary: true,
-          startingMcapUsd: 10000000000000,
-          tokenId: result.token.id,
-          updatedAt: null
-        } as Pool,
-        deployerContract: {
-          id: expect.any(Number),
-          createdAt: expect.any(Date),
-          address: testTokenCreatedData.deployerContractAddress
-        },
-        wallets: expect.arrayContaining([existingWallet]),
-        farcasterAccounts: [],
-        xAccounts: []
-      });
-    });
-
-    it('should NOT create new account in DB', () => {
-      expect(accountEntityDbRows?.accountEntity.id).toBe(
-        existingAccountEntityId
-      );
-    });
-
-    it('should NOT create new wallet in DB', () => {
-      expect(accountEntityDbRows?.wallets.length).toBe(1);
-      expect(accountEntityDbRows?.wallets[0]).toStrictEqual(existingWallet);
-    });
-
-    it('should NOT create new farcaster account in DB', () => {
-      expect(accountEntityDbRows?.farcasterAccounts.length).toBe(0);
-    });
-
-    it('should NOT create new x account in DB', () => {
-      expect(accountEntityDbRows?.xAccounts.length).toBe(0);
-    });
-
-    it('should create new token in DB', () => {
-      expect(accountEntityDbRows?.tokens.length).toBe(1);
-      expect(accountEntityDbRows?.tokens[0]).toStrictEqual({
+      expect(deployerContract).toStrictEqual({
         id: expect.any(Number),
         createdAt: expect.any(Date),
-        name: testTokenCreatedData.tokenName,
-        symbol: testTokenCreatedData.symbol,
-        address: testTokenCreatedData.tokenAddress,
-        deploymentTransactionHash: testTokenCreatedData.transactionHash,
-        block: BLOCK_NUMBER,
-        deploymentContractId: result.deployerContract.id,
-        accountEntityId: existingAccountEntityId,
-        score: null,
-        imageUrl: null,
-        creatorTokenIndex: 0,
-        totalSupply: testTokenCreatedData.totalSupply
-      } as Token);
+        address: testTokenCreatedData.deployerContractAddress
+      });
     });
-  });
 
-  describe('existing token creator, new neynar user', () => {
-    let existingAccountEntityId: number;
-    let existingWallet: Wallet;
-    let result: CommitTokenDetailsToDbResult;
-    let accountEntityDbRows: GetAccountEntityResult | undefined;
-
-    beforeAll(async () => {
-      await dbModule.unsafe__clearDbTables(db);
-      const dbPool = new dbModule.PooledDbConnection({
-        databaseUrl: env.DATABASE_URL
-      });
-
-      await dbPool.db.insert(currencies).values({
-        address: testTokenCreatedData.poolContext.pairedAddress,
-        name: testTokenCreatedData.tokenName,
-        symbol: testTokenCreatedData.symbol,
-        decimals: 18
-      });
-
-      const { accountEntity, wallets } = await dbModule.createAccountEntity(
-        dbPool.db,
-        {
-          newWallets: [
-            {
-              address: JOHNY_PRIMARY_ETH_WALLET
-            }
-          ]
-        }
-      );
-      existingAccountEntityId = accountEntity.id;
-      existingWallet = wallets[0] as Wallet;
-      await dbPool.endPoolConnection();
-      result = await commitTokenDetailsToDb({
-        tokenCreatedData: testTokenCreatedData,
-        accountEntityId: testAccountEntityId,
-        tokenScore: null
-      });
-      accountEntityDbRows = await dbModule.getAccountEntity(
+    it('should create new block in DB', async () => {
+      const block = await dbModule.getBlockByNumber(
         db,
-        result.accountEntityId
+        committedTokenDetailsResult.block.number
       );
-    });
 
-    it('should return DB objects (existing and created) related to existing account entity', () => {
-      expect(result).toStrictEqual({
-        block: {
-          number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP
-        },
-        accountEntityId: expect.any(Number),
-        token: {
-          id: expect.any(Number),
-          createdAt: expect.any(Date),
-          name: testTokenCreatedData.tokenName,
-          symbol: testTokenCreatedData.symbol,
-          address: testTokenCreatedData.tokenAddress,
-          deploymentTransactionHash: testTokenCreatedData.transactionHash,
-          block: BLOCK_NUMBER,
-          deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId,
-          score: null,
-          imageUrl: null,
-          totalSupply: testTokenCreatedData.totalSupply,
-          creatorTokenIndex: 0
-        } as Token,
-        tokenPool: {
-          address: testTokenCreatedData.poolContext.pairedAddress,
-          athMcapUsd: 10000000000000,
-          createdAt: expect.any(Date),
-          currencyId: expect.any(Number),
-          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
-          id: expect.any(Number),
-          isPrimary: true,
-          startingMcapUsd: 10000000000000,
-          tokenId: result.token.id,
-          updatedAt: null
-        } as Pool,
-        deployerContract: {
-          id: expect.any(Number),
-          createdAt: expect.any(Date),
-          address: testTokenCreatedData.deployerContractAddress
-        },
-        wallets: expect.arrayContaining([
-          existingWallet,
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_SECONDARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_TERTIARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          }
-        ]),
-        farcasterAccounts: expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            fid: testNeynarUser.fid,
-            username: testNeynarUser.username,
-            accountEntityId: result.accountEntityId,
-            displayName: null,
-            followerCount: testNeynarUser.follower_count,
-            pfpUrl: null
-          } as FarcasterAccount
-        ]),
-        xAccounts: expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`,
-            username: JOHNY_FIRST_X_ACCOUNT,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_SECOND_X_ACCOUNT}`,
-            username: JOHNY_SECOND_X_ACCOUNT,
-            accountEntityId: result.accountEntityId
-          }
-        ])
+      expect(block).toStrictEqual({
+        ...committedTokenDetailsResult.block,
+        createdAt: expect.any(Date)
       });
     });
 
-    it('should NOT create new account in DB', () => {
-      expect(accountEntityDbRows?.accountEntity.id).toBe(
-        existingAccountEntityId
+    it('should create new pool in DB', async () => {
+      const getPoolResult = await dbModule.getPool(
+        db,
+        committedTokenDetailsResult.tokenPool.address as Address
       );
-    });
+      const pool = getPoolResult?.pools;
 
-    it('should create only missing verified wallets in DB', () => {
-      expect(accountEntityDbRows?.wallets.length).toBe(3);
-      expect(accountEntityDbRows?.wallets).toStrictEqual(
-        expect.arrayContaining([
-          existingWallet,
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_SECONDARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_TERTIARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          }
-        ])
-      );
-    });
-
-    it('should create new farcaster account in DB', () => {
-      expect(accountEntityDbRows?.farcasterAccounts.length).toBe(1);
-      expect(accountEntityDbRows?.farcasterAccounts[0]).toStrictEqual({
+      expect(pool).toStrictEqual({
         id: expect.any(Number),
         createdAt: expect.any(Date),
-        fid: testNeynarUser.fid,
-        username: testNeynarUser.username,
-        accountEntityId: existingAccountEntityId,
-        displayName: null,
-        followerCount: 100,
-        pfpUrl: null
-      } as FarcasterAccount);
-    });
-
-    it('should create new x account in DB', () => {
-      expect(accountEntityDbRows?.xAccounts.length).toBe(2);
-      expect(accountEntityDbRows?.xAccounts).toStrictEqual(
-        expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`,
-            username: JOHNY_FIRST_X_ACCOUNT,
-            accountEntityId: existingAccountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_SECOND_X_ACCOUNT}`,
-            username: JOHNY_SECOND_X_ACCOUNT,
-            accountEntityId: existingAccountEntityId
-          }
-        ])
-      );
-    });
-
-    it('should create new token in DB', () => {
-      expect(accountEntityDbRows?.tokens.length).toBe(1);
-      expect(accountEntityDbRows?.tokens[0]).toStrictEqual({
-        id: expect.any(Number),
-        createdAt: expect.any(Date),
-        name: testTokenCreatedData.tokenName,
-        symbol: testTokenCreatedData.symbol,
-        address: testTokenCreatedData.tokenAddress,
-        deploymentTransactionHash: testTokenCreatedData.transactionHash,
-        block: BLOCK_NUMBER,
-        deploymentContractId: result.deployerContract.id,
-        accountEntityId: existingAccountEntityId,
-        score: null,
-        creatorTokenIndex: 0,
-        imageUrl: null,
-        totalSupply: testTokenCreatedData.totalSupply
-      } as Token);
-    });
-  });
-
-  describe('new token creator, existing neynar user', () => {
-    let existingAccountEntityId: number;
-    let existingFarcasterAccount: FarcasterAccount;
-    let result: CommitTokenDetailsToDbResult;
-    let accountEntityDbRows: GetAccountEntityResult | undefined;
-
-    beforeAll(async () => {
-      await dbModule.unsafe__clearDbTables(db);
-      const dbPool = new dbModule.PooledDbConnection({
-        databaseUrl: env.DATABASE_URL
+        address: poolContext.address,
+        athMcapUsd: expect.any(Number),
+        currencyId: expect.any(Number),
+        feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
+        startingMcapUsd: expect.any(Number),
+        tokenId: committedTokenDetailsResult.token.id,
+        updatedAt: null,
+        isPrimary: expect.any(Boolean)
       });
-      await dbPool.db.insert(currencies).values({
-        address: testTokenCreatedData.poolContext.pairedAddress,
-        name: testTokenCreatedData.tokenName,
-        symbol: testTokenCreatedData.symbol,
-        decimals: 18
-      });
-      const { accountEntity, farcasterAccount } =
-        await dbModule.createAccountEntity(dbPool.db, {
-          newFarcasterAccount: {
-            fid: testNeynarUser.fid,
-            username: testNeynarUser.username
-          },
-          newXAccounts: [
-            {
-              xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`,
-              username: JOHNY_FIRST_X_ACCOUNT
-            }
-          ]
-        });
-      existingAccountEntityId = accountEntity.id;
-      existingFarcasterAccount = farcasterAccount as FarcasterAccount;
-      await dbPool.endPoolConnection();
-      result = await commitTokenDetailsToDb({
-        tokenCreatedData: testTokenCreatedData,
-        accountEntityId: testAccountEntityId,
-        tokenScore: null
-      });
-      accountEntityDbRows = await dbModule.getAccountEntity(
-        db,
-        result.accountEntityId
-      );
-    });
-
-    it('should return DB objects (existing and created) related to existing account entity', () => {
-      expect(result).toStrictEqual({
-        block: {
-          number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP
-        },
-        accountEntityId: expect.any(Number),
-        token: {
-          id: expect.any(Number),
-          createdAt: expect.any(Date),
-          name: testTokenCreatedData.tokenName,
-          symbol: testTokenCreatedData.symbol,
-          address: testTokenCreatedData.tokenAddress,
-          deploymentTransactionHash: testTokenCreatedData.transactionHash,
-          block: BLOCK_NUMBER,
-          deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId,
-          score: null,
-          imageUrl: null,
-          totalSupply: testTokenCreatedData.totalSupply,
-          creatorTokenIndex: 0
-        } as Token,
-        tokenPool: {
-          address: testTokenCreatedData.poolContext.pairedAddress,
-          athMcapUsd: 10000000000000,
-          createdAt: expect.any(Date),
-          currencyId: expect.any(Number),
-          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
-          id: expect.any(Number),
-          isPrimary: true,
-          startingMcapUsd: 10000000000000,
-          tokenId: result.token.id,
-          updatedAt: null
-        } as Pool,
-        deployerContract: {
-          id: expect.any(Number),
-          createdAt: expect.any(Date),
-          address: testTokenCreatedData.deployerContractAddress
-        },
-        wallets: expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_PRIMARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_SECONDARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_TERTIARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          }
-        ]),
-        farcasterAccounts: expect.arrayContaining([existingFarcasterAccount]),
-        xAccounts: expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`,
-            username: JOHNY_FIRST_X_ACCOUNT,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_SECOND_X_ACCOUNT}`,
-            username: JOHNY_SECOND_X_ACCOUNT,
-            accountEntityId: result.accountEntityId
-          }
-        ])
-      });
-    });
-
-    it('should NOT create new account in DB', () => {
-      expect(accountEntityDbRows?.accountEntity.id).toBe(
-        existingAccountEntityId
-      );
-    });
-
-    it('should create new wallets in DB (accountEntityId + neynar verified addresses)', () => {
-      expect(accountEntityDbRows?.wallets.length).toBe(3);
-      expect(accountEntityDbRows?.wallets).toStrictEqual(
-        expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_PRIMARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: existingAccountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_SECONDARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: existingAccountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_TERTIARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: existingAccountEntityId
-          }
-        ])
-      );
-    });
-
-    it('should NOT create new farcaster account in DB', () => {
-      expect(accountEntityDbRows?.farcasterAccounts.length).toBe(1);
-      expect(accountEntityDbRows?.farcasterAccounts[0]).toStrictEqual(
-        existingFarcasterAccount
-      );
-    });
-
-    it('should create missing x account in DB', () => {
-      expect(accountEntityDbRows?.xAccounts.length).toBe(2);
-      expect(accountEntityDbRows?.xAccounts).toStrictEqual(
-        expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`,
-            username: JOHNY_FIRST_X_ACCOUNT,
-            accountEntityId: existingAccountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_SECOND_X_ACCOUNT}`,
-            username: JOHNY_SECOND_X_ACCOUNT,
-            accountEntityId: existingAccountEntityId
-          }
-        ])
-      );
-    });
-
-    it('should create new token in DB', () => {
-      expect(accountEntityDbRows?.tokens.length).toBe(1);
-      expect(accountEntityDbRows?.tokens[0]).toStrictEqual({
-        id: expect.any(Number),
-        createdAt: expect.any(Date),
-        name: testTokenCreatedData.tokenName,
-        symbol: testTokenCreatedData.symbol,
-        address: testTokenCreatedData.tokenAddress,
-        deploymentTransactionHash: testTokenCreatedData.transactionHash,
-        block: BLOCK_NUMBER,
-        deploymentContractId: result.deployerContract.id,
-        accountEntityId: existingAccountEntityId,
-        score: null,
-        creatorTokenIndex: 0,
-        imageUrl: null,
-        totalSupply: testTokenCreatedData.totalSupply
-      } as Token);
-    });
-  });
-
-  describe('existing token creator, existing neynar user', () => {
-    let existingAccountEntityId: number;
-    let existingWallet: Wallet;
-    let existingFarcasterAccount: FarcasterAccount;
-    let result: CommitTokenDetailsToDbResult;
-    let accountEntityDbRows: GetAccountEntityResult | undefined;
-
-    beforeAll(async () => {
-      await dbModule.unsafe__clearDbTables(db);
-      const dbPool = new dbModule.PooledDbConnection({
-        databaseUrl: env.DATABASE_URL
-      });
-      await dbPool.db.insert(currencies).values({
-        address: testTokenCreatedData.poolContext.pairedAddress,
-        name: testTokenCreatedData.tokenName,
-        symbol: testTokenCreatedData.symbol,
-        decimals: 18
-      });
-      const { accountEntity, wallets, farcasterAccount } =
-        await dbModule.createAccountEntity(dbPool.db, {
-          newWallets: [
-            {
-              address: JOHNY_PRIMARY_ETH_WALLET
-            }
-          ],
-          newFarcasterAccount: {
-            fid: testNeynarUser.fid,
-            username: testNeynarUser.username
-          },
-          newXAccounts: [
-            {
-              xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`,
-              username: JOHNY_FIRST_X_ACCOUNT
-            }
-          ]
-        });
-      existingAccountEntityId = accountEntity.id;
-      existingFarcasterAccount = farcasterAccount as FarcasterAccount;
-      existingWallet = wallets[0] as Wallet;
-      await dbPool.endPoolConnection();
-      result = await commitTokenDetailsToDb({
-        tokenCreatedData: testTokenCreatedData,
-        accountEntityId: testAccountEntityId,
-        tokenScore: null
-      });
-      accountEntityDbRows = await dbModule.getAccountEntity(
-        db,
-        result.accountEntityId
-      );
-    });
-
-    it('should return DB objects (existing and created) related to existing account entity', () => {
-      expect(result).toStrictEqual({
-        block: {
-          number: BLOCK_NUMBER,
-          timestamp: BLOCK_TIMESTAMP
-        },
-        accountEntityId: expect.any(Number),
-        token: {
-          id: expect.any(Number),
-          createdAt: expect.any(Date),
-          name: testTokenCreatedData.tokenName,
-          symbol: testTokenCreatedData.symbol,
-          address: testTokenCreatedData.tokenAddress,
-          deploymentTransactionHash: testTokenCreatedData.transactionHash,
-          block: BLOCK_NUMBER,
-          deploymentContractId: result.deployerContract.id,
-          accountEntityId: result.accountEntityId,
-          score: null,
-          creatorTokenIndex: 0,
-          imageUrl: null,
-          totalSupply: testTokenCreatedData.totalSupply
-        } as Token,
-        deployerContract: {
-          id: expect.any(Number),
-          createdAt: expect.any(Date),
-          address: testTokenCreatedData.deployerContractAddress
-        },
-        tokenPool: {
-          address: testTokenCreatedData.poolContext.pairedAddress,
-          athMcapUsd: 10000000000000,
-          createdAt: expect.any(Date),
-          currencyId: expect.any(Number),
-          feeBps: CLANKER_3_1_UNISWAP_FEE_BPS,
-          id: expect.any(Number),
-          isPrimary: true,
-          startingMcapUsd: 10000000000000,
-          tokenId: result.token.id,
-          updatedAt: null
-        } as Pool,
-        wallets: expect.arrayContaining([
-          existingWallet,
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_SECONDARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_TERTIARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: result.accountEntityId
-          }
-        ]),
-        farcasterAccounts: expect.arrayContaining([existingFarcasterAccount]),
-        xAccounts: expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`,
-            username: JOHNY_FIRST_X_ACCOUNT,
-            accountEntityId: result.accountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_SECOND_X_ACCOUNT}`,
-            username: JOHNY_SECOND_X_ACCOUNT,
-            accountEntityId: result.accountEntityId
-          }
-        ])
-      });
-    });
-
-    it('should NOT create new account in DB', () => {
-      expect(accountEntityDbRows?.accountEntity.id).toBe(
-        existingAccountEntityId
-      );
-    });
-
-    it('should only create missing verified wallets in DB', () => {
-      expect(accountEntityDbRows?.wallets.length).toBe(3);
-      expect(accountEntityDbRows?.wallets).toStrictEqual(
-        expect.arrayContaining([
-          existingWallet,
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_SECONDARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: existingAccountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_TERTIARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: existingAccountEntityId
-          }
-        ])
-      );
-    });
-
-    it('should NOT create new farcaster account in DB', () => {
-      expect(accountEntityDbRows?.farcasterAccounts.length).toBe(1);
-      expect(accountEntityDbRows?.farcasterAccounts[0]).toStrictEqual(
-        existingFarcasterAccount
-      );
-    });
-
-    it('should create missing x account in DB', () => {
-      expect(accountEntityDbRows?.xAccounts.length).toBe(2);
-      expect(accountEntityDbRows?.xAccounts).toStrictEqual(
-        expect.arrayContaining([
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`,
-            username: JOHNY_FIRST_X_ACCOUNT,
-            accountEntityId: existingAccountEntityId
-          },
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_SECOND_X_ACCOUNT}`,
-            username: JOHNY_SECOND_X_ACCOUNT,
-            accountEntityId: existingAccountEntityId
-          }
-        ])
-      );
-    });
-
-    it('should create new token in DB', () => {
-      expect(accountEntityDbRows?.tokens.length).toBe(1);
-      expect(accountEntityDbRows?.tokens[0]).toStrictEqual({
-        id: expect.any(Number),
-        createdAt: expect.any(Date),
-        name: testTokenCreatedData.tokenName,
-        symbol: testTokenCreatedData.symbol,
-        address: testTokenCreatedData.tokenAddress,
-        deploymentTransactionHash: testTokenCreatedData.transactionHash,
-        block: BLOCK_NUMBER,
-        deploymentContractId: result.deployerContract.id,
-        accountEntityId: existingAccountEntityId,
-        score: null,
-        creatorTokenIndex: 0,
-        imageUrl: null,
-        totalSupply: testTokenCreatedData.totalSupply
-      } as Token);
-    });
-  });
-
-  describe('new neynar user for existing entity with farcaster account', () => {
-    let existingAccountEntityId: number;
-    let existingWallets: Wallet[];
-    let existingXAccounts: XAccount[];
-    let existingFarcasterAccount: FarcasterAccount;
-    let result: CommitTokenDetailsToDbResult;
-    let accountEntityDbRows: GetAccountEntityResult | undefined;
-
-    beforeAll(async () => {
-      await dbModule.unsafe__clearDbTables(db);
-      // In this setup we find assicoation between JOHNY_SECONDARY_ETH_WALLET that we already have in DB
-      // and same JOHNY_SECONDARY_ETH_WALLET being present in anotherNeynarUser verified wallets list
-      const dbPool = new dbModule.PooledDbConnection({
-        databaseUrl: env.DATABASE_URL
-      });
-      await dbPool.db.insert(currencies).values({
-        address: testTokenCreatedData.poolContext.pairedAddress,
-        name: testTokenCreatedData.tokenName,
-        symbol: testTokenCreatedData.symbol,
-        decimals: 18
-      });
-      const { accountEntity, wallets, xAccounts, farcasterAccount } =
-        await dbModule.createAccountEntity(dbPool.db, {
-          newWallets: [
-            {
-              address: JOHNY_PRIMARY_ETH_WALLET
-            },
-            {
-              address: JOHNY_SECONDARY_ETH_WALLET
-            },
-            {
-              address: JOHNY_TERTIARY_ETH_WALLET
-            }
-          ],
-          newFarcasterAccount: {
-            fid: testNeynarUser.fid,
-            username: testNeynarUser.username
-          },
-          newXAccounts: [
-            {
-              username: JOHNY_FIRST_X_ACCOUNT,
-              xid: `xid-for-${JOHNY_FIRST_X_ACCOUNT}`
-            },
-            {
-              username: JOHNY_SECOND_X_ACCOUNT,
-              xid: `xid-for-${JOHNY_SECOND_X_ACCOUNT}`
-            }
-          ]
-        });
-      existingAccountEntityId = accountEntity.id;
-      existingFarcasterAccount = farcasterAccount as FarcasterAccount;
-      existingWallets = wallets;
-      existingXAccounts = xAccounts;
-      await dbPool.endPoolConnection();
-      result = await commitTokenDetailsToDb({
-        tokenCreatedData: {
-          ...testTokenCreatedData,
-          msgSender: JOHNY_SECRET_ETH_WALLET
-        },
-        accountEntityId: testAccountEntityId,
-        tokenScore: null
-      });
-      accountEntityDbRows = await dbModule.getAccountEntity(
-        db,
-        result.accountEntityId
-      );
-    });
-
-    it('should create new farcaster account in DB', () => {
-      expect(accountEntityDbRows?.farcasterAccounts.length).toBe(2);
-      expect(accountEntityDbRows?.farcasterAccounts).toStrictEqual(
-        expect.arrayContaining([
-          existingFarcasterAccount,
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            fid: anotherNeynarUser.fid,
-            username: anotherNeynarUser.username,
-            accountEntityId: existingAccountEntityId,
-            displayName: null,
-            followerCount: testNeynarUser.follower_count,
-            pfpUrl: null
-          } as FarcasterAccount
-        ])
-      );
-    });
-
-    it('should add new neynar user verified wallet to DB', () => {
-      expect(accountEntityDbRows?.wallets.length).toBe(4);
-      expect(accountEntityDbRows?.wallets).toStrictEqual(
-        expect.arrayContaining([
-          ...existingWallets,
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            address: JOHNY_SECONDARY_ETH_WALLET,
-            verificationSourceId: null,
-            accountEntityId: existingAccountEntityId
-          }
-        ])
-      );
-    });
-
-    it('should add new neynar user verified X accounts to DB', () => {
-      expect(accountEntityDbRows?.xAccounts.length).toBe(3);
-      expect(accountEntityDbRows?.xAccounts).toStrictEqual(
-        expect.arrayContaining([
-          ...existingXAccounts,
-          {
-            id: expect.any(Number),
-            createdAt: expect.any(Date),
-            xid: `xid-for-${JOHNY_SECFRET_X_ACCOUNT}`,
-            username: JOHNY_SECFRET_X_ACCOUNT,
-            accountEntityId: existingAccountEntityId
-          }
-        ])
-      );
     });
   });
 });

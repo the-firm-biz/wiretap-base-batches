@@ -9,7 +9,7 @@ import {
 } from '../schema/index.js';
 import { env } from '../env.js';
 import { unsafe__clearDbTables } from '../utils/testUtils.js';
-import { getToken } from './get-token.js';
+import { getTokenByAddress } from './get-token-by-address.js';
 
 const newToken: NewToken = {
   block: 0,
@@ -28,7 +28,7 @@ const newToken: NewToken = {
 
 let existingToken: Token;
 
-describe('getToken', () => {
+describe('getTokenByAddress', () => {
   const db = singletonDb({
     databaseUrl: env.DATABASE_URL
   });
@@ -68,21 +68,21 @@ describe('getToken', () => {
     });
 
     it('returns existing DB row (exact same address)', async () => {
-      const returnedRow = await getToken(db, newToken);
+      const returnedRow = await getTokenByAddress(db, newToken.address);
       expect(returnedRow).toStrictEqual(existingToken);
     });
     it('returns existing DB row (same address, different letter case)', async () => {
-      const returnedRow = await getToken(db, {
-        ...existingToken,
-        address: existingToken.address.toLowerCase()
-      });
+      const returnedRow = await getTokenByAddress(
+        db,
+        existingToken.address.toLowerCase()
+      );
       expect(returnedRow).toStrictEqual(existingToken);
     });
   });
 
   describe('if token does not exist in DB', () => {
     it('returns null', async () => {
-      const returnedRow = await getToken(db, newToken);
+      const returnedRow = await getTokenByAddress(db, newToken.address);
       expect(returnedRow).toBeNull();
     });
   });
