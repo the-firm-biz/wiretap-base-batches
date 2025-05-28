@@ -60,7 +60,7 @@ const main = async () => {
     });
 
     const client = createHttpPublicClient({
-      alchemyApiKey: process.env.SERVER_ALCHEMY_API_KEY
+      transportUrl: `https://base-mainnet.g.alchemy.com/v2/${process.env.SERVER_ALCHEMY_API_KEY}`
     });
 
     const slot0 = await client

@@ -28,7 +28,7 @@ export const createInnerContext = (opts: {
     apiKey: serverEnv.NEYNAR_API_KEY
   });
   const viemClient = createHttpPublicClient({
-    alchemyApiKey: serverEnv.SERVER_ALCHEMY_API_KEY
+    transportUrl: `https://base-mainnet.g.alchemy.com/v2/${serverEnv.SERVER_ALCHEMY_API_KEY}`
   });
 
   return {

@@ -22,7 +22,7 @@ const main = async () => {
 
   for (const [i, token] of tokensWithoutImageUrl.entries()) {
     const client = createHttpPublicClient({
-      alchemyApiKey: process.env.SERVER_ALCHEMY_API_KEY
+      transportUrl: `https://base-mainnet.g.alchemy.com/v2/${process.env.SERVER_ALCHEMY_API_KEY}`
     });
 
     const imageUrl = (await client.readContract({
