@@ -3,7 +3,7 @@
   "include": [
     "src",
     "*.ts",
-    "../../packages/utils/src/server/block-transaction-processor/group-transactions-by-service/is-clanker-v3-1-deploy-token-tx.ts"
+    "../../packages/utils/src/server/block-processor/group-transactions-by-service/is-clanker-v3-1-deploy-token-tx.ts"
   ],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {

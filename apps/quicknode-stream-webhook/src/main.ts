@@ -4,8 +4,7 @@ import { parseAndValidateQuicknodeWebhookPayload } from './parse-and-validate-pa
 import {
   getLogsForBlock,
   getTransactionsForBlock,
-  groupTransactionsByService,
-  groupLogsByService
+  groupTransactionLogPairsByService
 } from '@wiretap/utils/server';
 import { env } from '../env.js';
 
@@ -32,6 +31,7 @@ app.post('/webhook', async (c) => {
   try {
     /**
      * @note TRANSACTION & BLOCK FETCHING SHOULD BE PUSHED OUT OF THE WEBHOOK SERVER
+     * https://linear.app/the-firm/issue/ENG-354/swaptoken-created-watcher-re-architect-our-watcher-services
      * This is just an implementation example
      */
     console.time('transactions:: get-for-block');
@@ -43,37 +43,26 @@ app.post('/webhook', async (c) => {
 
     /**
      * @note TRANSACTION & LOG GROUPING SHOULD BE PUSHED OUT OF THE WEBHOOK SERVER
+     * https://linear.app/the-firm/issue/ENG-354/swaptoken-created-watcher-re-architect-our-watcher-services
      * This is just an implementation example
      */
     console.time('transactions:: group-by-service');
-    const transactionsByService = groupTransactionsByService(transactions);
+    const transactionLogPairsByService = groupTransactionLogPairsByService(
+      transactions,
+      logs
+    );
     console.timeEnd('transactions:: group-by-service');
 
-    console.time('logs:: group-by-service');
-    const logsByService = groupLogsByService(logs);
-    console.timeEnd('logs:: group-by-service');
-
-    if (transactionsByService.clanker_v3_1_deploy_token_handler.length > 0) {
+    if (
+      transactionLogPairsByService.clanker_v3_1_deploy_token_handler.length > 0
+    ) {
       console.log(
-        `Found ${transactionsByService.clanker_v3_1_deploy_token_handler.length} Clanker transactions in block ${block.number}`
+        `Found ${transactionLogPairsByService.clanker_v3_1_deploy_token_handler.length} Clanker transactions in block ${block.number}`
       );
     }
-
-    if (transactionsByService.uniswap_v3_swap_handler.length > 0) {
+    if (transactionLogPairsByService.uniswap_v3_swap_handler.length > 0) {
       console.log(
-        `Found ${transactionsByService.uniswap_v3_swap_handler.length} Uniswap V3 transactions in block ${block.number}`
-      );
-    }
-
-    if (logsByService.clanker_v3_1_token_created_handler.length > 0) {
-      console.log(
-        `Found ${logsByService.clanker_v3_1_token_created_handler.length} Clanker TokenCreated logs in block ${block.number}`
-      );
-    }
-
-    if (logsByService.uniswap_v3_swap_handler.length > 0) {
-      console.log(
-        `Found ${logsByService.uniswap_v3_swap_handler.length} Uniswap V3 Swap logs in block ${block.number}`
+        `Found ${transactionLogPairsByService.uniswap_v3_swap_handler.length} Uniswap V3 transactions in block ${block.number}`
       );
     }
 
