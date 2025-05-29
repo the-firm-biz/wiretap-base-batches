@@ -115,7 +115,7 @@ export async function handleClankerFarcaster(
     tokenName: tokenCreatedData.tokenName,
     tokenSymbol: tokenCreatedData.symbol,
     deployerContractAddress: tokenCreatedData.deployerContractAddress,
-    neynarUser,
+    neynarUser: neynarUser || null,
     tracing: {
       latencyMs,
       span: parentSpan?.root()
