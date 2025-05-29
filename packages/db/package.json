@@ -26,6 +26,7 @@
     "@neondatabase/serverless": "^1.0.0",
     "@wiretap/config": "workspace:*",
     "@wiretap/utils": "workspace:*",
+    "@vitest/coverage-istanbul": "^3.1.4",
     "dotenv": "^16.5.0",
     "drizzle-kit": "^0.31.0",
     "drizzle-orm": "^0.42.0",
@@ -37,8 +38,9 @@
     "@wiretap/eslint-config": "workspace:*",
     "@wiretap/prettier-config": "workspace:*",
     "@wiretap/typescript-config": "workspace:*",
+    "@wiretap/vitest-config": "workspace:*",
     "vite": "^6.3.2",
-    "vitest": "^3.1.2",
+    "vitest": "^3.1.4",
     "@uniswap/sdk-core": "^7.7.2",
     "@uniswap/v3-sdk": "^3.25.2"
   }
