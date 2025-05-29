@@ -87,10 +87,10 @@ blockReceiver.post('/quicknode', async (c) => {
 });
 
 // Default 404 for all other routes
-blockReceiverServer.notFound((c) => c.text('404 Not Found', 404));
+blockReceiver.notFound((c) => c.text('404 Not Found', 404));
 
 console.log(`block-receiver-server server running on port ${PORT}`);
 serve({
-  fetch: blockReceiverServer.fetch,
+  fetch: blockReceiver.fetch,
   port: PORT
 });
