@@ -1,4 +1,4 @@
-app = 'quicknode-stream-webhook'
+app = 'block-receiver-server-production'
 primary_region = 'bos'
 kill_signal = 'SIGINT'
 kill_timeout = 10
@@ -6,8 +6,8 @@ kill_timeout = 10
 [build]
 
 [build.args]
-  ENTRY_POINT_FILE_PATH='quicknode-stream-webhook/dist/src/main.js'
-  PACKAGE_NAME='@wiretap/quicknode-stream-webhook'
+  ENTRY_POINT_FILE_PATH='block-receiver-server/dist/src/main.js'
+  PACKAGE_NAME='@wiretap/block-receiver-server'
 
 [http_service]
   internal_port = 8080

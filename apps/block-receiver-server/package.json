@@ -1,5 +1,5 @@
 {
-  "name": "@wiretap/quicknode-stream-webhook",
+  "name": "@wiretap/block-receiver-server",
   "version": "0.1.0",
   "type": "module",
   "scripts": {

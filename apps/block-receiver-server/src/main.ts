@@ -9,9 +9,9 @@ import {
 import { env } from '../env.js';
 
 const PORT = Number(process.env.PORT) || 8080;
-const app = new Hono();
+const blockReceiver = new Hono();
 
-app.post('/webhook', async (c) => {
+blockReceiver.post('/quicknode', async (c) => {
   console.time('TOTAL');
 
   console.time('webhook-payload::  parse-and-validate');
@@ -31,7 +31,7 @@ app.post('/webhook', async (c) => {
   try {
     /**
      * @note TRANSACTION & BLOCK FETCHING SHOULD BE PUSHED OUT OF THE WEBHOOK SERVER
-     * https://linear.app/the-firm/issue/ENG-354/swaptoken-created-watcher-re-architect-our-watcher-services
+     * https://linear.webhookReceiverServer/the-firm/issue/ENG-354/swaptoken-created-watcher-re-architect-our-watcher-services
      * This is just an implementation example
      */
     console.time('transactions:: get-for-block');
@@ -43,7 +43,7 @@ app.post('/webhook', async (c) => {
 
     /**
      * @note TRANSACTION & LOG GROUPING SHOULD BE PUSHED OUT OF THE WEBHOOK SERVER
-     * https://linear.app/the-firm/issue/ENG-354/swaptoken-created-watcher-re-architect-our-watcher-services
+     * https://linear.webhookReceiverServer/the-firm/issue/ENG-354/swaptoken-created-watcher-re-architect-our-watcher-services
      * This is just an implementation example
      */
     console.time('transactions:: group-by-service');
@@ -87,10 +87,10 @@ app.post('/webhook', async (c) => {
 });
 
 // Default 404 for all other routes
-app.notFound((c) => c.text('404 Not Found', 404));
+blockReceiverServer.notFound((c) => c.text('404 Not Found', 404));
 
-console.log(`quicknode-stream-webhook server running on port ${PORT}`);
+console.log(`block-receiver-server server running on port ${PORT}`);
 serve({
-  fetch: app.fetch,
+  fetch: blockReceiverServer.fetch,
   port: PORT
 });
