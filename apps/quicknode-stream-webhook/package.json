@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "build": "tsc",
-    "start": "node dist/main.js"
+    "start": "node dist/main.js",
+    "lint": "eslint .",
+    "ts:check": "tsc --noEmit"
   },
   "dependencies": {
     "@hono/node-server": "^1.14.2",
@@ -17,8 +19,9 @@
   },
   "devDependencies": {
     "@types/node": "^18.16.0",
-    "@wiretap/typescript-config": "workspace:*",
+    "@wiretap/eslint-config": "workspace:*",
     "@wiretap/prettier-config": "workspace:*",
+    "@wiretap/typescript-config": "workspace:*",
     "typescript": "^5.8.3"
   }
 }

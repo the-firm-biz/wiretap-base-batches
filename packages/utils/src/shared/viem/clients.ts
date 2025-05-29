@@ -47,22 +47,3 @@ export function createHttpPublicClient(
 }
 
 export type ViemClient = HttpViemClient | WebSocketViemClient;
-
-// @todo Migrate to this pattern using transportUrl rather than a termplate string with alchemy hardcoded
-export interface QuicknodeHttpClientOptions {
-  transportUrl: string;
-}
-let clientInstance: HttpViemClient | undefined;
-
-export function createQuicknodeHttpClient(
-  opts: QuicknodeHttpClientOptions
-): HttpViemClient {
-  if (!clientInstance) {
-    clientInstance = viemCreatePublicClient({
-      chain: base,
-      transport: http(opts.transportUrl)
-    });
-  }
-
-  return clientInstance;
-}

@@ -1,5 +1,5 @@
 import { decodeFunctionData } from 'viem/utils';
-import { CLANKER_ABI, type ClankerAbi } from '@wiretap/config';
+import { CLANKER_3_1_ABI, type ClankerAbi } from '@wiretap/config';
 import { httpPublicClient } from '../rpc-clients.js';
 import type { ContractFunctionArgs } from 'viem';
 import { callWithBackOff } from '@wiretap/utils/server';
@@ -44,7 +44,7 @@ export const getTransactionContext = async (
   }
 
   const { args: transactionArgs } = decodeFunctionData({
-    abi: CLANKER_ABI,
+    abi: CLANKER_3_1_ABI,
     data: transaction.input
   });
 

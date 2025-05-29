@@ -1,7 +1,24 @@
 import type { Context } from 'hono';
 
 /**
- * @note webhook receives a single block, ran through a Quicknode Stream payload filter to only return the block number and timestamp
+ * @note webhook receives a single block, ran through a Quicknode Stream payload filter
+ * to only return the block number and timestamp.
+ *
+ * Stream payload filter (declared in https://dashboard.quicknode.com/streams):
+ * Extended from https://www.quicknode.com/docs/streams/filters#return-hash-and-block-number
+ * ```ts
+ * function main(stream) {
+ *   const data = stream.data;
+ *
+ *   const numberDecimal = parseInt(data[0].number, 16);
+ *   const unixTimestamp = parseInt(data[0].timestamp, 16);
+ *
+ *   return {
+ *     timestamp: unixTimestamp,
+ *     number: numberDecimal,
+ *   };
+ * }
+ * ```
  */
 interface WebhookPayload {
   /** unix timestamp */
@@ -28,7 +45,7 @@ type ParsedAndValidatedResponse =
  * @returns An object containing the parsed webhook payload or error response
  */
 export async function parseAndValidateQuicknodeWebhookPayload(
-  c: Context,
+  c: Context
 ): Promise<ParsedAndValidatedResponse> {
   let webhookPayload: WebhookPayload;
 
@@ -38,7 +55,7 @@ export async function parseAndValidateQuicknodeWebhookPayload(
     console.error('Error parsing JSON data:', error);
     return {
       success: false,
-      response: c.json({ error: 'Failed to parse request data' }, 400),
+      response: c.json({ error: 'Failed to parse request data' }, 400)
     };
   }
 
@@ -49,10 +66,10 @@ export async function parseAndValidateQuicknodeWebhookPayload(
       response: c.json(
         {
           success: true,
-          message: 'PONG',
+          message: 'PONG'
         },
-        200,
-      ),
+        200
+      )
     };
   }
 
@@ -60,13 +77,13 @@ export async function parseAndValidateQuicknodeWebhookPayload(
   if (!webhookPayload.number) {
     return {
       success: false,
-      response: c.json({ error: 'Missing block number' }, 400),
+      response: c.json({ error: 'Missing block number' }, 400)
     };
   }
 
   // Return the parsed payload and metadata
   return {
     success: true,
-    webhookPayload,
+    webhookPayload
   };
 }

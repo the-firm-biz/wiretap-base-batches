@@ -1,6 +1,10 @@
 {
   "extends": "@wiretap/typescript-config/no-dom-library-config.json",
-  "include": ["src", "*.ts"],
+  "include": [
+    "src",
+    "*.ts",
+    "../../packages/utils/src/server/block-transaction-processor/group-transactions-by-service/is-clanker-v3-1-deploy-token-tx.ts"
+  ],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "outDir": "./dist"

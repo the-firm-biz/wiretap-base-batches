@@ -1,7 +1,12 @@
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { parseAndValidateQuicknodeWebhookPayload } from './parse-and-validate-payload.js';
-import { getTransactionsForBlockNumber } from '@wiretap/utils/server';
+import {
+  getLogsForBlock,
+  getTransactionsForBlock,
+  groupTransactionsByService,
+  groupLogsByService
+} from '@wiretap/utils/server';
 import { env } from '../env.js';
 
 const PORT = Number(process.env.PORT) || 8080;
@@ -10,9 +15,9 @@ const app = new Hono();
 app.post('/webhook', async (c) => {
   console.time('TOTAL');
 
-  console.time('webhook-parse-and-validate');
+  console.time('webhook-payload::  parse-and-validate');
   const parsedContext = await parseAndValidateQuicknodeWebhookPayload(c);
-  console.timeEnd('webhook-parse-and-validate');
+  console.timeEnd('webhook-payload::  parse-and-validate');
 
   if (!parsedContext.success) {
     return parsedContext.response;
@@ -25,21 +30,66 @@ app.post('/webhook', async (c) => {
   }
 
   try {
-    console.time('fetch-blocks');
-    // @todo - pass transactions to next function
-    await getTransactionsForBlockNumber(block.number, env.RPC_TRANSPORT_URL);
-    console.timeEnd('fetch-blocks');
+    /**
+     * @note TRANSACTION & BLOCK FETCHING SHOULD BE PUSHED OUT OF THE WEBHOOK SERVER
+     * This is just an implementation example
+     */
+    console.time('transactions:: get-for-block');
+    const [transactions, logs] = await Promise.all([
+      getTransactionsForBlock(BigInt(block.number), env.RPC_TRANSPORT_URL),
+      getLogsForBlock(BigInt(block.number), env.RPC_TRANSPORT_URL)
+    ]);
+    console.timeEnd('transactions:: get-for-block');
+
+    /**
+     * @note TRANSACTION & LOG GROUPING SHOULD BE PUSHED OUT OF THE WEBHOOK SERVER
+     * This is just an implementation example
+     */
+    console.time('transactions:: group-by-service');
+    const transactionsByService = groupTransactionsByService(transactions);
+    console.timeEnd('transactions:: group-by-service');
+
+    console.time('logs:: group-by-service');
+    const logsByService = groupLogsByService(logs);
+    console.timeEnd('logs:: group-by-service');
+
+    if (transactionsByService.clanker_v3_1_deploy_token_handler.length > 0) {
+      console.log(
+        `Found ${transactionsByService.clanker_v3_1_deploy_token_handler.length} Clanker transactions in block ${block.number}`
+      );
+    }
+
+    if (transactionsByService.uniswap_v3_swap_handler.length > 0) {
+      console.log(
+        `Found ${transactionsByService.uniswap_v3_swap_handler.length} Uniswap V3 transactions in block ${block.number}`
+      );
+    }
+
+    if (logsByService.clanker_v3_1_token_created_handler.length > 0) {
+      console.log(
+        `Found ${logsByService.clanker_v3_1_token_created_handler.length} Clanker TokenCreated logs in block ${block.number}`
+      );
+    }
+
+    if (logsByService.uniswap_v3_swap_handler.length > 0) {
+      console.log(
+        `Found ${logsByService.uniswap_v3_swap_handler.length} Uniswap V3 Swap logs in block ${block.number}`
+      );
+    }
 
     console.log('current time   |', new Date().toISOString());
-    console.log('blockTime      |', new Date(block?.timestamp * 1000).toISOString());
+    console.log(
+      'blockTime      |',
+      new Date(block?.timestamp * 1000).toISOString()
+    );
   } catch (error) {
     console.error('Error fetching transactions for block:', error);
     return c.json(
       {
         error: 'Error fetching transactions for block',
-        details: error instanceof Error ? error.message : 'Unknown error',
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
-      500,
+      500
     );
   }
 
@@ -53,5 +103,5 @@ app.notFound((c) => c.text('404 Not Found', 404));
 console.log(`quicknode-stream-webhook server running on port ${PORT}`);
 serve({
   fetch: app.fetch,
-  port: PORT,
+  port: PORT
 });
