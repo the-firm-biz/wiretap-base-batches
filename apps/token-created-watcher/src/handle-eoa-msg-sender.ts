@@ -83,6 +83,7 @@ export async function handleEOAMsgSender(
     tokenName: createdDbRows.token.name,
     tokenSymbol: createdDbRows.token.symbol,
     deployerContractAddress: createdDbRows.deployerContract.address,
+    neynarUser: neynarUser || null,
     tracing: {
       latencyMs
     },

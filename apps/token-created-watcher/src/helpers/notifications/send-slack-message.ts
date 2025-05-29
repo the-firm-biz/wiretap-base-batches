@@ -16,7 +16,7 @@ type SlackMessageDetails = {
   tokenSymbol: string;
   transactionHash: string;
   deployerContractAddress: string;
-  neynarUser?: NeynarUser;
+  neynarUser: NeynarUser | null;
   source: string;
   castValidation?: {
     castExists: boolean;
@@ -118,7 +118,7 @@ const _sendSlackMessage = async ({
   tokenScoreDetails,
   transactionArgs
 }: SlackMessageDetails) => {
-  console.log(`${source}: ${tokenName} (${tokenSymbol})`);
+  console.log(`${source}: ${tokenName} (${tokenSymbol}) ${tokenAddress}`);
   if (!env.IS_SLACK_NOTIFICATION_ENABLED) {
     console.log('Slack notifications are disabled');
     return;
