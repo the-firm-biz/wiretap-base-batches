@@ -33,7 +33,7 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  apps/quicknode-stream-webhook:
+  apps/block-receiver-server:
     dependencies:
       '@hono/node-server':
         specifier: ^1.14.2
