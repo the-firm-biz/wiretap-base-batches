@@ -14,6 +14,7 @@
     "dev:watchers": "pnpm run dev:redis:up && pnpm run build:packages && turbo run dev --filter=@wiretap/token-created-watcher --filter=@wiretap/swap-watcher --filter=@wiretap/vitest-config --filter=@wiretap/config --filter=@wiretap/utils --filter=@wiretap/db --filter=@wiretap/redis",
     "dev:swap-watcher": "pnpm run dev:redis:up && pnpm run build:packages && turbo run dev --filter=@wiretap/swap-watcher --filter=@wiretap/vitest-config --filter=@wiretap/config --filter=@wiretap/utils --filter=@wiretap/db --filter=@wiretap/redis",
     "dev:token-created-watcher": "pnpm run dev:redis:up && pnpm run build:packages && turbo run dev --filter=@wiretap/token-created-watcher --filter=@wiretap/vitest-config --filter=@wiretap/config --filter=@wiretap/utils --filter=@wiretap/db --filter=@wiretap/redis",
+    "dev:block-receiver-server": "pnpm run build:packages && turbo run dev --filter=@wiretap/block-receiver-server --filter=@wiretap/vitest-config --filter=@wiretap/config --filter=@wiretap/utils --filter=@wiretap/db --filter=@wiretap/redis",
     "dev:webapp": "pnpm run build:packages && turbo run dev --filter=@wiretap/webapp --filter=@wiretap/config --filter=@wiretap/utils --filter=@wiretap/db",
     "test": "pnpm run test-db:start && pnpm run test-db:migration && turbo run test ; pnpm run test-db:stop",
     "test:watch:watchers": "pnpm run test-db:start && pnpm run test-db:migration && turbo run test:watch --ui=tui --filter=@wiretap/token-created-watcher; pnpm run test-db:stop",

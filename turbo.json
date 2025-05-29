@@ -2,6 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "globalEnv": [
     "NODE_ENV",
+    "PORT",
     "VERCEL_GIT_COMMIT_REF",
 
     "FLY_APP_NAME",
@@ -21,6 +22,7 @@
     "NEYNAR_API_KEY",
     "GLIDER_API_KEY",
     "SERVER_ALCHEMY_API_KEY",
+    "QUICKNODE_TRANSPORT_URL",
     "REDIS_URL",
 
     "IS_SLACK_NOTIFICATION_ENABLED",

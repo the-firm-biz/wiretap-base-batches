@@ -1,4 +1,4 @@
-import { CLANKER_3_1_ADDRESS, CLANKER_ABI } from '@wiretap/config';
+import { CLANKER_3_1_ADDRESS, CLANKER_3_1_ABI } from '@wiretap/config';
 import { onLogs } from './on-logs.js';
 import { onError } from './on-error.js';
 import { websocketPublicClient } from './rpc-clients.js';
@@ -25,7 +25,7 @@ export async function startTokenCreatedWatcher() {
 
     unwatch = websocketPublicClient.watchContractEvent({
       address: CLANKER_3_1_ADDRESS,
-      abi: CLANKER_ABI,
+      abi: CLANKER_3_1_ABI,
       eventName: 'TokenCreated',
       onError: (error) => onError({ error, startWatcher, unwatch }),
       onLogs: onLogs

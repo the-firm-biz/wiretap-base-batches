@@ -1,4 +1,4 @@
-export const CLANKER_ABI = [
+export const CLANKER_3_1_ABI = [
   {
     inputs: [{ internalType: 'address', name: 'owner_', type: 'address' }],
     stateMutability: 'nonpayable',
@@ -717,4 +717,4 @@ export const CLANKER_ABI = [
   }
 ] as const;
 
-export type ClankerAbi = typeof CLANKER_ABI;
+export type ClankerAbi = typeof CLANKER_3_1_ABI;
