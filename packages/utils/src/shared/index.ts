@@ -4,3 +4,4 @@ export * from './json/index.js';
 export * from './context/index.js';
 export * from './tracing/index.js';
 export * from './address.js';
+export * from './logger/index.js';
