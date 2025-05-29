@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      dotenv:
-        specifier: ^16.5.0
-        version: 16.5.0
     devDependencies:
       '@total-typescript/tsconfig':
         specifier: ^1.0.4
@@ -48,12 +44,18 @@ importers:
       '@wiretap/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
       hono:
         specifier: ^4.7.10
         version: 4.7.10
       viem:
         specifier: ^2.29.2
         version: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
+      zod:
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@wiretap/eslint-config':
         specifier: workspace:*
@@ -88,9 +90,15 @@ importers:
       abitype:
         specifier: ^1.0.8
         version: 1.0.8(typescript@5.8.3)(zod@3.24.4)
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
       viem:
         specifier: ^2.29.2
         version: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
+      zod:
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@vitest/coverage-istanbul':
         specifier: ^3.1.4
@@ -143,6 +151,9 @@ importers:
       viem:
         specifier: ^2.29.2
         version: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
+      zod:
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@vitest/coverage-istanbul':
         specifier: ^3.1.4
@@ -330,6 +341,9 @@ importers:
       wagmi:
         specifier: ^2.15.1
         version: 2.15.1(@tanstack/query-core@5.74.4)(@tanstack/react-query@5.74.4(react@19.1.0))(@types/react@19.1.2)(bufferutil@4.0.9)(encoding@0.1.13)(ioredis@5.6.1)(react@19.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))(zod@3.24.4)
+      zod:
+        specifier: ^3.24.4
+        version: 3.24.4
       zustand:
         specifier: ^5.0.4
         version: 5.0.4(@types/react@19.1.2)(react@19.1.0)(use-sync-external-store@1.4.0(react@19.1.0))
@@ -413,6 +427,9 @@ importers:
       '@wiretap/utils':
         specifier: workspace:*
         version: link:../utils
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
       drizzle-kit:
         specifier: ^0.31.0
         version: 0.31.0
@@ -422,6 +439,9 @@ importers:
       pg:
         specifier: ^8.14.1
         version: 8.14.1
+      zod:
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@types/pg':
         specifier: ^8.11.13
@@ -484,12 +504,18 @@ importers:
       '@wiretap/config':
         specifier: workspace:*
         version: link:../config
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
       exponential-backoff:
         specifier: ^3.1.2
         version: 3.1.2
       viem:
         specifier: ^2.29.2
         version: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
+      zod:
+        specifier: ^3.24.4
+        version: 3.24.4
     devDependencies:
       '@wiretap/eslint-config':
         specifier: workspace:*
