@@ -28,6 +28,9 @@
     "test-db:migration": "turbo run test-db:migration --filter=@wiretap/db",
     "test-db:stop": "docker compose -f docker-compose.test.yaml down"
   },
+  "dependencies": {
+    "dotenv": "^16.5.0"
+  },
   "devDependencies": {
     "@total-typescript/tsconfig": "^1.0.4",
     "@types/mime": "3.0.4",
