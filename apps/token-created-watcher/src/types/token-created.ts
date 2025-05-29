@@ -6,8 +6,11 @@ import {
 import { type Address, type Block, type Log } from 'viem';
 import type { ExtractAbiEvent } from 'abitype';
 import type { MinimalBlock } from './block.js';
-import type { DeployTokenArgs } from '../get-transaction-context.js';
-import { getPoolContext, type PoolContext } from '../get-pool-context.js';
+import type { DeployTokenArgs } from '../helpers/get-transaction-context.js';
+import {
+  getPoolContext,
+  type PoolContext
+} from '../helpers/get-pool-context.js';
 import { bigIntReplacer, trace, type Context } from '@wiretap/utils/shared';
 
 export type TokenCreatedOnChainParams = {

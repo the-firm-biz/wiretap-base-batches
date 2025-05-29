@@ -11,6 +11,9 @@ export const CLANKER_3_1_TOTAL_SUPPLY = 100_000_000_000;
 /** Clanker 3.1 Uniswap V3 fee in basis points */
 export const CLANKER_3_1_UNISWAP_FEE_BPS = 10000;
 
+/** Clanker Tokenbot Farcaster ID */
+export const CLANKER_TOKENBOT_FID = 874542;
+
 /** Uniswap V3 Pool Created Topic */
 export const UNISWAP_V3_POOL_CREATED_TOPIC =
   '0x0dfe168177b9affe7b58c4ab64a313695e95d82978a972e459e6921b3ee5e9c9';

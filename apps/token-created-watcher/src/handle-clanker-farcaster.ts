@@ -1,30 +1,27 @@
-import {
-  callWithBackOff,
-  getSingletonNeynarClient,
-  lookupCastConversation,
-  type NeynarAPIClient,
-  type NeynarCastWithInteractionsAndConversations
-} from '@wiretap/utils/server';
+import { getSingletonNeynarClient } from '@wiretap/utils/server';
 import { env } from './env.js';
-import { handleTokenWithFarcasterUser } from './handle-token-with-farcaster-user.js';
+import { getAccountEntityIdWithNeynarUserAndAddress } from './helpers/accounts/get-account-entity-id-with-neynar-user-and-address.js';
 import type { TokenCreatedOnChainParams } from './types/token-created.js';
-import {
-  validateAuthorFid,
-  validateDirectReplies
-} from './handle-clanker-farcaster-validation.js';
 import type { Address } from 'viem';
-import { sendSlackMessage } from './notifications/send-slack-message.js';
-import { getTokenScore } from './token-score/get-token-score.js';
-import type { DeployTokenArgs } from './get-transaction-context.js';
-import { TokenIndexerError } from './errors.js';
+import { sendSlackMessage } from './helpers/notifications/send-slack-message.js';
+import {
+  getTokenScore,
+  type TokenScoreDetails
+} from './helpers/token-score/get-token-score.js';
+import type { DeployTokenArgs } from './helpers/get-transaction-context.js';
 import { type Context, trace } from '@wiretap/utils/shared';
-import { buyToken } from './token-buyer/index.js';
+import { buyToken } from './helpers/token-buying/index.js';
+import { commitTokenDetailsToDb } from './helpers/commit-token-details-to-db.js';
+import { lookupAndValidateCastConversationWithBackoff } from './helpers/cast-validation/lookup-and-validate-cast-conversation-with-backoff.js';
 
 export interface HandleClankerFarcasterArgs {
   fid: number;
   messageId: string;
 }
 
+/**
+ * Called when we expect a Clanker token has been deployed by @ing Clanker on Farcaster.
+ */
 export async function handleClankerFarcaster(
   tokenCreatedData: TokenCreatedOnChainParams,
   clankerFarcasterArgs: HandleClankerFarcasterArgs,
@@ -51,50 +48,65 @@ export async function handleClankerFarcaster(
 
   const neynarUser = castAndConversations?.author;
 
-  let latencyMs: number | undefined = undefined;
-  const tokenScoreDetails = neynarUser
-    ? await trace(() => getTokenScore(neynarUser), {
-        name: 'getTokenScore',
-        parentSpan
-      })
-    : null;
+  let latencyMs: number | null = null;
+  let tokenScoreDetails: TokenScoreDetails | null = null;
 
   if (castAndConversations && isValidCast && neynarUser) {
-    const tokenCreatorAddress = neynarUser.verified_addresses.primary
-      .eth_address as Address;
-    if (!tokenCreatorAddress) {
-      throw new TokenIndexerError(
-        'neynarUser without verified primary address',
-        'handleClankerFarcaster',
-        {
-          neynarUser: neynarUser,
-          cast: clankerFarcasterArgs.messageId
-        }
-      );
-    }
-    const createdDbRows = await trace(
+    const primaryAddress = neynarUser.verified_addresses.primary?.eth_address;
+    const otherAddresses = neynarUser.verified_addresses.eth_addresses;
+    const tokenCreatorAddress = (primaryAddress ||
+      otherAddresses[0]) as Address | null;
+
+    const accountEntityId = await trace(
       () =>
-        handleTokenWithFarcasterUser(
-          tokenCreatedData,
+        getAccountEntityIdWithNeynarUserAndAddress({
           tokenCreatorAddress,
-          neynarUser,
-          tokenScoreDetails,
-          transactionArgs
-        ),
+          neynarUser
+        }),
       {
-        name: 'handleTokenWithFarcasterUser',
+        name: 'getAccountEntityIdWithNeynarUserAndAddress',
         parentSpan
       }
     );
 
-    // TODO: try to call before const createdDbRows
-    buyToken(tokenCreatedData.tokenAddress, tokenCreatedData.poolContext.address);
+    tokenScoreDetails = await trace(
+      () =>
+        getTokenScore({
+          accountEntityId,
+          neynarUserScore: neynarUser?.experimental?.neynar_user_score,
+          neynarUserFollowersCount: neynarUser?.follower_count
+        }),
+      {
+        name: 'getTokenScore',
+        parentSpan
+      }
+    );
+
+    const createdDbRows = await trace(
+      () =>
+        commitTokenDetailsToDb({
+          tokenCreatedData,
+          accountEntityId,
+          tokenScore: tokenScoreDetails?.tokenScore ?? null,
+          imageUrl: transactionArgs?.tokenConfig?.image
+        }),
+      {
+        name: 'commitTokenDetailsToDb',
+        parentSpan
+      }
+    );
+
+    // @todo jeff: migrate to use accountEntityId and call sooner
+    buyToken(
+      tokenCreatedData.tokenAddress,
+      tokenCreatedData.poolContext.address
+    );
 
     latencyMs =
       createdDbRows && tokenCreatedData.block.timestamp
         ? createdDbRows.token.createdAt.getTime() -
           tokenCreatedData.block.timestamp?.getTime()
-        : undefined;
+        : null;
   }
 
   sendSlackMessage({
@@ -103,7 +115,7 @@ export async function handleClankerFarcaster(
     tokenName: tokenCreatedData.tokenName,
     tokenSymbol: tokenCreatedData.symbol,
     deployerContractAddress: tokenCreatedData.deployerContractAddress,
-    neynarUser,
+    neynarUser: neynarUser || null,
     tracing: {
       latencyMs,
       span: parentSpan?.root()
@@ -117,68 +129,4 @@ export async function handleClankerFarcaster(
     tokenScoreDetails,
     transactionArgs
   });
-}
-
-type CastWithValidation = {
-  castAndConversations: NeynarCastWithInteractionsAndConversations | undefined;
-  isValidCast: boolean;
-};
-
-async function lookupAndValidateCastConversationWithBackoff(
-  neynarClient: NeynarAPIClient,
-  tokenCreatedData: TokenCreatedOnChainParams,
-  clankerFarcasterArgs: HandleClankerFarcasterArgs,
-  { tracing }: Context
-): Promise<CastWithValidation> {
-  const { messageId: castHash } = clankerFarcasterArgs;
-
-  const castWithValidation = await callWithBackOff(
-    async () => {
-      const castAndConversations = await lookupCastConversation(
-        neynarClient,
-        castHash
-      );
-
-      if (!castAndConversations) {
-        throw new Error('No Cast was fetched');
-      }
-
-      const isFidValid = validateAuthorFid(
-        castAndConversations,
-        clankerFarcasterArgs,
-        tokenCreatedData
-      );
-      if (!isFidValid) {
-        // no need to retry as fid validation went wrong
-        return { castAndConversations, isValidCast: false };
-      }
-
-      const areDirectRepliesValid = validateDirectReplies(
-        castAndConversations,
-        clankerFarcasterArgs,
-        tokenCreatedData
-      );
-      if (!areDirectRepliesValid) {
-        // cause retry to cover cases when direct reply is delayed
-        throw new Error('Cast Direct Reply validation failed, try again');
-      }
-
-      return { castAndConversations, isValidCast: true };
-    },
-    {
-      startingDelay: 500,
-      timeMultiple: 1.3
-    },
-    {
-      name: 'lookupAndValidateCastConversation',
-      tracing
-    }
-  );
-
-  return (
-    castWithValidation ?? {
-      castAndConversations: undefined,
-      isValidCast: false
-    }
-  );
 }
