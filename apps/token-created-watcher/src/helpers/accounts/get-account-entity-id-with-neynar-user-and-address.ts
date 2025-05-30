@@ -11,6 +11,7 @@ import { env } from '../../env.js';
 import { getListOfWalletAddresses } from './get-list-of-wallet-addresses.js';
 import { getXAccountsFromNeynarUser } from './get-x-accounts-from-neynar-user.js';
 import { TokenIndexerError } from '../../errors.js';
+import { mergeAccountEntities } from './merge-account-entities.js';
 
 interface GetAccountEntityIdWithNeynarUserAndAddressParams {
   neynarUser: NeynarUser;
@@ -61,7 +62,13 @@ export async function getAccountEntityIdWithNeynarUserAndAddress({
       ];
 
       const uniqueAccountEntityIds = new Set(allAccountEntityIds);
+
       if (uniqueAccountEntityIds.size > 1) {
+        await mergeAccountEntities(tx, {
+          accountEntityIds: Array.from(uniqueAccountEntityIds),
+          neynarUser,
+          tokenCreatorAddress
+        });
         throw new TokenIndexerError(
           'conflicting accountEntityIds detected',
           'getAccountEntityIdWithNeynarUserAndAddress',
