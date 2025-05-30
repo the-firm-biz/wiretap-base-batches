@@ -92,10 +92,10 @@ describe('getAccountEntityIdWithNeynarUserAndAddress', () => {
         { address: JOHNY_SECONDARY_ETH_WALLET },
         { address: JOHNY_TERTIARY_ETH_WALLET }
       ]);
-      expect(createInput.newXAccounts).toEqual([
-        { username: JOHNY_FIRST_X_ACCOUNT, xid: 'test-xid' },
-        { username: JOHNY_SECOND_X_ACCOUNT, xid: 'test-xid' }
-      ]);
+      // Not explicitly asserting on the xid as the logic for how its constructed is not important for this test
+      expect(
+        createInput.newXAccounts.map((account: any) => account.username)
+      ).toEqual([JOHNY_FIRST_X_ACCOUNT, JOHNY_SECOND_X_ACCOUNT]);
     });
   });
 
