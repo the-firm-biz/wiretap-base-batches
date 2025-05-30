@@ -1,17 +1,22 @@
 import type { ServerlessDb } from '@wiretap/db';
 import { inArray } from 'drizzle-orm';
-import {
-  xAccounts,
-  farcasterAccounts,
-  wallets,
-  wireTapAccounts
-} from '@wiretap/db';
+import { xAccounts, farcasterAccounts, wallets } from '@wiretap/db';
 
 export async function updateAccountEntitiesToPrimaryEntityId(
   tx: ServerlessDb,
   primaryEntityId: number,
   entityIdsToMerge: number[]
 ): Promise<void> {
+  if (entityIdsToMerge.length === 0) {
+    return;
+  }
+
+  if (entityIdsToMerge.includes(primaryEntityId)) {
+    throw new Error(
+      'Primary entity ID cannot be in the list of entities to merge'
+    );
+  }
+
   await Promise.all([
     // Update X accounts
     tx
@@ -29,12 +34,6 @@ export async function updateAccountEntitiesToPrimaryEntityId(
     tx
       .update(wallets)
       .set({ accountEntityId: primaryEntityId })
-      .where(inArray(wallets.accountEntityId, entityIdsToMerge)),
-
-    // Update WireTapAccounts
-    tx
-      .update(wireTapAccounts)
-      .set({ accountEntityId: primaryEntityId })
-      .where(inArray(wireTapAccounts.accountEntityId, entityIdsToMerge))
+      .where(inArray(wallets.accountEntityId, entityIdsToMerge))
   ]);
 }
