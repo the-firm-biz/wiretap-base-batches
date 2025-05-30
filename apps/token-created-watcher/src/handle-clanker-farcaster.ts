@@ -13,6 +13,7 @@ import { type Context, trace } from '@wiretap/utils/shared';
 import { buyToken } from './helpers/token-buying/index.js';
 import { commitTokenDetailsToDb } from './helpers/commit-token-details-to-db.js';
 import { lookupAndValidateCastConversationWithBackoff } from './helpers/cast-validation/lookup-and-validate-cast-conversation-with-backoff.js';
+import { createAccountEntity, PooledDbConnection } from '@wiretap/db';
 
 export interface HandleClankerFarcasterArgs {
   fid: number;
@@ -57,17 +58,36 @@ export async function handleClankerFarcaster(
     const tokenCreatorAddress = (primaryAddress ||
       otherAddresses[0]) as Address | null;
 
-    const accountEntityId = await trace(
-      () =>
-        getAccountEntityIdWithNeynarUserAndAddress({
-          tokenCreatorAddress,
-          neynarUser
-        }),
-      {
-        name: 'getAccountEntityIdWithNeynarUserAndAddress',
-        parentSpan
+    const poolDb = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
+
+    const accountEntityId = await poolDb.db.transaction(async (tx) => {
+      const getAccountEntityResult = await trace(
+        () =>
+          getAccountEntityIdWithNeynarUserAndAddress(tx, {
+            tokenCreatorAddress,
+            neynarUser
+          }),
+        {
+          name: 'getAccountEntityIdWithNeynarUserAndAddress',
+          parentSpan
+        }
+      );
+
+      // AccountEntityID found
+      if (typeof getAccountEntityResult === 'number') {
+        // @todo jeff - MOVE BUY LOGIC HERE
+        return getAccountEntityResult;
+      } else {
+        const { accountEntity } = await trace(
+          () => createAccountEntity(tx, getAccountEntityResult),
+          {
+            name: 'createAccountEntity',
+            parentSpan
+          }
+        );
+        return accountEntity.id;
       }
-    );
+    });
 
     tokenScoreDetails = await trace(
       () =>
