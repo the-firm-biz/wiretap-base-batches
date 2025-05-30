@@ -16,7 +16,7 @@ import type { ServerlessDb } from '../client.js';
 import { createXAccounts } from './create-x-accounts.js';
 import { createWireTapAccount } from './create-wire-tap-account.js';
 
-type createAccountEntityInput = {
+export type CreateAccountEntityInput = {
   newWallets?: Omit<NewWallet, 'accountEntityId'>[];
   newFarcasterAccount?: Omit<NewFarcasterAccount, 'accountEntityId'>;
   newXAccounts?: Omit<NewXAccount, 'accountEntityId'>[];
@@ -45,7 +45,7 @@ export async function createAccountEntity(
     newXAccounts,
     newWireTapAccount,
     label
-  }: createAccountEntityInput
+  }: CreateAccountEntityInput
 ): Promise<CreateAccountEntityResponse> {
   const txResponse = await db.transaction(async (tx) => {
     const [createdAccountEntity] = await tx

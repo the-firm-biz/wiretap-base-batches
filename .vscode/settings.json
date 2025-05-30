@@ -13,5 +13,6 @@
   // Runs ESLint on save
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
-  }
+  },
+  "vitest.disableWorkspaceWarning": true
 }

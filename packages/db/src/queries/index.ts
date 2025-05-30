@@ -1,3 +1,4 @@
+export * from './delete-account-entities.js';
 export * from './create-account-entity-tracker.js';
 export * from './count-tokens-by-creator.js';
 export * from './create-account-entity.js';
@@ -33,6 +34,7 @@ export * from './get-all-pool-addresses.js';
 export * from './get-or-create-pool.js';
 export * from './get-currency.js';
 export * from './update-pool-ath-mcap.js';
+export * from './update-account-entities-to-primary-entity-id.js';
 export * from './get-pool.js';
 export * from './delete-account-entity-trackers.js';
 export * from './update-account-entity-tracker.js';

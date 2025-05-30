@@ -235,4 +235,4 @@ sendSlackMessage();
 
 - Prefer named exports.
 
-- Generally prefer explicit `null` declarations and types over `undefined` - it helps guarantee the argument is intentionally ommited.
+- Generally prefer explicit `null` argument types over `undefined` - it helps guarantee an argument is knowingly ommited.

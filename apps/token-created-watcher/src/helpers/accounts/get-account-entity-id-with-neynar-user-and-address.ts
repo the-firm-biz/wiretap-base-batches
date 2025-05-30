@@ -3,99 +3,104 @@ import type { Address } from 'viem';
 import {
   getAccountEntityByFid,
   getAccountEntitiesByWalletAddresses,
-  PooledDbConnection,
   getXAccounts,
-  createAccountEntity
+  type ServerlessDb,
+  type CreateAccountEntityInput
 } from '@wiretap/db';
-import { env } from '../../env.js';
 import { getListOfWalletAddresses } from './get-list-of-wallet-addresses.js';
 import { getXAccountsFromNeynarUser } from './get-x-accounts-from-neynar-user.js';
-import { TokenIndexerError } from '../../errors.js';
+import { handleMultipleAssociatedAccountEntities } from './handle-multiple-associated-account-entities.js';
 
 interface GetAccountEntityIdWithNeynarUserAndAddressParams {
   neynarUser: NeynarUser;
   tokenCreatorAddress: Address | null;
 }
 
-export async function getAccountEntityIdWithNeynarUserAndAddress({
-  neynarUser,
-  tokenCreatorAddress
-}: GetAccountEntityIdWithNeynarUserAndAddressParams): Promise<number> {
-  const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
+/**
+ * Returns an account entity ID for a given Neynar user and address if it's found,
+ * otherwise returns a CreateAccountEntityInput object to create a new account entity.
+ */
+export async function getAccountEntityIdWithNeynarUserAndAddress(
+  tx: ServerlessDb,
+  {
+    neynarUser,
+    tokenCreatorAddress
+  }: GetAccountEntityIdWithNeynarUserAndAddressParams
+): Promise<number | CreateAccountEntityInput> {
+  let accountEntityId: number | null = null;
 
   try {
     // @todo jeff - promise.all the async calls, batch the db calls?
-    return await dbPool.db.transaction(async (tx) => {
-      /** Get account entities for addresses */
-      const allWalletsAddresses = getListOfWalletAddresses(
-        tokenCreatorAddress,
-        neynarUser
-      );
-      const accountEntitiesForAddresses =
-        await getAccountEntitiesByWalletAddresses(tx, allWalletsAddresses);
+    /** Get account entities for addresses */
+    const allWalletsAddresses = getListOfWalletAddresses(
+      tokenCreatorAddress,
+      neynarUser
+    );
+    const accountEntitiesForAddresses =
+      await getAccountEntitiesByWalletAddresses(tx, allWalletsAddresses);
 
-      const accountEntityIdsForAddresses = accountEntitiesForAddresses?.map(
-        (accountEntity) => accountEntity.id
-      );
+    const accountEntityIdsForAddresses = accountEntitiesForAddresses?.map(
+      (accountEntity) => accountEntity.id
+    );
 
-      /** Get account entities for fid */
-      const accountEntityForFid = await getAccountEntityByFid(
+    /** Get account entities for fid */
+    const accountEntityForFid = await getAccountEntityByFid(tx, neynarUser.fid);
+    const accountEntityIdForFid = accountEntityForFid?.id;
+
+    /** Get account entities for verified x accounts */
+    const xAccountsFromNeynarUser = getXAccountsFromNeynarUser(neynarUser);
+    const existingXAccounts = xAccountsFromNeynarUser
+      ? await getXAccounts(tx, xAccountsFromNeynarUser)
+      : [];
+    const accountEntityIdsForXAccounts = existingXAccounts.map(
+      (xAccount) => xAccount.accountEntityId
+    );
+
+    const allAccountEntityIds = [
+      ...(accountEntityIdsForAddresses ?? []),
+      ...(accountEntityIdsForXAccounts ?? []),
+      ...(accountEntityIdForFid ? [accountEntityIdForFid] : [])
+    ];
+
+    const uniqueAccountEntityIds = new Set(allAccountEntityIds);
+
+    if (uniqueAccountEntityIds.size > 1) {
+      accountEntityId = await handleMultipleAssociatedAccountEntities(
         tx,
-        neynarUser.fid
-      );
-      const accountEntityIdForFid = accountEntityForFid?.id;
-
-      /** Get account entities for verified x accounts */
-      const xAccountsFromNeynarUser = getXAccountsFromNeynarUser(neynarUser);
-      const existingXAccounts = xAccountsFromNeynarUser
-        ? await getXAccounts(tx, xAccountsFromNeynarUser)
-        : [];
-      const accountEntityIdsForXAccounts = existingXAccounts.map(
-        (xAccount) => xAccount.accountEntityId
+        Array.from(uniqueAccountEntityIds)
       );
 
-      const allAccountEntityIds = [
-        ...(accountEntityIdsForAddresses ?? []),
-        ...(accountEntityIdsForXAccounts ?? []),
-        ...(accountEntityIdForFid ? [accountEntityIdForFid] : [])
-      ];
+      // @todo temporary logging to help observability while these are cleared in our DB
+      console.log(
+        'multiple account entities merged!',
+        'reassigned:: ',
+        { accountEntityIdForFid },
+        { accountEntityIdsForXAccounts },
+        { accountEntityIdsForAddresses },
+        'to:: ',
+        accountEntityId
+      );
+    } else {
+      accountEntityId = uniqueAccountEntityIds.values().next().value ?? null;
+    }
 
-      const uniqueAccountEntityIds = new Set(allAccountEntityIds);
-      if (uniqueAccountEntityIds.size > 1) {
-        throw new TokenIndexerError(
-          'conflicting accountEntityIds detected',
-          'getAccountEntityIdWithNeynarUserAndAddress',
-          {
-            walletAddresses: allWalletsAddresses,
-            xAccounts: xAccountsFromNeynarUser,
-            fid: neynarUser.fid
-          }
-        );
-      }
-      const accountEntityId = uniqueAccountEntityIds.values().next().value;
+    /** If no account entities found, return a CreateAccountEntityInput object to create a new account entity */
+    if (!accountEntityId) {
+      return {
+        newWallets: allWalletsAddresses.map((wallet) => ({
+          address: wallet
+        })),
+        newXAccounts: xAccountsFromNeynarUser?.map((username) => ({
+          xid: `xid-for-${username}`, // TODO xid: actually get xid
+          username
+        })),
+        newFarcasterAccount: neynarUser
+      };
+    }
 
-      /** If no account entities found, create a new one */
-      // @todo jeff - when handling merging account entities, this potentially needs moving into a separate function
-      if (!accountEntityId) {
-        const { accountEntity } = await createAccountEntity(tx, {
-          newWallets: allWalletsAddresses.map((wallet) => ({
-            address: wallet
-          })),
-          newXAccounts: xAccountsFromNeynarUser?.map((username) => ({
-            xid: `xid-for-${username}`, // TODO: actually get xid
-            username
-          })),
-          newFarcasterAccount: neynarUser
-        });
-        return accountEntity.id;
-      }
-
-      return accountEntityId;
-    });
+    return accountEntityId;
   } catch (error) {
     console.error(error);
     throw error;
-  } finally {
-    await dbPool.endPoolConnection();
   }
 }

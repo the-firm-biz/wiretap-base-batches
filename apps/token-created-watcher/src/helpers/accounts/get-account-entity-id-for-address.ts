@@ -1,48 +1,39 @@
 import type { Address } from 'viem';
 import {
   getAccountEntitiesByWalletAddresses,
-  PooledDbConnection,
-  createAccountEntity
+  type CreateAccountEntityInput,
+  type ServerlessDb
 } from '@wiretap/db';
-import { env } from '../../env.js';
 
 interface GetAccountEntityIdForAddressParams {
   tokenCreatorAddress: Address;
 }
 
-export async function getAccountEntityIdForAddress({
-  tokenCreatorAddress
-}: GetAccountEntityIdForAddressParams): Promise<number> {
-  const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
-
+/**
+ * Returns an account entity ID for a given address if it's found,
+ * otherwise returns a CreateAccountEntityInput object to create a new account entity.
+ */
+export async function getAccountEntityIdForAddress(
+  tx: ServerlessDb,
+  { tokenCreatorAddress }: GetAccountEntityIdForAddressParams
+): Promise<number | CreateAccountEntityInput> {
   try {
-    // @todo jeff - promise.all the async calls, batch the db calls?
-    return await dbPool.db.transaction(async (tx) => {
-      /** Get account entities for addresses */
-      const accountEntitiesForAddresses =
-        await getAccountEntitiesByWalletAddresses(tx, [tokenCreatorAddress]);
+    /** Get account entities for address */
+    const accountEntitiesForAddresses =
+      await getAccountEntitiesByWalletAddresses(tx, [tokenCreatorAddress]);
 
-      const accountEntityIdsForAddresses = accountEntitiesForAddresses?.map(
-        (accountEntity) => accountEntity.id
-      );
+    const accountEntityIdsForAddresses = accountEntitiesForAddresses?.map(
+      (accountEntity) => accountEntity.id
+    );
 
-      const accountEntityId = accountEntityIdsForAddresses?.[0];
-
-      /** If no account entitiy found, create a new one */
-      // @todo jeff - when handling merging account entities, this potentially needs moving into a separate function
-      if (!accountEntityId) {
-        const { accountEntity } = await createAccountEntity(tx, {
-          newWallets: [{ address: tokenCreatorAddress }]
-        });
-        return accountEntity.id;
+    const accountEntityId = accountEntityIdsForAddresses?.[0];
+    return (
+      accountEntityId ?? {
+        newWallets: [{ address: tokenCreatorAddress }]
       }
-
-      return accountEntityId;
-    });
+    );
   } catch (error) {
     console.error(error);
     throw error;
-  } finally {
-    await dbPool.endPoolConnection();
   }
 }

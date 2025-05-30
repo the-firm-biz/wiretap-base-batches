@@ -11,6 +11,11 @@ import { getTokenScore } from './helpers/token-score/get-token-score.js';
 import type { DeployTokenArgs } from './helpers/get-transaction-context.js';
 import { buyToken } from './helpers/token-buying/index.js';
 import { getAccountEntityIdForAddress } from './helpers/accounts/get-account-entity-id-for-address.js';
+import {
+  createAccountEntity,
+  PooledDbConnection,
+  type CreateAccountEntityInput
+} from '@wiretap/db';
 
 /** Called when the msgSender of the Clanker TokenCreated event is an EOA. */
 export async function handleEOAMsgSender(
@@ -43,18 +48,40 @@ export async function handleEOAMsgSender(
   ]);
   const neynarUser = userResponse && userResponse[0];
 
-  let accountEntityId: number | undefined = undefined;
+  const poolDb = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
 
-  if (!neynarUser) {
-    accountEntityId = await getAccountEntityIdForAddress({
-      tokenCreatorAddress: tokenCreatedData.msgSender
-    });
-  } else {
-    accountEntityId = await getAccountEntityIdWithNeynarUserAndAddress({
-      neynarUser,
-      tokenCreatorAddress: tokenCreatedData.msgSender
-    });
-  }
+  const accountEntityId = await poolDb.db.transaction(async (tx) => {
+    let getAccountEntityResult: number | CreateAccountEntityInput;
+
+    // Neynar user not found, retrieve account entity ID with address
+    if (!neynarUser) {
+      getAccountEntityResult = await getAccountEntityIdForAddress(tx, {
+        tokenCreatorAddress: tokenCreatedData.msgSender
+      });
+    } else {
+      getAccountEntityResult = await getAccountEntityIdWithNeynarUserAndAddress(
+        tx,
+        {
+          neynarUser,
+          tokenCreatorAddress: tokenCreatedData.msgSender
+        }
+      );
+    }
+
+    // AccountEntity ID found
+    if (typeof getAccountEntityResult === 'number') {
+      // @todo jeff - MOVE BUY LOGIC HERE
+      return getAccountEntityResult;
+    } else {
+      const { accountEntity } = await createAccountEntity(
+        tx,
+        getAccountEntityResult
+      );
+      return accountEntity.id;
+    }
+  });
+
+  await poolDb.endPoolConnection();
 
   const tokenScoreDetails = await getTokenScore({
     accountEntityId,

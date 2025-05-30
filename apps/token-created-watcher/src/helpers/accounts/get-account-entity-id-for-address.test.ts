@@ -2,7 +2,7 @@ import * as dbModule from '@wiretap/db';
 import type { Address } from 'viem';
 import { env } from '../../env.js';
 import { getAccountEntityIdForAddress } from './get-account-entity-id-for-address.js';
-import { expect, describe, beforeEach, it, vi } from 'vitest';
+import { expect, describe, beforeEach, it } from 'vitest';
 
 const JOHNY_PRIMARY_ETH_WALLET =
   '0x1111111111111111111111111111111111111111' as Address;
@@ -16,61 +16,24 @@ describe('getAccountEntityIdForAddress', () => {
     databaseUrl: env.DATABASE_URL
   });
 
-  const spyEndPoolConnection = vi.spyOn(
-    dbModule.PooledDbConnection.prototype,
-    'endPoolConnection'
-  );
-
-  describe('pool db connection', () => {
-    beforeEach(async () => {
-      await dbModule.unsafe__clearDbTables(db);
-      spyEndPoolConnection.mockClear();
-    });
-
-    it('should be closed on success', async () => {
-      await expect(
-        getAccountEntityIdForAddress({
-          tokenCreatorAddress: JOHNY_PRIMARY_ETH_WALLET
-        })
-      ).resolves.not.toThrow();
-      expect(spyEndPoolConnection).toHaveBeenCalledTimes(1);
-    });
-
-    it('should be closed on error', async () => {
-      await expect(
-        getAccountEntityIdForAddress({
-          tokenCreatorAddress: null as unknown as Address
-        })
-      ).rejects.toThrowError('Cannot read properties of null');
-      expect(spyEndPoolConnection).toHaveBeenCalledTimes(1);
-    });
-  });
-
   describe('when wallet address has no existing account entity', () => {
     beforeEach(async () => {
       await dbModule.unsafe__clearDbTables(db);
     });
 
-    it('should create new account entity and return its id', async () => {
-      const accountEntityId = await getAccountEntityIdForAddress({
-        tokenCreatorAddress: JOHNY_PRIMARY_ETH_WALLET
-      });
-
-      // Verify account entity and wallet were created
-      const accountEntityResult = await dbModule.getAccountEntity(
-        db,
-        accountEntityId
+    it('should return CreateAccountEntityInput if no account entity exists', async () => {
+      const result = await dbPool.db.transaction((tx) =>
+        getAccountEntityIdForAddress(tx, {
+          tokenCreatorAddress: JOHNY_PRIMARY_ETH_WALLET
+        })
       );
 
-      expect(accountEntityResult).toBeDefined();
-      expect(accountEntityResult?.accountEntity.id).toBe(accountEntityId);
-      expect(accountEntityResult?.wallets).toHaveLength(1);
-      expect(accountEntityResult?.wallets[0]?.address).toBe(
-        JOHNY_PRIMARY_ETH_WALLET
-      );
-      expect(accountEntityResult?.wallets[0]?.accountEntityId).toBe(
-        accountEntityId
-      );
+      // Should return CreateAccountEntityInput object
+      expect(typeof result).toBe('object');
+      expect(result).toHaveProperty('newWallets');
+      expect((result as any).newWallets).toEqual([
+        { address: JOHNY_PRIMARY_ETH_WALLET }
+      ]);
     });
   });
 
@@ -88,11 +51,14 @@ describe('getAccountEntityIdForAddress', () => {
     });
 
     it('should return existing account entity id', async () => {
-      const accountEntityId = await getAccountEntityIdForAddress({
-        tokenCreatorAddress: JOHNY_PRIMARY_ETH_WALLET
-      });
+      const result = await dbPool.db.transaction((tx) =>
+        getAccountEntityIdForAddress(tx, {
+          tokenCreatorAddress: JOHNY_PRIMARY_ETH_WALLET
+        })
+      );
 
-      expect(accountEntityId).toBe(existingAccountEntityId);
+      expect(typeof result).toBe('number');
+      expect(result).toBe(existingAccountEntityId);
     });
   });
 
