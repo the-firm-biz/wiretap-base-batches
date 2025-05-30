@@ -1,14 +1,18 @@
-import type { ServerlessDb } from '@wiretap/db';
+import type {
+  HttpDb,
+  ServerlessDb,
+  ServerlessDbTransaction
+} from '@wiretap/db';
 import { inArray } from 'drizzle-orm';
 import { xAccounts, farcasterAccounts, wallets } from '@wiretap/db';
 
 export async function updateAccountEntitiesToPrimaryEntityId(
-  tx: ServerlessDb,
+  db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   primaryEntityId: number,
   entityIdsToMerge: number[]
-): Promise<void> {
+): Promise<number> {
   if (entityIdsToMerge.length === 0) {
-    return;
+    return primaryEntityId;
   }
 
   if (entityIdsToMerge.includes(primaryEntityId)) {
@@ -18,22 +22,24 @@ export async function updateAccountEntitiesToPrimaryEntityId(
   }
 
   await Promise.all([
-    // Update X accounts
-    tx
+    // X accounts
+    db
       .update(xAccounts)
       .set({ accountEntityId: primaryEntityId })
       .where(inArray(xAccounts.accountEntityId, entityIdsToMerge)),
 
-    // Update Farcaster accounts
-    tx
+    // Farcaster accounts
+    db
       .update(farcasterAccounts)
       .set({ accountEntityId: primaryEntityId })
       .where(inArray(farcasterAccounts.accountEntityId, entityIdsToMerge)),
 
-    // Update Wallets
-    tx
+    // Wallets
+    db
       .update(wallets)
       .set({ accountEntityId: primaryEntityId })
       .where(inArray(wallets.accountEntityId, entityIdsToMerge))
   ]);
+
+  return primaryEntityId;
 }

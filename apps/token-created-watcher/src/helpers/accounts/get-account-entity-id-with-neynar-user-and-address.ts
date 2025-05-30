@@ -11,7 +11,7 @@ import { env } from '../../env.js';
 import { getListOfWalletAddresses } from './get-list-of-wallet-addresses.js';
 import { getXAccountsFromNeynarUser } from './get-x-accounts-from-neynar-user.js';
 import { TokenIndexerError } from '../../errors.js';
-import { mergeAccountEntities } from './merge-account-entities.js';
+import { mergeAccountEntities } from './handle-multiple-account-entities.js';
 
 interface GetAccountEntityIdWithNeynarUserAndAddressParams {
   neynarUser: NeynarUser;

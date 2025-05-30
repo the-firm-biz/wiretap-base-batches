@@ -114,11 +114,13 @@ describe('updateAccountEntitiesToPrimaryEntityId', () => {
       testData.entities[2]!.id
     ];
 
-    await updateAccountEntitiesToPrimaryEntityId(
-      dbPool.db,
-      primaryEntityId,
-      entityIdsToMerge
-    );
+    const returnedPrimaryEntityId =
+      await updateAccountEntitiesToPrimaryEntityId(
+        db,
+        primaryEntityId,
+        entityIdsToMerge
+      );
+    expect(returnedPrimaryEntityId).toBe(primaryEntityId);
 
     // Verify all accounts were updated to primary entity
     const [updatedXAccounts, updatedFarcasterAccounts, updatedWallets] =
@@ -156,14 +158,14 @@ describe('updateAccountEntitiesToPrimaryEntityId', () => {
     const primaryEntityId = testData.entities[0]!.id;
     const entityIdsToMerge: number[] = [];
 
-    // Should not throw and should not change anything
+    // Should return primaryEntityId and should not change anything
     await expect(
       updateAccountEntitiesToPrimaryEntityId(
-        dbPool.db,
+        db,
         primaryEntityId,
         entityIdsToMerge
       )
-    ).resolves.toBeUndefined();
+    ).resolves.toBe(primaryEntityId);
 
     // Verify data remains unchanged
     const xAccountsAfter = await db.select().from(xAccounts);
@@ -181,11 +183,14 @@ describe('updateAccountEntitiesToPrimaryEntityId', () => {
     const primaryEntityId = testData.entities[0]!.id;
     const entityIdsToMerge = [testData.entities[1]!.id]; // Only merge entity 2, not 3
 
-    await updateAccountEntitiesToPrimaryEntityId(
-      dbPool.db,
-      primaryEntityId,
-      entityIdsToMerge
-    );
+    const returnedPrimaryEntityId =
+      await updateAccountEntitiesToPrimaryEntityId(
+        db,
+        primaryEntityId,
+        entityIdsToMerge
+      );
+
+    expect(returnedPrimaryEntityId).toBe(primaryEntityId);
 
     // Check that entity 1 accounts remain unchanged (they were already on primary)
     const xAccount1 = await db
@@ -231,13 +236,14 @@ describe('updateAccountEntitiesToPrimaryEntityId', () => {
     const primaryEntityId = testData.entities[0]!.id;
     const entityIdsToMerge = [testData.entities[1]!.id];
 
-    await dbPool.db.transaction(async (tx) => {
-      await updateAccountEntitiesToPrimaryEntityId(
+    const returnedPrimaryEntityId = await dbPool.db.transaction(async (tx) => {
+      return await updateAccountEntitiesToPrimaryEntityId(
         tx,
         primaryEntityId,
         entityIdsToMerge
       );
     });
+    expect(returnedPrimaryEntityId).toBe(primaryEntityId);
 
     // Verify the updates were committed
     const updatedXAccount2 = await db
@@ -257,11 +263,13 @@ describe('updateAccountEntitiesToPrimaryEntityId', () => {
     const primaryEntityId = testData.entities[0]!.id;
     const entityIdsToMerge = [testData.entities[1]!.id];
 
-    await updateAccountEntitiesToPrimaryEntityId(
-      dbPool.db,
-      primaryEntityId,
-      entityIdsToMerge
-    );
+    const returnedPrimaryEntityId =
+      await updateAccountEntitiesToPrimaryEntityId(
+        db,
+        primaryEntityId,
+        entityIdsToMerge
+      );
+    expect(returnedPrimaryEntityId).toBe(primaryEntityId);
 
     // Verify that only accountEntityId changed, all other data preserved
     const updatedXAccount2 = await db
@@ -295,7 +303,7 @@ describe('updateAccountEntitiesToPrimaryEntityId', () => {
 
     await expect(
       updateAccountEntitiesToPrimaryEntityId(
-        dbPool.db,
+        db,
         primaryEntityId,
         entityIdsToMerge
       )

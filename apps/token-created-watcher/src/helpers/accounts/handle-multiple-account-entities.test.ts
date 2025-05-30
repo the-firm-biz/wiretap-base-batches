@@ -5,7 +5,7 @@ import {
   unsafe__clearDbTables
 } from '@wiretap/db';
 import { env } from '../../env.js';
-import { mergeAccountEntities } from './merge-account-entities.js';
+import { handleMultipleAccountEntities } from './handle-multiple-account-entities.js';
 import { accountEntities, type AccountEntity } from '@wiretap/db';
 import type { NeynarUser } from '@wiretap/utils/server';
 import type { Address } from 'viem';
