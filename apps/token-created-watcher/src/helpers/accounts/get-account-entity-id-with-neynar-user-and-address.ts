@@ -10,8 +10,7 @@ import {
 import { env } from '../../env.js';
 import { getListOfWalletAddresses } from './get-list-of-wallet-addresses.js';
 import { getXAccountsFromNeynarUser } from './get-x-accounts-from-neynar-user.js';
-import { TokenIndexerError } from '../../errors.js';
-import { mergeAccountEntities } from './handle-multiple-account-entities.js';
+import { handleMultipleAssociatedAccountEntities } from './handle-multiple-associated-account-entities.js';
 
 interface GetAccountEntityIdWithNeynarUserAndAddressParams {
   neynarUser: NeynarUser;
@@ -22,6 +21,7 @@ export async function getAccountEntityIdWithNeynarUserAndAddress({
   neynarUser,
   tokenCreatorAddress
 }: GetAccountEntityIdWithNeynarUserAndAddressParams): Promise<number> {
+  let accountEntityId: number | null = null;
   const dbPool = new PooledDbConnection({ databaseUrl: env.DATABASE_URL });
 
   try {
@@ -64,25 +64,27 @@ export async function getAccountEntityIdWithNeynarUserAndAddress({
       const uniqueAccountEntityIds = new Set(allAccountEntityIds);
 
       if (uniqueAccountEntityIds.size > 1) {
-        await mergeAccountEntities(tx, {
-          accountEntityIds: Array.from(uniqueAccountEntityIds),
-          neynarUser,
-          tokenCreatorAddress
-        });
-        throw new TokenIndexerError(
-          'conflicting accountEntityIds detected',
-          'getAccountEntityIdWithNeynarUserAndAddress',
-          {
-            walletAddresses: allWalletsAddresses,
-            xAccounts: xAccountsFromNeynarUser,
-            fid: neynarUser.fid
-          }
+        accountEntityId = await handleMultipleAssociatedAccountEntities(
+          tx,
+          Array.from(uniqueAccountEntityIds)
         );
+
+        // @todo temporary logging to help observability while these are cleared in our DB
+        console.log(
+          'multiple account entities merged!',
+          'reassigned:: ',
+          { accountEntityIdForFid },
+          { accountEntityIdsForXAccounts },
+          { accountEntityIdsForAddresses },
+          'to:: ',
+          accountEntityId
+        );
+      } else {
+        accountEntityId = uniqueAccountEntityIds.values().next().value ?? null;
       }
-      const accountEntityId = uniqueAccountEntityIds.values().next().value;
 
       /** If no account entities found, create a new one */
-      // @todo jeff - when handling merging account entities, this potentially needs moving into a separate function
+      // @TODO JEFF DONT FORGET ABOUT THIS YOU SHIT - when handling merging account entities, this potentially needs moving into a separate function
       if (!accountEntityId) {
         const { accountEntity } = await createAccountEntity(tx, {
           newWallets: allWalletsAddresses.map((wallet) => ({

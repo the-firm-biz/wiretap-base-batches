@@ -4,7 +4,6 @@ import * as dbModule from '@wiretap/db';
 import { env } from '../../env.js';
 import { expect, describe, beforeEach, it, vi } from 'vitest';
 import { getAccountEntityIdWithNeynarUserAndAddress } from './get-account-entity-id-with-neynar-user-and-address.js';
-import { TokenIndexerError } from '../../errors.js';
 
 const JOHNY_PRIMARY_ETH_WALLET =
   '0x1111111111111111111111111111111111111111' as Address;
@@ -201,67 +200,153 @@ describe('getAccountEntityIdWithNeynarUserAndAddress', () => {
     });
   });
 
-  describe('error handling', () => {
+  describe('multiple account entities', () => {
     beforeEach(async () => {
       await dbModule.unsafe__clearDbTables(db);
     });
 
-    it('should throw TokenIndexerError if different account entities exist for wallets already', async () => {
+    it('should merge account entities if different account entities exist for wallets already', async () => {
       // Create first account entity with wallet
-      await dbModule.createAccountEntity(dbPool.db, {
-        newWallets: [{ address: JOHNY_PRIMARY_ETH_WALLET }]
-      });
+      const firstEntityResponse = await dbModule.createAccountEntity(
+        dbPool.db,
+        {
+          newWallets: [{ address: JOHNY_PRIMARY_ETH_WALLET }]
+        }
+      );
 
       // Create second account entity with another wallet
-      await dbModule.createAccountEntity(dbPool.db, {
-        newWallets: [{ address: JOHNY_SECONDARY_ETH_WALLET }]
+      const secondEntityResponse = await dbModule.createAccountEntity(
+        dbPool.db,
+        {
+          newWallets: [{ address: JOHNY_SECONDARY_ETH_WALLET }]
+        }
+      );
+
+      const accountEntityId = await getAccountEntityIdWithNeynarUserAndAddress({
+        tokenCreatorAddress: JOHNY_PRIMARY_ETH_WALLET,
+        neynarUser: testNeynarUser
       });
 
-      await expect(
-        getAccountEntityIdWithNeynarUserAndAddress({
-          tokenCreatorAddress: JOHNY_PRIMARY_ETH_WALLET,
-          neynarUser: testNeynarUser
-        })
-      ).rejects.toThrow(TokenIndexerError);
+      // Should return the primary (lowest) entity ID
+      const primaryEntityId = Math.min(
+        firstEntityResponse.accountEntity.id,
+        secondEntityResponse.accountEntity.id
+      );
+      expect(accountEntityId).toBe(primaryEntityId);
+
+      // Verify the entities were merged - only primary should exist
+      const primaryEntity = await dbModule.getAccountEntity(
+        dbPool.db,
+        primaryEntityId
+      );
+      const higherEntityId = Math.max(
+        firstEntityResponse.accountEntity.id,
+        secondEntityResponse.accountEntity.id
+      );
+      const higherEntity = await dbModule.getAccountEntity(
+        dbPool.db,
+        higherEntityId
+      );
+
+      expect(primaryEntity).toBeDefined();
+      expect(higherEntity).toBeUndefined();
     });
 
-    it('should throw TokenIndexerError if different account entity exists for X accounts already', async () => {
+    it('should merge account entities if different account entity exists for X accounts already', async () => {
       // Create first account entity with user's X account
-      await dbModule.createAccountEntity(dbPool.db, {
-        newXAccounts: [{ username: JOHNY_FIRST_X_ACCOUNT, xid: 'test-xid-1' }]
-      });
+      const firstEntityResponse = await dbModule.createAccountEntity(
+        dbPool.db,
+        {
+          newXAccounts: [{ username: JOHNY_FIRST_X_ACCOUNT, xid: 'test-xid-1' }]
+        }
+      );
 
       // Create second account entity with user's X account
-      await dbModule.createAccountEntity(dbPool.db, {
-        newXAccounts: [{ username: JOHNY_SECOND_X_ACCOUNT, xid: 'test-xid-2' }]
+      const secondEntityResponse = await dbModule.createAccountEntity(
+        dbPool.db,
+        {
+          newXAccounts: [
+            { username: JOHNY_SECOND_X_ACCOUNT, xid: 'test-xid-2' }
+          ]
+        }
+      );
+
+      const accountEntityId = await getAccountEntityIdWithNeynarUserAndAddress({
+        tokenCreatorAddress: null,
+        neynarUser: testNeynarUser
       });
 
-      await expect(
-        getAccountEntityIdWithNeynarUserAndAddress({
-          tokenCreatorAddress: null,
-          neynarUser: testNeynarUser
-        })
-      ).rejects.toThrow(TokenIndexerError);
+      // Should return the primary (lowest) entity ID
+      const primaryEntityId = Math.min(
+        firstEntityResponse.accountEntity.id,
+        secondEntityResponse.accountEntity.id
+      );
+      expect(accountEntityId).toBe(primaryEntityId);
+
+      // Verify the entities were merged - only primary should exist
+      const primaryEntity = await dbModule.getAccountEntity(
+        dbPool.db,
+        primaryEntityId
+      );
+      const higherEntityId = Math.max(
+        firstEntityResponse.accountEntity.id,
+        secondEntityResponse.accountEntity.id
+      );
+      const higherEntity = await dbModule.getAccountEntity(
+        dbPool.db,
+        higherEntityId
+      );
+
+      expect(primaryEntity).toBeDefined();
+      expect(higherEntity).toBeUndefined();
     });
 
-    it('should throw TokenIndexerError if different account entities exist for multiple entity types', async () => {
+    it('should merge account entities if different account entities exist for multiple entity types', async () => {
       // Create first account entity with wallet and X account
-      await dbModule.createAccountEntity(dbPool.db, {
-        newWallets: [{ address: JOHNY_SECONDARY_ETH_WALLET }],
-        newXAccounts: [{ username: JOHNY_FIRST_X_ACCOUNT, xid: 'test-xid-1' }]
-      });
+      const firstEntityResponse = await dbModule.createAccountEntity(
+        dbPool.db,
+        {
+          newWallets: [{ address: JOHNY_SECONDARY_ETH_WALLET }],
+          newXAccounts: [{ username: JOHNY_FIRST_X_ACCOUNT, xid: 'test-xid-1' }]
+        }
+      );
 
       // Create second account entity with Farcaster account
-      await dbModule.createAccountEntity(dbPool.db, {
-        newFarcasterAccount: testNeynarUser
+      const secondEntityResponse = await dbModule.createAccountEntity(
+        dbPool.db,
+        {
+          newFarcasterAccount: testNeynarUser
+        }
+      );
+
+      const accountEntityId = await getAccountEntityIdWithNeynarUserAndAddress({
+        tokenCreatorAddress: JOHNY_SECONDARY_ETH_WALLET,
+        neynarUser: testNeynarUser
       });
 
-      await expect(
-        getAccountEntityIdWithNeynarUserAndAddress({
-          tokenCreatorAddress: JOHNY_SECONDARY_ETH_WALLET,
-          neynarUser: testNeynarUser
-        })
-      ).rejects.toThrow(TokenIndexerError);
+      // Should return the primary (lowest) entity ID
+      const primaryEntityId = Math.min(
+        firstEntityResponse.accountEntity.id,
+        secondEntityResponse.accountEntity.id
+      );
+      expect(accountEntityId).toBe(primaryEntityId);
+
+      // Verify the entities were merged - only primary should exist
+      const primaryEntity = await dbModule.getAccountEntity(
+        dbPool.db,
+        primaryEntityId
+      );
+      const higherEntityId = Math.max(
+        firstEntityResponse.accountEntity.id,
+        secondEntityResponse.accountEntity.id
+      );
+      const higherEntity = await dbModule.getAccountEntity(
+        dbPool.db,
+        higherEntityId
+      );
+
+      expect(primaryEntity).toBeDefined();
+      expect(higherEntity).toBeUndefined();
     });
   });
 

@@ -9,12 +9,12 @@ import {
 } from '@wiretap/db';
 
 /**
- * Assigns all account entities associated with an array of passed accountEntityIds to one entity ID
+ * Assigns all accounts associated with an array of passed accountEntityIds to the primary entity ID
  * and deletes the other account entities.
  *
  * @returns The primary entity ID.
  */
-export async function handleMultipleAccountEntities(
+export async function handleMultipleAssociatedAccountEntities(
   db: ServerlessDbTransaction | HttpDb | ServerlessDb,
   accountEntityIds: number[]
 ): Promise<number> {
@@ -40,6 +40,5 @@ export async function handleMultipleAccountEntities(
   );
 
   await deleteAccountEntities(db, entityIdsToMerge);
-
   return returnedPrimaryEntityId;
 }
