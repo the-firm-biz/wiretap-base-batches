@@ -45,7 +45,7 @@ function processUpdate(priceUpdate: PriceUpdate) {
 }
 
 export async function initPriceFeeds() {
-  console.log('Initializing price feeds...');
+  console.log('hermes-client:: Initializing price feeds...');
   const priceIds = SUPPORTED_CURRENCIES.map(
     (currency) => priceFeeds[currency].id
   );
@@ -70,19 +70,23 @@ export async function initPriceFeeds() {
         priceFeeds[priceFeed.name].price = processUpdate(priceUpdate);
       });
     } catch (error) {
-      console.error('Error parsing price update:', error, event.data);
+      console.error(
+        'hermes-client:: Error parsing price update:',
+        error,
+        event.data
+      );
     }
   };
 
   priceUpdatesStream.onerror = (error) => {
-    console.error('Error receiving updates:', error);
+    console.error('hermes-client:: Error receiving updates:', error);
     priceUpdatesStream.close();
 
-    console.log('Reconnecting to price feeds...');
+    console.log('hermes-client:: Reconnecting to price feeds...');
     initPriceFeeds();
   };
 
-  console.log('Price feeds initialized');
+  console.log('hermes-client:: Price feeds initialized');
 
   return () => {
     priceUpdatesStream.close();
@@ -99,7 +103,7 @@ export async function fetchLatest(currency: SupportedCurrency): Promise<Price> {
     );
 
     if (!priceUpdate) {
-      throw new Error(`Price update for ${currency} not found`);
+      throw new Error(`hermes-client:: Price update for ${currency} not found`);
     }
 
     const price = processUpdate(priceUpdate);
@@ -110,12 +114,16 @@ export async function fetchLatest(currency: SupportedCurrency): Promise<Price> {
   };
 
   if (!priceFeed.price) {
-    console.warn(`Price update for ${currency} not found. Fetching...`);
+    console.warn(
+      `hermes-client:: Price update for ${currency} not found. Fetching...`
+    );
     return await fetchUpdate();
   }
 
   if (priceFeed.price.lastUpdated.getTime() < Date.now() - 1000 * 60) {
-    console.error(`Price update for ${currency} is stale. Fetching...`);
+    console.error(
+      `hermes-client:: Price update for ${currency} is stale. Fetching...`
+    );
     return await fetchUpdate();
   }
 
